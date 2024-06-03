@@ -31,4 +31,13 @@ public class Network {
         hiddenLayers = new ArrayList<>();
         outputLayer = new ArrayList<>();
     }
+
+    public void createRandomNeuronValuesInDir(String path, boolean initAfterwards){
+        //DATA RANDOM
+        if(initAfterwards) initNeuronsFromDir(path);
+
+    }
+    public void initNeuronsFromDir(String path){
+
+    }
 }
