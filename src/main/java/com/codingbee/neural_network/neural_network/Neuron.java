@@ -1,11 +1,8 @@
-package com.codingbee.neural_network;
+package com.codingbee.neural_network.neural_network;
 
 public class Neuron {
     public static final double LAST_NEURON = 0;
     private double currentValue;
-    /**
-     * NOTE: bias should be negative number.
-     */
     private final double bias;
     private final double[] weights;
 
@@ -22,7 +19,7 @@ public class Neuron {
 
     /**
      * Returns final value and resets the neuron to its initial state.
-     * @return Final value of the neuron. Calculated from Neurons current value by passing it through sigmoid and ReLU functions.
+     * @return final value of the neuron. Calculated from Neurons current value by passing it through sigmoid and ReLU functions.
      */
     public double getFinalValue(){
         double finalValue = ReLU(sigmoid(currentValue + bias));
@@ -48,5 +45,25 @@ public class Neuron {
         if(x < 0) return 0;
         return x;
     }
+
+    //region Getters and setters without additional logic
+
+    public double getCurrentValue() {
+        return currentValue;
+    }
+
+    public void setCurrentValue(double currentValue) {
+        this.currentValue = currentValue;
+    }
+
+    public double getBias() {
+        return bias;
+    }
+
+    public double[] getWeights() {
+        return weights;
+    }
+
+    //endregion
 
 }
