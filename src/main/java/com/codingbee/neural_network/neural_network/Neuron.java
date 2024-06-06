@@ -19,10 +19,10 @@ public class Neuron {
 
     /**
      * Returns final value and resets the neuron to its initial state.
-     * @return final value of the neuron. Calculated from Neurons current value by passing it through sigmoid and ReLU functions.
+     * @return final value of the neuron. Calculated from Neurons current value and bias by passing their difference through sigmoid and ReLU functions.
      */
     public double getFinalValue(){
-        double finalValue = ReLU(sigmoid(currentValue + bias));
+        double finalValue = ReLU(sigmoid(currentValue - bias));
         currentValue = 0;
         return finalValue;
     }
