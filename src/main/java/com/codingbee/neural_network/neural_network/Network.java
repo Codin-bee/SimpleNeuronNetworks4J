@@ -3,7 +3,11 @@ package com.codingbee.neural_network.neural_network;
 import com.codingbee.neural_network.exceptions.FileManagingException;
 import com.codingbee.neural_network.exceptions.IncorrectDataException;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.FileWriter;
+import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -45,7 +49,7 @@ public class Network {
      * Generates random values for neuron initialization.
      * @param dirPath path where directories will be generated
      * @param initAfterwards boolean value, if true neurons will be initialized after values were created
-     * @throws FileManagingException if some problem arises while working inside file system
+     * @throws FileManagingException if some problem arises while working with files
      */
     public void createRandomNeuronValuesInDir(String dirPath, boolean initAfterwards) throws FileManagingException {
         try {
@@ -90,6 +94,12 @@ public class Network {
             throw new FileManagingException(e.getLocalizedMessage());
         }
     }
+
+    /**
+     *
+     * @param dirPath path where directories with files are located
+     * @throws FileManagingException if some problem arises while working with files
+     */
     public void initNeuronsFromDir(String dirPath) throws FileManagingException {
         try {
 
@@ -119,9 +129,12 @@ public class Network {
                 }
                 outputLayer.add(new Neuron(weights, bias));
             }
-
         }catch (IOException e){
             throw new FileManagingException(e.getLocalizedMessage());
         }
+    }
+
+    public double[] process(double[] values){
+        return null;
     }
 }
