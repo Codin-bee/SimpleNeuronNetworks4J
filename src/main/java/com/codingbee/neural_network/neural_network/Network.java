@@ -3,20 +3,19 @@ package com.codingbee.neural_network.neural_network;
 import com.codingbee.neural_network.exceptions.FileManagingException;
 import com.codingbee.neural_network.exceptions.IncorrectDataException;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Network {
-    private int networkNo;
-    private List<List<Neuron>> hiddenLayers;
-    private List<Neuron> outputLayer;
-    private int[] hiddenLayersSizes;
-    private int inputLayerSize, outputLayerSize;
+    private final int networkNo;
+    private final List<List<Neuron>> hiddenLayers;
+    private final List<Neuron> outputLayer;
+    private final int[] hiddenLayersSizes;
+    private final int inputLayerSize;
+    private final int outputLayerSize;
 
     /**Creates new Network object based on the parameters it is given.
      *
@@ -42,9 +41,14 @@ public class Network {
 
     }
 
+    /**
+     * Generates random values for neuron initialization.
+     * @param dirPath path where directories will be generated
+     * @param initAfterwards boolean value, if true neurons will be initialized after values were created
+     * @throws FileManagingException if some problem arises while working inside file system
+     */
     public void createRandomNeuronValuesInDir(String dirPath, boolean initAfterwards) throws FileManagingException {
         try {
-            //FIRST HIDDEN LAYER
             Files.createDirectories(Paths.get(dirPath + "/neural_networks/network" + networkNo + "/layers/layer0"));
             for (int i = 0; i < hiddenLayersSizes[0]; i++) {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + "/neural_networks/network" + networkNo + "/layers/layer0/neuron" + i + ".txt"));
@@ -55,8 +59,6 @@ public class Network {
                 }
                 writer.close();
             }
-
-            //OTHER HIDDEN LAYERS
             for (int i = 1; i < hiddenLayersSizes.length; i++) {
                 Files.createDirectories(Paths.get(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + i));
 
@@ -70,7 +72,6 @@ public class Network {
                     writer.close();
                 }
             }
-            //OUTPUT LAYER
             Files.createDirectories(Paths.get(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + hiddenLayersSizes.length));
             for (int i = 0; i < outputLayerSize; i++) {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + "/neural_networks/network" + networkNo + "/layers/layer"
@@ -82,14 +83,45 @@ public class Network {
                 }
                 writer.close();
             }
-
+            if (initAfterwards){
+                initNeuronsFromDir(dirPath);
+            }
         } catch (IOException e) {
             throw new FileManagingException(e.getLocalizedMessage());
         }
-        if(initAfterwards) initNeuronsFromDir(dirPath);
-
     }
-    public void initNeuronsFromDir(String dirPath){
+    public void initNeuronsFromDir(String dirPath) throws FileManagingException {
+        try {
 
+            for (int i = 0; i < hiddenLayersSizes.length; i++) {
+                List<Neuron> tempNeurons = new ArrayList<>();
+                for (int j = 0; j < hiddenLayersSizes[0]; j++) {
+                    BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + i
+                        + "/neuron" + j + ".txt"));
+                    double bias = Double.parseDouble(reader.readLine());
+                    double[] weights = new double[hiddenLayersSizes.length];
+                    for (int k = 0; k < hiddenLayersSizes[i]; k++) {
+                        weights[k] = Double.parseDouble(reader.readLine());
+                    }
+                    tempNeurons.add(new Neuron(weights, bias));
+                }
+                hiddenLayers.add(tempNeurons);
+            }
+
+            for (int i = 0; i < outputLayerSize; i++) {
+
+                BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + hiddenLayersSizes.length
+                        + "/neuron" + i + ".txt"));
+                double bias = Double.parseDouble(reader.readLine());
+                double[] weights = new double[hiddenLayersSizes.length];
+                for (int k = 0; k < hiddenLayersSizes[i]; k++) {
+                    weights[k] = Double.parseDouble(reader.readLine());
+                }
+                outputLayer.add(new Neuron(weights, bias));
+            }
+
+        }catch (IOException e){
+            throw new FileManagingException(e.getLocalizedMessage());
+        }
     }
 }
