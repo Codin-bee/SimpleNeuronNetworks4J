@@ -1,7 +1,7 @@
 package com.codingbee.neural_network.neural_network;
 
 public class Neuron {
-    public static final double LAST_NEURON = 0;
+    public static final double LAST = 0;
     private double currentValue;
     private final double bias;
     private final double[] weights;
@@ -22,7 +22,7 @@ public class Neuron {
      * @return final value of the neuron. Calculated from Neurons current value and bias by passing their difference through sigmoid and ReLU functions.
      */
     public double getFinalValue(){
-        double finalValue = ReLU(sigmoid(currentValue - bias));
+        double finalValue = sigmoid(ReLU(currentValue - bias));
         currentValue = 0;
         return finalValue;
     }
