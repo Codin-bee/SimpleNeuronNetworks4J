@@ -1,7 +1,10 @@
 package com.codingbee.neural_network.neural_network;
 
+import com.codingbee.neural_network.exceptions.FileManagingException;
 import com.codingbee.neural_network.exceptions.IncorrectDataException;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -39,16 +42,54 @@ public class Network {
 
     }
 
-    public void createRandomNeuronValuesInDir(String path, boolean initAfterwards){
-        //DATA RANDOM
+    public void createRandomNeuronValuesInDir(String dirPath, boolean initAfterwards) throws FileManagingException {
         try {
-            Files.createDirectories(Paths.get(path));
+            //FIRST HIDDEN LAYER
+            Files.createDirectories(Paths.get(dirPath + "/neural_networks/network" + networkNo + "/layers/layer0"));
+            for (int i = 0; i < hiddenLayersSizes[0]; i++) {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + "/neural_networks/network" + networkNo + "/layers/layer0/neuron" + i + ".txt"));
+                writer.write(String.valueOf(Math.floor(Math.random()*10000)/10000));
+                for (int j = 0; j < inputLayerSize; j++) {
+                    writer.newLine();
+                    writer.write(String.valueOf(Math.floor(Math.random()*10000)/10000));
+                }
+                writer.close();
+            }
+
+            //OTHER HIDDEN LAYERS
+            for (int i = 1; i < hiddenLayersSizes.length; i++) {
+                Files.createDirectories(Paths.get(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + i));
+
+                for (int j = 0; j < hiddenLayersSizes[i]; j++) {
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + i + "/neuron" + j + ".txt"));
+                    writer.write(String.valueOf(Math.floor(Math.random()*10000)/10000));
+                    for (int k = 0; k < hiddenLayersSizes[i-1]; k++) {
+                        writer.newLine();
+                        writer.write(String.valueOf(Math.floor(Math.random()*10000)/10000));
+                    }
+                    writer.close();
+                }
+            }
+            //OUTPUT LAYER
+            Files.createDirectories(Paths.get(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + hiddenLayersSizes.length));
+            for (int i = 0; i < outputLayerSize; i++) {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + "/neural_networks/network" + networkNo + "/layers/layer"
+                        + hiddenLayersSizes.length + "/neuron" + i + ".txt"));
+                writer.write(String.valueOf(Neuron.LAST));
+                for (int j = 0; j < hiddenLayersSizes[hiddenLayersSizes.length-1]; j++) {
+                    writer.newLine();
+                    writer.write(String.valueOf(Math.floor(Math.random()*10000)/10000));
+                }
+                writer.close();
+            }
+
         } catch (IOException e) {
+            throw new FileManagingException(e.getLocalizedMessage());
         }
-        if(initAfterwards) initNeuronsFromDir(path);
+        if(initAfterwards) initNeuronsFromDir(dirPath);
 
     }
-    public void initNeuronsFromDir(String folderPath){
+    public void initNeuronsFromDir(String dirPath){
 
     }
 }
