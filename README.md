@@ -7,4 +7,4 @@ SSN4J is simple library for Java, which allows you to create simple neuron netwo
 ## How do I use it?
 First install this library.
 
-   
+Working on it...
