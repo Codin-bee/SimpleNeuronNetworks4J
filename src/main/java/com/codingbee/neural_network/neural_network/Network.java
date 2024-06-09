@@ -96,7 +96,7 @@ public class Network {
     }
 
     /**
-     *
+     * Initializes the network's neurons.
      * @param dirPath path where directories with files are located
      * @throws FileManagingException if some problem arises while working with files
      */
@@ -134,7 +134,27 @@ public class Network {
         }
     }
 
+    /**
+     * Process given values through the network and returns the networks decision about similarity with training data.
+     * @param values array of doubles which represent some variables depending on your application
+     * @return array same length as the output layer defined in constructor, each value will be between 0 and 1 depending on its
+     * probability to be correct, which means higher value, higher probability
+     */
     public double[] process(double[] values){
-        return null;
+        double[] values2;
+        for (int i = 0; i < hiddenLayers.size(); i++) {
+            values2 = new double[hiddenLayersSizes[i]];
+            for (int j = 0; j < hiddenLayersSizes[i]; j++) {
+                hiddenLayers.get(i).get(j).processNums(values);
+                values2[j] = hiddenLayers.get(i).get(j).getFinalValue();
+            }
+            values = values2;
+        }
+        values2 = new double[outputLayerSize];
+        for (int i = 0; i < outputLayerSize; i++) {
+            outputLayer.get(i).processNums(values);
+            values2[i] = outputLayer.get(i).getFinalValue();
+        }
+        return values2;
     }
 }
