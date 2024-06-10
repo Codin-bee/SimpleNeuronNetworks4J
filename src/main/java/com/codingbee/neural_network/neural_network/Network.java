@@ -4,6 +4,7 @@ import com.codingbee.neural_network.enums.TrainingDataFormat;
 import com.codingbee.neural_network.exceptions.FileManagingException;
 import com.codingbee.neural_network.exceptions.IncorrectDataException;
 import com.codingbee.neural_network.objects_for_parsing.TrainingExample;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -166,9 +167,10 @@ public class Network {
      * @param dataFormat enum deciding how to read the files
      * @param learningRate double deciding how big changes should be done to the weights
      */
-    public void train(String dataPath, TrainingDataFormat dataFormat, double learningRate){
+    public void train(String dataPath, TrainingDataFormat dataFormat, double learningRate) throws FileManagingException {
         double[][] trainingDataSet = new double[1][1];
         double[][] expectedResults = new double[1][1];
+        loadTrainingData(dataPath, dataFormat, trainingDataSet, expectedResults);
             for (int i = 0; i < hiddenLayersSizes.length; i++) {
                 //EVERY HIDDEN LAYER
                 for (int j = 0; j < hiddenLayersSizes[i]; j++) {
@@ -232,6 +234,43 @@ public class Network {
     }
 
     public void saveNetworksValues(String directoryPath) throws FileManagingException{
+        try {
+            Files.createDirectories(Paths.get(directoryPath + "/neural_networks/network" + networkNo + "/layers/layer0"));
+            for (int i = 0; i < hiddenLayersSizes[0]; i++) {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(directoryPath + "/neural_networks/network" + networkNo + "/layers/layer0/neuron" + i + ".txt"));
+                writer.write(String.valueOf(hiddenLayers.getFirst().get(i).getBias()));
+                for (int j = 0; j < inputLayerSize; j++) {
+                    writer.newLine();
+                    writer.write(String.valueOf(hiddenLayers.getFirst().get(i).getWeight(j)));
+                }
+                writer.close();
+            }
+            for (int i = 1; i < hiddenLayersSizes.length; i++) {
+                Files.createDirectories(Paths.get(directoryPath + "/neural_networks/network" + networkNo + "/layers/layer" + i));
 
+                for (int j = 0; j < hiddenLayersSizes[i]; j++) {
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(directoryPath + "/neural_networks/network" + networkNo + "/layers/layer" + i + "/neuron" + j + ".txt"));
+                    writer.write(String.valueOf(hiddenLayers.get(i).get(j).getBias()));
+                    for (int k = 0; k < hiddenLayersSizes[i-1]; k++) {
+                        writer.newLine();
+                        writer.write(String.valueOf(hiddenLayers.get(i).get(j).getWeight(k)));
+                    }
+                    writer.close();
+                }
+            }
+            Files.createDirectories(Paths.get(directoryPath + "/neural_networks/network" + networkNo + "/layers/layer" + hiddenLayersSizes.length));
+            for (int i = 0; i < outputLayerSize; i++) {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(directoryPath + "/neural_networks/network" + networkNo + "/layers/layer"
+                        + hiddenLayersSizes.length + "/neuron" + i + ".txt"));
+                writer.write(String.valueOf(outputLayer.get(i).getBias()));
+                for (int j = 0; j < outputLayer.get(i).getWeights().length; j++) {
+                    writer.newLine();
+                    writer.write(String.valueOf(outputLayer.get(i).getWeight(j)));
+                }
+                writer.close();
+            }
+        }catch (IOException e){
+            throw new FileManagingException(e.getLocalizedMessage());
+        }
     }
 }
