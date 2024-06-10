@@ -1,5 +1,6 @@
 package com.codingbee.neural_network.neural_network;
 
+import com.codingbee.neural_network.enums.TrainingDataFormat;
 import com.codingbee.neural_network.exceptions.FileManagingException;
 import com.codingbee.neural_network.exceptions.IncorrectDataException;
 
@@ -156,5 +157,52 @@ public class Network {
             values2[i] = outputLayer.get(i).getFinalValue();
         }
         return values2;
+    }
+
+    public void train(String dataPath, TrainingDataFormat dataFormat, double learningRate){
+        double[][] trainingDataSet = new double[1][1];
+        double[][] expectedResults = new double[1][1];
+            for (int i = 0; i < hiddenLayersSizes.length; i++) {
+                //EVERY HIDDEN LAYER
+                for (int j = 0; j < hiddenLayersSizes[i]; j++) {
+                    //EVERY NEURON IN LAYER
+                    for (int k = 0; k < hiddenLayers.get(i).get(j).getWeights().length; k++) {
+                        //EVERY WEIGHT OF THE NEURON
+                        double originalCost = calculateAverageCost(trainingDataSet, expectedResults);
+                        double originalWeight = hiddenLayers.get(i).get(j).getWeight(k);
+                        hiddenLayers.get(i).get(j).setWeight(k, originalWeight+learningRate);
+                        double costWithFirstNudge = calculateAverageCost(trainingDataSet, expectedResults);
+                        if(originalCost > costWithFirstNudge){
+                            //SAVE NEW WEIGHT
+                            break;
+                        }else {
+                            hiddenLayers.get(i).get(j).setWeight(k, originalWeight-learningRate);
+                            double costWithRevertedNudge = calculateAverageCost(trainingDataSet, expectedResults);
+                            if(costWithRevertedNudge < originalCost){
+                                //SAVE NEW WEIGHT
+                                break;
+                            }else {
+                                hiddenLayers.get(i).get(j).setWeight(k, originalWeight);
+                            }
+                        }
+                    }
+                }
+            }
+    }
+    private double calculateAverageCost(double[][] trainingDataSet, double[][] expectedResults){
+        double costsSummed = 0;
+        int numberOfCostsInSum = 0;
+        for (int i =0; i < trainingDataSet.length; i++) {
+            double[] received = process(trainingDataSet[i]);
+            for (int j = 0; j < outputLayerSize; j++) {
+                costsSummed += Math.pow(received[j] - expectedResults[i][j], 2);
+            }
+            numberOfCostsInSum++;
+        }
+        return costsSummed/numberOfCostsInSum;
+    }
+
+    private void loadTrainingData(String directoryPath, TrainingDataFormat dataFormat, double[][] trainingDataSet, double[][] expectedResults){
+
     }
 }
