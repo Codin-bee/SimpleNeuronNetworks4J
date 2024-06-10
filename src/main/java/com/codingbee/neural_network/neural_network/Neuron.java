@@ -3,8 +3,8 @@ package com.codingbee.neural_network.neural_network;
 public class Neuron {
     public static final double LAST = 0;
     private double currentValue;
-    private final double bias;
-    private final double[] weights;
+    private double bias;
+    private double[] weights;
 
     public Neuron(double[] weights, double bias) {
         this.weights = weights;
@@ -60,10 +60,26 @@ public class Neuron {
         return bias;
     }
 
+    public void setBias(double bias) {
+        this.bias = bias;
+    }
+
     public double[] getWeights() {
         return weights;
     }
 
+    public void setWeights(double[] weights) {
+        this.weights = weights;
+    }
+
     //endregion
+
+    public double getWeight(int index){
+        return weights[index];
+    }
+
+    public void setWeight(int index, double weight){
+        weights[index] = weight;
+    }
 
 }
