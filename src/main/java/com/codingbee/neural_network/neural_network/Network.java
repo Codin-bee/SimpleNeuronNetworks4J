@@ -159,6 +159,13 @@ public class Network {
         return values2;
     }
 
+    /**
+     * Trains the network to act more like you want based on the training examples. It corrects the values, but doesn't
+     * overwrite the values in files so if you want to keep them you should call {@link #saveNetworksValues saveTrainingData()}
+     * @param dataPath directory where training examples are located
+     * @param dataFormat enum deciding how to read the files
+     * @param learningRate double deciding how big changes should be done to the weights
+     */
     public void train(String dataPath, TrainingDataFormat dataFormat, double learningRate){
         double[][] trainingDataSet = new double[1][1];
         double[][] expectedResults = new double[1][1];
@@ -173,13 +180,11 @@ public class Network {
                         hiddenLayers.get(i).get(j).setWeight(k, originalWeight+learningRate);
                         double costWithFirstNudge = calculateAverageCost(trainingDataSet, expectedResults);
                         if(originalCost > costWithFirstNudge){
-                            //SAVE NEW WEIGHT
                             break;
                         }else {
                             hiddenLayers.get(i).get(j).setWeight(k, originalWeight-learningRate);
                             double costWithRevertedNudge = calculateAverageCost(trainingDataSet, expectedResults);
                             if(costWithRevertedNudge < originalCost){
-                                //SAVE NEW WEIGHT
                                 break;
                             }else {
                                 hiddenLayers.get(i).get(j).setWeight(k, originalWeight);
@@ -203,6 +208,10 @@ public class Network {
     }
 
     private void loadTrainingData(String directoryPath, TrainingDataFormat dataFormat, double[][] trainingDataSet, double[][] expectedResults){
+
+    }
+
+    public void saveNetworksValues(String directoryPath) throws FileManagingException{
 
     }
 }
