@@ -3,15 +3,15 @@ package com.codingbee.neural_network.neural_network;
 import com.codingbee.neural_network.enums.TrainingDataFormat;
 import com.codingbee.neural_network.exceptions.FileManagingException;
 import com.codingbee.neural_network.exceptions.IncorrectDataException;
+import com.codingbee.neural_network.objects_for_parsing.TrainingExample;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.FileWriter;
-import java.io.FileReader;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Network {
@@ -136,7 +136,7 @@ public class Network {
     }
 
     /**
-     * Process given values through the network and returns the networks decision about similarity with training data.
+     * Processes given values through the network and returns the networks decision about similarity with training data.
      * @param values array of doubles which represent some variables depending on your application
      * @return array same length as the output layer defined in constructor, each value will be between 0 and 1 depending on its
      * probability to be correct, which means higher value, higher probability
@@ -194,7 +194,7 @@ public class Network {
                 }
             }
     }
-    private double calculateAverageCost(double[][] trainingDataSet, double[][] expectedResults){
+    public double calculateAverageCost(double[][] trainingDataSet, double[][] expectedResults){
         double costsSummed = 0;
         int numberOfCostsInSum = 0;
         for (int i =0; i < trainingDataSet.length; i++) {
@@ -207,8 +207,28 @@ public class Network {
         return costsSummed/numberOfCostsInSum;
     }
 
-    private void loadTrainingData(String directoryPath, TrainingDataFormat dataFormat, double[][] trainingDataSet, double[][] expectedResults){
-
+    private void loadTrainingData(String directoryPath, TrainingDataFormat dataFormat, double[][] trainingDataSet, double[][] expectedResults) throws FileManagingException {
+        try {
+            switch (dataFormat) {
+                case JSON -> {
+                    ObjectMapper mapper = new ObjectMapper();
+                    File directory = new File(directoryPath);
+                    File[] files = directory.listFiles((dir, name) -> name.startsWith("example") && name.endsWith("json"));
+                    if (files != null) {
+                        trainingDataSet = new double[files.length][inputLayerSize];
+                        expectedResults = new double[files.length][outputLayerSize];
+                        for (int i = 0; i < files.length; i++) {
+                            Arrays.fill(expectedResults[i], 0);
+                            TrainingExample example = mapper.readValue(directoryPath + "/example" + i + ".json", TrainingExample.class);
+                            trainingDataSet[i] = example.getWeights();
+                            expectedResults[i][example.getCorrectNumber()] = 1;
+                        }
+                    }
+                }
+            }
+        }catch (JsonProcessingException e){
+            throw new FileManagingException(e.getLocalizedMessage());
+        }
     }
 
     public void saveNetworksValues(String directoryPath) throws FileManagingException{
