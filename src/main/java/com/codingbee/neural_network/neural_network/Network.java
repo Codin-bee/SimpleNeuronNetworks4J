@@ -68,7 +68,7 @@ public class Network {
             for (int i = 1; i < hiddenLayersSizes.length; i++) {
                 Files.createDirectories(Paths.get(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + i));
 
-                for (int j = 0; j < hiddenLayersSizes[i-1]; j++) {
+                for (int j = 0; j < hiddenLayersSizes[i]; j++) {
                     BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + i + "/neuron" + j + ".txt"));
                     writer.write(String.valueOf(Math.floor(Math.random()*10000)/10000));
                     for (int k = 0; k < hiddenLayersSizes[i-1]; k++) {
@@ -104,33 +104,53 @@ public class Network {
      */
     public void initNeuronsFromDir(String dirPath) throws FileManagingException {
         try {
+            //FIRST HIDDEN
 
-            for (int i = 0; i < hiddenLayersSizes.length; i++) {
-                List<Neuron> tempNeurons = new ArrayList<>();
-                for (int j = 0; j < hiddenLayersSizes[0]; j++) {
+            List<Neuron> tempNeurons = new ArrayList<>();
+            for (int j = 0; j < hiddenLayersSizes[0]; j++) {
+                BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + 0
+                        + "/neuron" + j + ".txt"));
+                double bias = Double.parseDouble(reader.readLine());
+                double[] weights = new double[inputLayerSize];
+
+                for (int k = 0; k < inputLayerSize; k++) {
+                    weights[k] = Double.parseDouble(reader.readLine());
+                }
+                tempNeurons.add(new Neuron(weights, bias));
+            }
+            hiddenLayers.add(tempNeurons);
+
+
+            //HIDDEN
+            for (int i = 1; i < hiddenLayersSizes.length; i++) {
+                List<Neuron> tempNeurons2 = new ArrayList<>();
+                for (int j = 0; j < hiddenLayersSizes[i]; j++) {
                     BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + i
                         + "/neuron" + j + ".txt"));
                     double bias = Double.parseDouble(reader.readLine());
-                    double[] weights = new double[hiddenLayersSizes.length];
-                    for (int k = 0; k < hiddenLayersSizes[i]; k++) {
+                    double[] weights = new double[hiddenLayersSizes[hiddenLayersSizes[i-1]]];
+
+                    for (int k = 0; k < hiddenLayersSizes[i-1]; k++) {
                         weights[k] = Double.parseDouble(reader.readLine());
                     }
-                    tempNeurons.add(new Neuron(weights, bias));
+                    tempNeurons2.add(new Neuron(weights, bias));
                 }
-                hiddenLayers.add(tempNeurons);
+                hiddenLayers.add(tempNeurons2);
             }
 
-            for (int i = 0; i < outputLayerSize; i++) {
+            //OUTPUT
+//            for (int i = 0; i < outputLayerSize; i++) {
+//
+//                BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + hiddenLayersSizes.length
+//                        + "/neuron" + i + ".txt"));
+//                double bias = Double.parseDouble(reader.readLine());
+//                double[] weights = new double[hiddenLayersSizes[hiddenLayersSizes.length-2]];
+//                for (int k = 0; k < hiddenLayersSizes[i]; k++) {
+//                    weights[k] = Double.parseDouble(reader.readLine());
+//                }
+//                outputLayer.add(new Neuron(weights, bias));
+//            }
 
-                BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + hiddenLayersSizes.length
-                        + "/neuron" + i + ".txt"));
-                double bias = Double.parseDouble(reader.readLine());
-                double[] weights = new double[hiddenLayersSizes.length];
-                for (int k = 0; k < hiddenLayersSizes[i]; k++) {
-                    weights[k] = Double.parseDouble(reader.readLine());
-                }
-                outputLayer.add(new Neuron(weights, bias));
-            }
         }catch (IOException e){
             throw new FileManagingException(e.getLocalizedMessage());
         }
