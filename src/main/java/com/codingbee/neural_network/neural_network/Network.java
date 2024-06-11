@@ -68,7 +68,7 @@ public class Network {
             for (int i = 1; i < hiddenLayersSizes.length; i++) {
                 Files.createDirectories(Paths.get(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + i));
 
-                for (int j = 0; j < hiddenLayersSizes[i]; j++) {
+                for (int j = 0; j < hiddenLayersSizes[i-1]; j++) {
                     BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + i + "/neuron" + j + ".txt"));
                     writer.write(String.valueOf(Math.floor(Math.random()*10000)/10000));
                     for (int k = 0; k < hiddenLayersSizes[i-1]; k++) {
