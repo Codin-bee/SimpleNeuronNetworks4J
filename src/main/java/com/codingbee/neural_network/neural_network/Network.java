@@ -171,12 +171,10 @@ public class Network {
         double[][] trainingDataSet = new double[1][1];
         double[][] expectedResults = new double[1][1];
         loadTrainingData(dataPath, dataFormat, trainingDataSet, expectedResults);
+        System.out.println(calculateAverageCost(trainingDataSet, expectedResults));///////////////////////TEMP
             for (int i = 0; i < hiddenLayersSizes.length; i++) {
-                //EVERY HIDDEN LAYER
                 for (int j = 0; j < hiddenLayersSizes[i]; j++) {
-                    //EVERY NEURON IN LAYER
                     for (int k = 0; k < hiddenLayers.get(i).get(j).getWeights().length; k++) {
-                        //EVERY WEIGHT OF THE NEURON
                         double originalCost = calculateAverageCost(trainingDataSet, expectedResults);
                         double originalWeight = hiddenLayers.get(i).get(j).getWeight(k);
                         hiddenLayers.get(i).get(j).setWeight(k, originalWeight+learningRate);
@@ -195,6 +193,7 @@ public class Network {
                     }
                 }
             }
+        System.out.println(calculateAverageCost(trainingDataSet, expectedResults));////////////////////TEMP
     }
 
     /**
