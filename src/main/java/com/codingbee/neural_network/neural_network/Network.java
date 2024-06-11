@@ -128,7 +128,7 @@ public class Network {
                     BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + i
                         + "/neuron" + j + ".txt"));
                     double bias = Double.parseDouble(reader.readLine());
-                    double[] weights = new double[hiddenLayersSizes[hiddenLayersSizes[i-1]]];
+                    double[] weights = new double[hiddenLayersSizes[i-1]]; //[hiddenLayersSizes[hiddenLayersSizes[i-1]]];
 
                     for (int k = 0; k < hiddenLayersSizes[i-1]; k++) {
                         weights[k] = Double.parseDouble(reader.readLine());
