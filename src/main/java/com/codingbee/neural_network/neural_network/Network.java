@@ -162,7 +162,7 @@ public class Network {
 
     /**
      * Trains the network to act more like you want based on the training examples. It corrects the values, but doesn't
-     * overwrite the values in files so if you want to keep them you should call {@link #saveNetworksValues saveTrainingData()}
+     * overwrite the values in files so if you want to keep them you should call {@link #saveNetworksValues saveNetworkValues()}
      * @param dataPath directory where training examples are located
      * @param dataFormat enum deciding how to read the files
      * @param learningRate double deciding how big changes should be done to the weights
@@ -196,6 +196,13 @@ public class Network {
                 }
             }
     }
+
+    /**
+     * Calculates cost function of given data.
+     * @param trainingDataSet 2D array of training values
+     * @param expectedResults 2D array of results you expect to get after processing the training data set
+     * @return the average cost function
+     */
     public double calculateAverageCost(double[][] trainingDataSet, double[][] expectedResults){
         double costsSummed = 0;
         int numberOfCostsInSum = 0;
@@ -209,6 +216,14 @@ public class Network {
         return costsSummed/numberOfCostsInSum;
     }
 
+    /**
+     * Loads training data into given arrays.
+     * @param directoryPath path to directory with training data
+     * @param dataFormat enum deciding how to read the files
+     * @param trainingDataSet 2D array where training numbers will be written
+     * @param expectedResults 2D array where expected results will be written
+     * @throws FileManagingException if some problem arises while working with files
+     */
     private void loadTrainingData(String directoryPath, TrainingDataFormat dataFormat, double[][] trainingDataSet, double[][] expectedResults) throws FileManagingException {
         try {
             switch (dataFormat) {
@@ -233,6 +248,11 @@ public class Network {
         }
     }
 
+    /**
+     * Saves networks values back to files.
+     * @param directoryPath path to the files
+     * @throws FileManagingException if some problem arises while working with files
+     */
     public void saveNetworksValues(String directoryPath) throws FileManagingException{
         try {
             Files.createDirectories(Paths.get(directoryPath + "/neural_networks/network" + networkNo + "/layers/layer0"));
