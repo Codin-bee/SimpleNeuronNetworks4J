@@ -237,7 +237,7 @@ public class Network {
                         for (int i = 0; i < files.length; i++) {
                             Arrays.fill(expectedResults[i], 0);
                             TrainingExample example = mapper.readValue(directoryPath + "/example" + i + ".json", TrainingExample.class);
-                            trainingDataSet[i] = example.getWeights();
+                            trainingDataSet[i] = example.getValues();
                             expectedResults[i][example.getCorrectNumber()] = 1;
                         }
                     }

@@ -2,14 +2,14 @@ package com.codingbee.neural_network.objects_for_parsing;
 
 public class TrainingExample {
     private int correctNumber;
-    private double[] weights;
+    private double[] values;
 
     public TrainingExample() {
     }
 
-    public TrainingExample(int correctNumber, double[] weights) {
+    public TrainingExample(int correctNumber, double[] values) {
         this.correctNumber = correctNumber;
-        this.weights = weights;
+        this.values = values;
     }
 
     public int getCorrectNumber() {
@@ -20,11 +20,11 @@ public class TrainingExample {
         this.correctNumber = correctNumber;
     }
 
-    public double[] getWeights() {
-        return weights;
+    public double[] getValues() {
+        return values;
     }
 
-    public void setWeights(double[] weights) {
-        this.weights = weights;
+    public void setValues(double[] values) {
+        this.values = values;
     }
 }
