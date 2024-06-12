@@ -108,12 +108,14 @@ public class Network {
 
             List<Neuron> tempNeurons = new ArrayList<>();
             for (int j = 0; j < hiddenLayersSizes[0]; j++) {
+                System.out.println(j);//
                 BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + 0
                         + "/neuron" + j + ".txt"));
                 double bias = Double.parseDouble(reader.readLine());
                 double[] weights = new double[inputLayerSize];
 
                 for (int k = 0; k < inputLayerSize; k++) {
+                    System.out.println(k);//
                     weights[k] = Double.parseDouble(reader.readLine());
                 }
                 tempNeurons.add(new Neuron(weights, bias));
