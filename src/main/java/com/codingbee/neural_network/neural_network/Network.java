@@ -257,14 +257,14 @@ public class Network {
                         expectedResults = new double[files.length][outputLayerSize];
                         for (int i = 0; i < files.length; i++) {
                             Arrays.fill(expectedResults[i], 0);
-                            TrainingExample example = mapper.readValue(directoryPath + "/example" + i + ".json", TrainingExample.class);
+                            TrainingExample example = mapper.readValue(new File(directoryPath + "/example" + i + ".json"), TrainingExample.class);
                             trainingDataSet[i] = example.getValues();
                             expectedResults[i][example.getCorrectNumber()] = 1;
                         }
                     }
                 }
             }
-        }catch (JsonProcessingException e){
+        }catch (IOException e){
             throw new FileManagingException(e.getLocalizedMessage());
         }
     }
