@@ -162,10 +162,8 @@ public class Network {
      * probability to be correct, which means higher value, higher probability
      */
     public double[] process(double[] values){
-        System.out.println(values.length);
         double[] values2;
         for (int i = 0; i < hiddenLayers.size(); i++) {
-            System.out.println(i);
             values2 = new double[hiddenLayersSizes[i]];
             for (int j = 0; j < hiddenLayersSizes[i]; j++) {
                 System.out.println(j);
@@ -176,7 +174,6 @@ public class Network {
         }
         values2 = new double[outputLayerSize];
         for (int i = 0; i < outputLayerSize; i++) {
-            System.err.println(i);
             outputLayer.get(i).processNums(values);
             values2[i] = outputLayer.get(i).getFinalValue();
         }
@@ -239,13 +236,13 @@ public class Network {
     public double calculateAverageCost(double[][] trainingDataSet, double[][] expectedResults){
         double costsSummed = 0;
         int numberOfCostsInSum = 0;
-        System.out.println(trainingDataSet.length + "= length of data set");
-        System.out.println(expectedResults.length + "= length of result set");
+//        System.out.println(trainingDataSet.length + "= length of data set");
+//        System.out.println(expectedResults.length + "= length of result set");
         for (int i =0; i < trainingDataSet.length; i++) {
             System.out.println(i);
             double[] received = process(trainingDataSet[i]);
             for (int j = 0; j < outputLayerSize; j++) {
-                System.out.println(j);
+//                System.out.println(j);
                 costsSummed += Math.pow(received[j] - expectedResults[i][j], 2);
             }
             numberOfCostsInSum++;
