@@ -235,6 +235,7 @@ public class Network {
     public double calculateAverageCost(double[][] trainingDataSet, double[][] expectedResults){
         double costsSummed = 0;
         int numberOfCostsInSum = 0;
+        System.out.println(trainingDataSet.length + "= length of data set");
         for (int i =0; i < trainingDataSet.length; i++) {
             double[] received = process(trainingDataSet[i]);
             for (int j = 0; j < outputLayerSize; j++) {
