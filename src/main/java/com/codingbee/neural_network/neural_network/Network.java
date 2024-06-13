@@ -139,17 +139,16 @@ public class Network {
             }
 
             //OUTPUT
-//            for (int i = 0; i < outputLayerSize; i++) {
-//
-//                BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + hiddenLayersSizes.length
-//                        + "/neuron" + i + ".txt"));
-//                double bias = Double.parseDouble(reader.readLine());
-//                double[] weights = new double[hiddenLayersSizes[hiddenLayersSizes.length-2]];
-//                for (int k = 0; k < hiddenLayersSizes[i]; k++) {
-//                    weights[k] = Double.parseDouble(reader.readLine());
-//                }
-//                outputLayer.add(new Neuron(weights, bias));
-//            }
+            for (int i = 0; i < outputLayerSize; i++) {
+                BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + hiddenLayersSizes.length + "/neuron" + i + ".txt"));
+                double bias = Double.parseDouble(reader.readLine());
+                double[] weights = new double[hiddenLayersSizes[hiddenLayersSizes.length-1]];
+                for (int k = 0; k < weights.length; k++) {
+                    weights[k] = Double.parseDouble(reader.readLine());
+                }
+                outputLayer.add(new Neuron(weights, bias));
+            }
+
 
         }catch (IOException e){
             throw new FileManagingException(e.getLocalizedMessage());
@@ -262,8 +261,8 @@ public class Network {
      * @throws FileManagingException if some problem arises while working with files
      */
     private void loadTrainingData(String directoryPath, TrainingDataFormat dataFormat, TrainingData trainingData) throws FileManagingException {
-        double[][] trainingDataSet;
-        double[][] expectedResults;
+        double[][] trainingDataSet = null;
+        double[][] expectedResults = null;
         try {
             switch (dataFormat) {
                 case JSON -> {
@@ -278,9 +277,10 @@ public class Network {
                             TrainingExample example = mapper.readValue(new File(directoryPath + "/example" + i + ".json"), TrainingExample.class);
                             trainingDataSet[i] = example.getValues();
                             expectedResults[i][example.getCorrectNumber()] = 1;
-                            trainingData.trainingDataSet = trainingDataSet;
-                            trainingData.expectedResults = expectedResults;
                         }
+
+                        trainingData.trainingDataSet = trainingDataSet;
+                        trainingData.expectedResults = expectedResults;
                     }
                 }
             }
