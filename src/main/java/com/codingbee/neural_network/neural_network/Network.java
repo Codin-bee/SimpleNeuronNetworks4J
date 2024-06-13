@@ -3,9 +3,9 @@ package com.codingbee.neural_network.neural_network;
 import com.codingbee.neural_network.enums.TrainingDataFormat;
 import com.codingbee.neural_network.exceptions.FileManagingException;
 import com.codingbee.neural_network.exceptions.IncorrectDataException;
+import com.codingbee.neural_network.helping_objects.TrainingData;
 import com.codingbee.neural_network.objects_for_parsing.TrainingExample;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
@@ -108,14 +108,12 @@ public class Network {
 
             List<Neuron> tempNeurons = new ArrayList<>();
             for (int j = 0; j < hiddenLayersSizes[0]; j++) {
-                System.out.println(j);//
                 BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + 0
                         + "/neuron" + j + ".txt"));
                 double bias = Double.parseDouble(reader.readLine());
                 double[] weights = new double[inputLayerSize];
 
                 for (int k = 0; k < inputLayerSize; k++) {
-                    System.out.println(k);//
                     weights[k] = Double.parseDouble(reader.readLine());
                 }
                 tempNeurons.add(new Neuron(weights, bias));
@@ -130,7 +128,7 @@ public class Network {
                     BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + i
                         + "/neuron" + j + ".txt"));
                     double bias = Double.parseDouble(reader.readLine());
-                    double[] weights = new double[hiddenLayersSizes[i-1]]; //[hiddenLayersSizes[hiddenLayersSizes[i-1]]];
+                    double[] weights = new double[hiddenLayersSizes[i-1]];
 
                     for (int k = 0; k < hiddenLayersSizes[i-1]; k++) {
                         weights[k] = Double.parseDouble(reader.readLine());
@@ -192,7 +190,17 @@ public class Network {
     public void train(String dataPath, TrainingDataFormat dataFormat, double learningRate) throws FileManagingException {
         double[][] trainingDataSet = new double[1][1];
         double[][] expectedResults = new double[1][1];
-        loadTrainingData(dataPath, dataFormat, trainingDataSet, expectedResults);
+        TrainingData data = new TrainingData();
+        data.trainingDataSet = trainingDataSet;
+        data.expectedResults = expectedResults;
+
+        System.err.println("LOADING DATA");
+
+        loadTrainingData(dataPath, dataFormat, data);
+        trainingDataSet = data.trainingDataSet;
+        expectedResults = data.expectedResults;
+
+        System.err.println("TRAINING");
         System.out.println(calculateAverageCost(trainingDataSet, expectedResults));///////////////////////TEMP
             for (int i = 0; i < hiddenLayersSizes.length; i++) {
                 for (int j = 0; j < hiddenLayersSizes[i]; j++) {
@@ -241,11 +249,12 @@ public class Network {
      * Loads training data into given arrays.
      * @param directoryPath path to directory with training data
      * @param dataFormat enum deciding how to read the files
-     * @param trainingDataSet 2D array where training numbers will be written
-     * @param expectedResults 2D array where expected results will be written
+     * @param trainingData object holding arrays with values used to train the network
      * @throws FileManagingException if some problem arises while working with files
      */
-    private void loadTrainingData(String directoryPath, TrainingDataFormat dataFormat, double[][] trainingDataSet, double[][] expectedResults) throws FileManagingException {
+    private void loadTrainingData(String directoryPath, TrainingDataFormat dataFormat, TrainingData trainingData) throws FileManagingException {
+        double[][] trainingDataSet;
+        double[][] expectedResults;
         try {
             switch (dataFormat) {
                 case JSON -> {
@@ -260,6 +269,8 @@ public class Network {
                             TrainingExample example = mapper.readValue(new File(directoryPath + "/example" + i + ".json"), TrainingExample.class);
                             trainingDataSet[i] = example.getValues();
                             expectedResults[i][example.getCorrectNumber()] = 1;
+                            trainingData.trainingDataSet = trainingDataSet;
+                            trainingData.expectedResults = expectedResults;
                         }
                     }
                 }
