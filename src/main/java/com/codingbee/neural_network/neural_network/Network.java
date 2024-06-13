@@ -166,7 +166,6 @@ public class Network {
         for (int i = 0; i < hiddenLayersSizes.length; i++) {
             values2 = new double[hiddenLayersSizes[i]];
             for (int j = 0; j < hiddenLayersSizes[i]; j++) {
-                System.out.println(j);
                 hiddenLayers.get(i).get(j).processNums(values);
                 values2[j] = hiddenLayers.get(i).get(j).getFinalValue();
             }
@@ -202,7 +201,6 @@ public class Network {
 
         System.err.println("TRAINING");
         System.out.println(calculateAverageCost(trainingDataSet, expectedResults) + " = COST");///////////////////////TEMP
-        System.out.println("COST WRITTEN");
             for (int i = 0; i < hiddenLayersSizes.length; i++) {
                 for (int j = 0; j < hiddenLayersSizes[i]; j++) {
                     for (int k = 0; k < hiddenLayers.get(i).get(j).getWeights().length; k++) {
@@ -224,7 +222,7 @@ public class Network {
                     }
                 }
             }
-        System.out.println(calculateAverageCost(trainingDataSet, expectedResults));////////////////////TEMP
+        System.out.println(calculateAverageCost(trainingDataSet, expectedResults) + "= probably better cost lol");////////////////////TEMP
     }
 
     /**
@@ -236,13 +234,9 @@ public class Network {
     public double calculateAverageCost(double[][] trainingDataSet, double[][] expectedResults){
         double costsSummed = 0;
         int numberOfCostsInSum = 0;
-//        System.out.println(trainingDataSet.length + "= length of data set");
-//        System.out.println(expectedResults.length + "= length of result set");
         for (int i =0; i < trainingDataSet.length; i++) {
-            System.out.println(i);
             double[] received = process(trainingDataSet[i]);
             for (int j = 0; j < outputLayerSize; j++) {
-//                System.out.println(j);
                 costsSummed += Math.pow(received[j] - expectedResults[i][j], 2);
             }
             numberOfCostsInSum++;
