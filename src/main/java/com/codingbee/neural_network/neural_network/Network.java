@@ -237,9 +237,12 @@ public class Network {
         double costsSummed = 0;
         int numberOfCostsInSum = 0;
         System.out.println(trainingDataSet.length + "= length of data set");
+        System.out.println(expectedResults.length + "= length of result set");
         for (int i =0; i < trainingDataSet.length; i++) {
+            System.out.println(i);
             double[] received = process(trainingDataSet[i]);
             for (int j = 0; j < outputLayerSize; j++) {
+                System.out.println(j);
                 costsSummed += Math.pow(received[j] - expectedResults[i][j], 2);
             }
             numberOfCostsInSum++;
