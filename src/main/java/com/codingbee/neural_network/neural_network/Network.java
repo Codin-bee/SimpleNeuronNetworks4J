@@ -163,7 +163,7 @@ public class Network {
      */
     public double[] process(double[] values){
         double[] values2;
-        for (int i = 0; i < hiddenLayers.size(); i++) {
+        for (int i = 0; i < hiddenLayersSizes.length; i++) {
             values2 = new double[hiddenLayersSizes[i]];
             for (int j = 0; j < hiddenLayersSizes[i]; j++) {
                 System.out.println(j);
