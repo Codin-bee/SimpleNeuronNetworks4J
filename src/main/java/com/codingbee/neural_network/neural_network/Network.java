@@ -163,10 +163,13 @@ public class Network {
      * probability to be correct, which means higher value, higher probability
      */
     public double[] process(double[] values){
+        System.out.println(values.length);
         double[] values2;
         for (int i = 0; i < hiddenLayers.size(); i++) {
+            System.out.println(i);
             values2 = new double[hiddenLayersSizes[i]];
             for (int j = 0; j < hiddenLayersSizes[i]; j++) {
+                System.out.println(j);
                 hiddenLayers.get(i).get(j).processNums(values);
                 values2[j] = hiddenLayers.get(i).get(j).getFinalValue();
             }
@@ -174,6 +177,7 @@ public class Network {
         }
         values2 = new double[outputLayerSize];
         for (int i = 0; i < outputLayerSize; i++) {
+            System.err.println(i);
             outputLayer.get(i).processNums(values);
             values2[i] = outputLayer.get(i).getFinalValue();
         }
