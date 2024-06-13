@@ -201,7 +201,8 @@ public class Network {
         expectedResults = data.expectedResults;
 
         System.err.println("TRAINING");
-        System.out.println(calculateAverageCost(trainingDataSet, expectedResults));///////////////////////TEMP
+        System.out.println(calculateAverageCost(trainingDataSet, expectedResults) + " = COST");///////////////////////TEMP
+        System.out.println("COST WRITTEN");
             for (int i = 0; i < hiddenLayersSizes.length; i++) {
                 for (int j = 0; j < hiddenLayersSizes[i]; j++) {
                     for (int k = 0; k < hiddenLayers.get(i).get(j).getWeights().length; k++) {
