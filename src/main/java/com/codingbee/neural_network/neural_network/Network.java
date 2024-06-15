@@ -394,9 +394,7 @@ public class Network {
      * @return value of the x calculated with the sigmoid function.
      */
     private double sigmoid(double x){
-//        return 1 / (1 + Math.exp(-x));
-        System.out.println(1 / (1 + Math.pow(2.718, -x)));
-        System.out.println(x);
-        return 1 / (1 + Math.pow(2.718, -x));
+        System.out.println(1 / (1 + Math.pow(2.71828, -(x/1000))));
+        return 1 / (1 + Math.pow(2.71828, -(x/1000)));
     }
 }

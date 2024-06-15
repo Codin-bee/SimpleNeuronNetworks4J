@@ -33,7 +33,6 @@ public class Neuron {
      * @return value of the x calculated with the ReLU function.
      */
     private double ReLU(double x){
-        System.err.println("relu " + x);
         if(x < 0){
             return 0;
         }
