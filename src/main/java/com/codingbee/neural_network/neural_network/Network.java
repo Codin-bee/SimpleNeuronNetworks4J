@@ -174,7 +174,7 @@ public class Network {
         values2 = new double[outputLayerSize];
         for (int i = 0; i < outputLayerSize; i++) {
             outputLayer.get(i).processNums(values);
-            values2[i] = outputLayer.get(i).getFinalValue();
+            values2[i] = sigmoid(outputLayer.get(i).getFinalValue());
         }
         return values2;
     }
@@ -182,47 +182,109 @@ public class Network {
     /**
      * Trains the network to act more like you want based on the training examples. It corrects the values, but doesn't
      * overwrite the values in files so if you want to keep them you should call {@link #saveNetworksValues saveNetworkValues()}
-     * @param dataPath directory where training examples are located
-     * @param dataFormat enum deciding how to read the files
+     * @param data data, which is the network trained on
      * @param learningRate double deciding how big changes should be done to the weights
+     * @param printCosts whether to print starting and final cost function or not
      */
-    public void train(String dataPath, TrainingDataFormat dataFormat, double learningRate) throws FileManagingException {
-        double[][] trainingDataSet = new double[1][1];
-        double[][] expectedResults = new double[1][1];
-        TrainingData data = new TrainingData();
-        data.trainingDataSet = trainingDataSet;
-        data.expectedResults = expectedResults;
+    public void trainWeights(TrainingData data, double learningRate, boolean printCosts){
+        double[][] trainingDataSet = data.trainingDataSet;
+        double[][] expectedResults = data.expectedResults;
 
-        System.err.println("LOADING DATA");
-
-        loadTrainingData(dataPath, dataFormat, data);
-        trainingDataSet = data.trainingDataSet;
-        expectedResults = data.expectedResults;
-
-        System.err.println("TRAINING");
-        System.out.println(calculateAverageCost(trainingDataSet, expectedResults) + " = COST");///////////////////////TEMP
-            for (int i = 0; i < hiddenLayersSizes.length; i++) {
-                for (int j = 0; j < hiddenLayersSizes[i]; j++) {
-                    for (int k = 0; k < hiddenLayers.get(i).get(j).getWeights().length; k++) {
-                        double originalCost = calculateAverageCost(trainingDataSet, expectedResults);
-                        double originalWeight = hiddenLayers.get(i).get(j).getWeight(k);
-                        hiddenLayers.get(i).get(j).setWeight(k, originalWeight+learningRate);
-                        double costWithFirstNudge = calculateAverageCost(trainingDataSet, expectedResults);
-                        if(originalCost > costWithFirstNudge){
+        if (printCosts) {
+            System.out.println("Starting cost: " + calculateAverageCost(trainingDataSet, expectedResults));
+        }
+        for (int i = 0; i < hiddenLayersSizes.length; i++) {
+            for (int j = 0; j < hiddenLayersSizes[i]; j++) {
+                for (int k = 0; k < hiddenLayers.get(i).get(j).getWeights().length; k++) {
+                    double originalCost = calculateAverageCost(trainingDataSet, expectedResults);
+                    double originalWeight = hiddenLayers.get(i).get(j).getWeight(k);
+                    hiddenLayers.get(i).get(j).setWeight(k, originalWeight + learningRate);
+                    double costWithFirstNudge = calculateAverageCost(trainingDataSet, expectedResults);
+                    if (originalCost > costWithFirstNudge) {
+                        break;
+                    } else {
+                        hiddenLayers.get(i).get(j).setWeight(k, originalWeight - learningRate);
+                        double costWithRevertedNudge = calculateAverageCost(trainingDataSet, expectedResults);
+                        if (costWithRevertedNudge < originalCost) {
                             break;
-                        }else {
-                            hiddenLayers.get(i).get(j).setWeight(k, originalWeight-learningRate);
-                            double costWithRevertedNudge = calculateAverageCost(trainingDataSet, expectedResults);
-                            if(costWithRevertedNudge < originalCost){
-                                break;
-                            }else {
-                                hiddenLayers.get(i).get(j).setWeight(k, originalWeight);
-                            }
+                        } else {
+                            hiddenLayers.get(i).get(j).setWeight(k, originalWeight);
                         }
                     }
                 }
             }
-        System.out.println(calculateAverageCost(trainingDataSet, expectedResults) + "= probably better cost lol");////////////////////TEMP
+        }
+
+        for (int i = 0; i < outputLayerSize; i++) {
+            for (int j = 0; j < outputLayer.get(i).getWeights().length; j++) {
+                double originalCost = calculateAverageCost(trainingDataSet, expectedResults);
+                double originalWeight = outputLayer.get(i).getWeight(j);
+                outputLayer.get(i).setWeight(j, originalWeight + learningRate);
+                double costWithFirstNudge = calculateAverageCost(trainingDataSet, expectedResults);
+                if (originalCost > costWithFirstNudge) {
+                    break;
+                } else {
+                    outputLayer.get(i).setWeight(j, originalWeight - learningRate);
+                    double costWithRevertedNudge = calculateAverageCost(trainingDataSet, expectedResults);
+                    if (costWithRevertedNudge < originalCost) {
+                        break;
+                    } else {
+                        outputLayer.get(i).setWeight(j, originalWeight);
+                    }
+                }
+            }
+        }
+        if (printCosts) {
+            System.out.println("Cost after training: " + calculateAverageCost(trainingDataSet, expectedResults));
+    }
+    }
+
+    public void trainBiases(TrainingData data, double learningRate, boolean printCosts){
+        double[][] trainingDataSet = data.trainingDataSet;
+        double[][] expectedResults = data.expectedResults;
+        if (printCosts) {
+            System.out.println("Starting cost: " + calculateAverageCost(trainingDataSet, expectedResults));
+        }
+        for (int i = 0; i < hiddenLayersSizes.length; i++) {
+            for (int j = 0; j < hiddenLayersSizes[i]; j++) {
+                    double originalCost = calculateAverageCost(trainingDataSet, expectedResults);
+                    double originalBias = hiddenLayers.get(i).get(j).getBias();
+                    hiddenLayers.get(i).get(j).setBias(originalBias + learningRate);
+                    double costWithFirstNudge = calculateAverageCost(trainingDataSet, expectedResults);
+                    if (originalCost > costWithFirstNudge) {
+                        break;
+                    } else {
+                        hiddenLayers.get(i).get(j).setBias(originalBias - learningRate);
+                        double costWithRevertedNudge = calculateAverageCost(trainingDataSet, expectedResults);
+                        if (costWithRevertedNudge < originalCost) {
+                            break;
+                        } else {
+                            hiddenLayers.get(i).get(j).setBias(originalBias);
+                        }
+                    }
+            }
+        }
+        for (int i = 0; i < outputLayerSize; i++) {
+            double originalCost = calculateAverageCost(trainingDataSet, expectedResults);
+            double originalBias = outputLayer.get(i).getBias();
+            outputLayer.get(i).setBias(originalBias + learningRate);
+            double costWithFirstNudge = calculateAverageCost(trainingDataSet, expectedResults);
+            if (originalCost > costWithFirstNudge) {
+                break;
+            } else {
+                outputLayer.get(i).setBias(originalBias - learningRate);
+                double costWithRevertedNudge = calculateAverageCost(trainingDataSet, expectedResults);
+                if (costWithRevertedNudge < originalCost) {
+                    break;
+                } else {
+                    outputLayer.get(i).setBias(originalBias);
+                }
+            }
+        }
+        if (printCosts) {
+            System.out.println("Cost after training: " + calculateAverageCost(trainingDataSet, expectedResults));
+        }
+
     }
 
     /**
@@ -245,15 +307,15 @@ public class Network {
     }
 
     /**
-     * Loads training data into given arrays.
+     * Loads training data into given object.
      * @param directoryPath path to directory with training data
      * @param dataFormat enum deciding how to read the files
-     * @param trainingData object holding arrays with values used to train the network
+     * @param trainingData object holding arrays with the data, this method writes values directly into the object
      * @throws FileManagingException if some problem arises while working with files
      */
-    private void loadTrainingData(String directoryPath, TrainingDataFormat dataFormat, TrainingData trainingData) throws FileManagingException {
-        double[][] trainingDataSet = null;
-        double[][] expectedResults = null;
+    public void loadTrainingData(String directoryPath, TrainingDataFormat dataFormat, TrainingData trainingData) throws FileManagingException {
+        double[][] trainingDataSet;
+        double[][] expectedResults;
         try {
             switch (dataFormat) {
                 case JSON -> {
@@ -324,5 +386,14 @@ public class Network {
         }catch (IOException e){
             throw new FileManagingException(e.getLocalizedMessage());
         }
+    }
+
+    /**
+     * Sigmoid function which changes any number to number between 1 and 0. The function is not linear, and it is really steep around zero.
+     * @param x the number you want to convert.
+     * @return value of the x calculated with the sigmoid function.
+     */
+    private double sigmoid(double x){
+        return 1 / (1 + Math.exp(-x));
     }
 }
