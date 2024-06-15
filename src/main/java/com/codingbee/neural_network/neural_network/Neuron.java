@@ -19,21 +19,12 @@ public class Neuron {
 
     /**
      * Returns final value and resets the neuron to its initial state.
-     * @return final value of the neuron. Calculated from Neurons current value and bias by passing their difference through sigmoid and ReLU functions.
+     * @return final value of the neuron. Calculated from Neurons current value and bias by passing their sum through ReLU function.
      */
     public double getFinalValue(){
-        double finalValue = sigmoid(ReLU(currentValue - bias));
+        double finalValue = ReLU(currentValue + bias);
         currentValue = 0;
         return finalValue;
-    }
-
-    /**
-     * Sigmoid function which changes any number to number between 1 and -1. The function is not linear, but it is really steep around zero.
-     * @param x the number you want to convert.
-     * @return value of the x calculated with the sigmoid function.
-     */
-    private double sigmoid(double x){
-        return 1 / (1 + Math.exp(-x));
     }
 
     /**
