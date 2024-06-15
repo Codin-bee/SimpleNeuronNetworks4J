@@ -395,6 +395,7 @@ public class Network {
      */
     private double sigmoid(double x){
 //        return 1 / (1 + Math.exp(-x));
+        System.out.println(1 / (1 + Math.pow(2.718, -x)));
         return 1 / (1 + Math.pow(2.718, -x));
     }
 }
