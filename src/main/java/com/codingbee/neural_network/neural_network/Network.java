@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class Network {
     private final int networkNo;
@@ -55,13 +56,14 @@ public class Network {
      */
     public void createRandomNeuronValuesInDir(String dirPath, boolean initAfterwards) throws FileManagingException {
         try {
+            Random rand = new Random();
             Files.createDirectories(Paths.get(dirPath + "/neural_networks/network" + networkNo + "/layers/layer0"));
             for (int i = 0; i < hiddenLayersSizes[0]; i++) {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + "/neural_networks/network" + networkNo + "/layers/layer0/neuron" + i + ".txt"));
-                writer.write(String.valueOf(Math.floor(Math.random()*10000)/10000));
+                writer.write(String.valueOf(Math.random()));
                 for (int j = 0; j < inputLayerSize; j++) {
                     writer.newLine();
-                    writer.write(String.valueOf(Math.floor(Math.random()*10000)/10000));
+                    writer.write(String.valueOf(rand.nextGaussian() * Math.sqrt(2.0 / inputLayerSize)));
                 }
                 writer.close();
             }
@@ -70,10 +72,10 @@ public class Network {
 
                 for (int j = 0; j < hiddenLayersSizes[i]; j++) {
                     BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + i + "/neuron" + j + ".txt"));
-                    writer.write(String.valueOf(Math.floor(Math.random()*10000)/10000));
+                    writer.write(String.valueOf(Math.random()));
                     for (int k = 0; k < hiddenLayersSizes[i-1]; k++) {
                         writer.newLine();
-                        writer.write(String.valueOf(Math.floor(Math.random()*10000)/10000));
+                        writer.write(String.valueOf(rand.nextGaussian() * Math.sqrt(2.0 / inputLayerSize)));
                     }
                     writer.close();
                 }
@@ -85,7 +87,7 @@ public class Network {
                 writer.write(String.valueOf(Neuron.LAST));
                 for (int j = 0; j < hiddenLayersSizes[hiddenLayersSizes.length-1]; j++) {
                     writer.newLine();
-                    writer.write(String.valueOf(Math.floor(Math.random()*10000)/10000));
+                    writer.write(String.valueOf(rand.nextGaussian() * Math.sqrt(2.0 / inputLayerSize)));
                 }
                 writer.close();
             }
@@ -394,6 +396,6 @@ public class Network {
      * @return value of the x calculated with the sigmoid function.
      */
     private double sigmoid(double x){
-        return 1 / (1 + Math.pow(2.71828, -(x/1000)));
+        return 1 / (1 + Math.exp(-x));
     }
 }
