@@ -34,7 +34,7 @@ public class Neuron {
      */
     private double activate(double x){
         if(x < 0){
-            return x * 0.1;
+            return x * 0.01;
         }
         return x;
     }
