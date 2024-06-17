@@ -37,4 +37,9 @@ dependencies {
 
 Then reload your build system files changes and the library should be in your external libraries folder.
 
-Working on it...
+## How do I use it?
+TUTORIAL AVAIBLE WHEN THE LIBRARY IS FINISHED NOW IT IS NOT GOOD IDEA TO EVEN USE IT
+
+## I found a bug!
+That can definitely happen, this library is still in developement and it will probably be for a long time.
+Please feel free to contact me via github or my e-mail thecodingbee.dev@gmail.com and provide some information about the bug so I can fix it for you.
