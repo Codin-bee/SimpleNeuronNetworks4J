@@ -1,10 +1,10 @@
 package com.codingbee.snn4j.neural_network;
 
-import com.codingbee.snn4j.enums.TrainingDataFormat;
+import com.codingbee.snn4j.enums.ExampleDataFormat;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.codingbee.snn4j.helping_objects.Dataset;
-import com.codingbee.snn4j.objects_for_parsing.TrainingExample;
+import com.codingbee.snn4j.objects_for_parsing.ExampleJsonOne;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -310,16 +310,16 @@ public class Network {
 
     /**
      * Loads training data into given object.
-     * @param directoryPath path to directory with training data
-     * @param dataFormat enum deciding how to read the files. More information in {@link TrainingDataFormat}
+     * @param directoryPath path to directory with training data. All data has to be named example0.json, example1.json, etc... this is only temporary
+     * @param exampleDataFormat enum deciding how to read the files. More information in {@link ExampleDataFormat}
      * @param data object holding arrays with the data, this method writes values directly into the object
      * @throws FileManagingException if some problem arises while working with files
      */
-    public void loadData(String directoryPath, TrainingDataFormat dataFormat, Dataset data) throws FileManagingException {
+    public void loadData(String directoryPath, ExampleDataFormat exampleDataFormat, Dataset data) throws FileManagingException {
         double[][] trainingDataSet;
         double[][] expectedResults;
         try {
-            switch (dataFormat) {
+            switch (exampleDataFormat) {
                 case JSON_ONE -> {
                     ObjectMapper mapper = new ObjectMapper();
                     File directory = new File(directoryPath);
@@ -329,7 +329,7 @@ public class Network {
                         expectedResults = new double[files.length][outputLayerSize];
                         for (int i = 0; i < files.length; i++) {
                             Arrays.fill(expectedResults[i], 0);
-                            TrainingExample example = mapper.readValue(new File(directoryPath + "/example" + i + ".json"), TrainingExample.class);
+                            ExampleJsonOne example = mapper.readValue(new File(directoryPath + "/example" + i + ".json"), ExampleJsonOne.class);
                             trainingDataSet[i] = example.getValues();
                             expectedResults[i][example.getCorrectNeuronIndex()] = 1;
                         }
@@ -338,8 +338,14 @@ public class Network {
                         data.setExpectedResults(expectedResults);
                     }
                 }
+                case JSON_TWO -> {
+
+                }
+                default -> throw new IncorrectDataException("Data format not implemented yet.");
             }
-        }catch (IOException e){
+        } catch (IncorrectDataException e) {
+            throw new IncorrectDataException(e.getLocalizedMessage());
+        } catch (IOException e) {
             throw new FileManagingException(e.getLocalizedMessage());
         }
     }
