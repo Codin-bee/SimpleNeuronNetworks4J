@@ -41,14 +41,6 @@ public class Neuron {
 
     //region Getters and setters without additional logic
 
-    public double getCurrentValue() {
-        return currentValue;
-    }
-
-    public void setCurrentValue(double currentValue) {
-        this.currentValue = currentValue;
-    }
-
     public double getBias() {
         return bias;
     }
