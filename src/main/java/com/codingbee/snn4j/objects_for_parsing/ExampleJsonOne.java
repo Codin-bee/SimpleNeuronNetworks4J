@@ -1,10 +1,10 @@
 package com.codingbee.snn4j.objects_for_parsing;
 
-public class TrainingExample {
+public class ExampleJsonOne {
     private int correctNeuronIndex;
     private double[] values;
 
-    public TrainingExample(int correctNumberIndex, double[] values) {
+    public ExampleJsonOne(int correctNumberIndex, double[] values) {
         this.correctNeuronIndex = correctNumberIndex;
         this.values = values;
     }
