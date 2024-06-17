@@ -1,6 +1,8 @@
 package com.codingbee.snn4j.exceptions;
 
-public class FileManagingException extends Exception{
+import java.io.IOException;
+
+public class FileManagingException extends IOException {
     public FileManagingException(String message){
         super(message);
     }
