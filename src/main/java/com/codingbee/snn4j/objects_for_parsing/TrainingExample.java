@@ -1,4 +1,4 @@
-package com.codingbee.neural_network.objects_for_parsing;
+package com.codingbee.snn4j.objects_for_parsing;
 
 public class TrainingExample {
     private int correctNumber;

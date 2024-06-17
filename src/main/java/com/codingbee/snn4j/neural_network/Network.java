@@ -1,10 +1,10 @@
-package com.codingbee.neural_network.neural_network;
+package com.codingbee.snn4j.neural_network;
 
-import com.codingbee.neural_network.enums.TrainingDataFormat;
-import com.codingbee.neural_network.exceptions.FileManagingException;
-import com.codingbee.neural_network.exceptions.IncorrectDataException;
-import com.codingbee.neural_network.helping_objects.TrainingData;
-import com.codingbee.neural_network.objects_for_parsing.TrainingExample;
+import com.codingbee.snn4j.enums.TrainingDataFormat;
+import com.codingbee.snn4j.exceptions.FileManagingException;
+import com.codingbee.snn4j.exceptions.IncorrectDataException;
+import com.codingbee.snn4j.helping_objects.TrainingData;
+import com.codingbee.snn4j.objects_for_parsing.TrainingExample;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

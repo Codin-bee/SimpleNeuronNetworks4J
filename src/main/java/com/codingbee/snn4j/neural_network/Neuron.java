@@ -1,4 +1,4 @@
-package com.codingbee.neural_network.neural_network;
+package com.codingbee.snn4j.neural_network;
 
 public class Neuron {
     public static final double LAST = 0;

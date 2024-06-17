@@ -1,4 +1,4 @@
-package com.codingbee.neural_network.exceptions;
+package com.codingbee.snn4j.exceptions;
 
 public class IncorrectDataException extends Exception{
     public IncorrectDataException(String message) {

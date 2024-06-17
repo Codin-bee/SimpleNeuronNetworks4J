@@ -1,4 +1,4 @@
-package com.codingbee.neural_network.enums;
+package com.codingbee.snn4j.enums;
 
 public enum TrainingDataFormat {
     JSON
