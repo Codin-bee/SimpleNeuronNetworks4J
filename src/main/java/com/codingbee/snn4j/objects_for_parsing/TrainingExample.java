@@ -1,23 +1,21 @@
 package com.codingbee.snn4j.objects_for_parsing;
 
 public class TrainingExample {
-    private int correctNumber;
+    private int correctNeuronIndex;
     private double[] values;
 
-    public TrainingExample() {
-    }
-
-    public TrainingExample(int correctNumber, double[] values) {
-        this.correctNumber = correctNumber;
+    public TrainingExample(int correctNumberIndex, double[] values) {
+        this.correctNeuronIndex = correctNumberIndex;
         this.values = values;
     }
 
-    public int getCorrectNumber() {
-        return correctNumber;
+    //region Getters and setters without additional logic
+    public int getCorrectNeuronIndex() {
+        return correctNeuronIndex;
     }
 
-    public void setCorrectNumber(int correctNumber) {
-        this.correctNumber = correctNumber;
+    public void setCorrectNeuronIndex(int correctNeuronIndex) {
+        this.correctNeuronIndex = correctNeuronIndex;
     }
 
     public double[] getValues() {
@@ -27,4 +25,5 @@ public class TrainingExample {
     public void setValues(double[] values) {
         this.values = values;
     }
+    //endregion
 }
