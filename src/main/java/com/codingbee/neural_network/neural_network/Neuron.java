@@ -22,7 +22,7 @@ public class Neuron {
      * @return final value of the neuron. Calculated from Neurons current value and bias by passing their sum through ReLU function.
      */
     public double getFinalValue(){
-        double finalValue = ReLU(currentValue + bias);
+        double finalValue = activate(currentValue + bias);
         currentValue = 0;
         return finalValue;
     }
@@ -32,9 +32,9 @@ public class Neuron {
      * @param x the number you want to convert.
      * @return value of the x calculated with the ReLU function.
      */
-    private double ReLU(double x){
+    private double activate(double x){
         if(x < 0){
-            return 0;
+            return x * 0.1;
         }
         return x;
     }
