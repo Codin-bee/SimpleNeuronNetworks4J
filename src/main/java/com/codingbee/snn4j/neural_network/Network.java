@@ -3,7 +3,7 @@ package com.codingbee.snn4j.neural_network;
 import com.codingbee.snn4j.enums.TrainingDataFormat;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
-import com.codingbee.snn4j.helping_objects.TrainingData;
+import com.codingbee.snn4j.helping_objects.Dataset;
 import com.codingbee.snn4j.objects_for_parsing.TrainingExample;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -188,9 +188,9 @@ public class Network {
      * @param learningRate double deciding how big changes should be done to the weights
      * @param printCosts whether to print starting and final cost function or not
      */
-    public void trainWeights(TrainingData data, double learningRate, boolean printCosts){
-        double[][] trainingDataSet = data.trainingDataSet;
-        double[][] expectedResults = data.expectedResults;
+    public void trainWeights(Dataset data, double learningRate, boolean printCosts){
+        double[][] trainingDataSet = data.getInputData();
+        double[][] expectedResults = data.getExpectedResults();
 
         if (printCosts) {
             System.out.println("Starting cost: " + calculateAverageCost(trainingDataSet, expectedResults));
@@ -241,9 +241,9 @@ public class Network {
     }
     }
 
-    public void trainBiases(TrainingData data, double learningRate, boolean printCosts){
-        double[][] trainingDataSet = data.trainingDataSet;
-        double[][] expectedResults = data.expectedResults;
+    public void trainBiases(Dataset data, double learningRate, boolean printCosts){
+        double[][] trainingDataSet = data.getInputData();
+        double[][] expectedResults = data.getExpectedResults();
         if (printCosts) {
             System.out.println("Starting cost: " + calculateAverageCost(trainingDataSet, expectedResults));
         }
@@ -311,16 +311,16 @@ public class Network {
     /**
      * Loads training data into given object.
      * @param directoryPath path to directory with training data
-     * @param dataFormat enum deciding how to read the files
-     * @param trainingData object holding arrays with the data, this method writes values directly into the object
+     * @param dataFormat enum deciding how to read the files. More information in {@link TrainingDataFormat}
+     * @param data object holding arrays with the data, this method writes values directly into the object
      * @throws FileManagingException if some problem arises while working with files
      */
-    public void loadTrainingData(String directoryPath, TrainingDataFormat dataFormat, TrainingData trainingData) throws FileManagingException {
+    public void loadData(String directoryPath, TrainingDataFormat dataFormat, Dataset data) throws FileManagingException {
         double[][] trainingDataSet;
         double[][] expectedResults;
         try {
             switch (dataFormat) {
-                case JSON -> {
+                case JSON_ONE -> {
                     ObjectMapper mapper = new ObjectMapper();
                     File directory = new File(directoryPath);
                     File[] files = directory.listFiles((dir, name) -> name.startsWith("example") && name.endsWith("json"));
@@ -331,11 +331,11 @@ public class Network {
                             Arrays.fill(expectedResults[i], 0);
                             TrainingExample example = mapper.readValue(new File(directoryPath + "/example" + i + ".json"), TrainingExample.class);
                             trainingDataSet[i] = example.getValues();
-                            expectedResults[i][example.getCorrectNumber()] = 1;
+                            expectedResults[i][example.getCorrectNeuronIndex()] = 1;
                         }
 
-                        trainingData.trainingDataSet = trainingDataSet;
-                        trainingData.expectedResults = expectedResults;
+                        data.setInputData(trainingDataSet);
+                        data.setExpectedResults(expectedResults);
                     }
                 }
             }
