@@ -116,8 +116,6 @@ public class Network {
     @SuppressWarnings("unused")
     public void initNeuronsFromDir(String dirPath) throws FileManagingException {
         try {
-            //FIRST HIDDEN
-
             List<Neuron> tempNeurons = new ArrayList<>();
             for (int j = 0; j < hiddenLayersSizes[0]; j++) {
                 BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + 0
@@ -132,8 +130,6 @@ public class Network {
             }
             hiddenLayers.add(tempNeurons);
 
-
-            //HIDDEN
             for (int i = 1; i < hiddenLayersSizes.length; i++) {
                 List<Neuron> tempNeurons2 = new ArrayList<>();
                 for (int j = 0; j < hiddenLayersSizes[i]; j++) {
@@ -150,7 +146,6 @@ public class Network {
                 hiddenLayers.add(tempNeurons2);
             }
 
-            //OUTPUT
             for (int i = 0; i < outputLayerSize; i++) {
                 BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + hiddenLayersSizes.length + "/neuron" + i + ".txt"));
                 double bias = Double.parseDouble(reader.readLine());
@@ -171,9 +166,9 @@ public class Network {
      * Processes given values through the network and returns the networks decision about similarity with training data.
      * @param values array of doubles showing how certain the network is, that the neuron on each index is the correct one
      * @return array same length as the output layer defined in constructor, each value will be between 0 and 1 depending on its
-     * probability to be correct, which means higher value, higher probability
+     * probability to be correct, which means: higher value, higher probability
      */
-    public double[] process(double[] values){
+    public double[] processAsProbabilities(double[] values){
         double[] values2;
         for (int i = 0; i < hiddenLayersSizes.length; i++) {
             values2 = new double[hiddenLayersSizes[i]];
@@ -189,6 +184,15 @@ public class Network {
             values2[i] = outputLayer.get(i).getFinalValue();
         }
         return values2;
+    }
+
+    /**
+     * Processes given values through the network and returns the networks decision about similarity with training data.
+     * @param values array of doubles showing how certain the network is, that the neuron on each index is the correct one
+     * @return the index of neuron with the largest probability to be correct
+     */
+    public int processAsIndex(double[] values){
+        return getIndexWithHighestNo(processAsProbabilities(values));
     }
 
     /**
@@ -315,7 +319,7 @@ public class Network {
         double costsSummed = 0;
         int numberOfCostsInSum = 0;
         for (int i =0; i < trainingDataSet.length; i++) {
-            double[] received = process(trainingDataSet[i]);
+            double[] received = processAsProbabilities(trainingDataSet[i]);
             for (int j = 0; j < outputLayerSize; j++) {
                 costsSummed += Math.pow(received[j] - expectedResults[i][j], 2);
             }
@@ -423,7 +427,7 @@ public class Network {
         int correct = 0, total = 0;
         for (int i = 0; i < testingData.getInputData().length; i++) {
             total++;
-            if (testingData.getExpectedResults()[i][getIndexWithHighestNo(process(testingData.getInputData()[i]))] == 1) correct ++;
+            if (testingData.getExpectedResults()[i][processAsIndex(testingData.getInputData()[i])] == 1) correct ++;
         }
         return (double) correct/ (double) total * (double) 1000;
     }
