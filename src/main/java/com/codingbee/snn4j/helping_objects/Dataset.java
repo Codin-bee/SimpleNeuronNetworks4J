@@ -14,6 +14,9 @@ public class Dataset {
         this.expectedResults = expectedResults;
     }
 
+    public Dataset(){
+    }
+
     @SuppressWarnings("unused")
     public double[][] getInputData() {
         return inputData;
