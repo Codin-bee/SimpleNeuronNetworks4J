@@ -1,20 +1,28 @@
 package com.codingbee.snn4j.neural_network;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.codingbee.snn4j.enums.ExampleDataFormat;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.codingbee.snn4j.helping_objects.Dataset;
 import com.codingbee.snn4j.objects_for_parsing.ExampleJsonOne;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
 
 public class Network {
     private final int networkNo;
@@ -54,6 +62,7 @@ public class Network {
      * @param initAfterwards boolean value, if true neurons will be initialized after values were created
      * @throws FileManagingException if some problem arises while working with files
      */
+    @SuppressWarnings("unused")
     public void createRandomNeuronValuesInDir(String dirPath, boolean initAfterwards) throws FileManagingException {
         try {
             Random rand = new Random();
@@ -104,6 +113,7 @@ public class Network {
      * @param dirPath path where directories with files are located
      * @throws FileManagingException if some problem arises while working with files
      */
+    @SuppressWarnings("unused")
     public void initNeuronsFromDir(String dirPath) throws FileManagingException {
         try {
             //FIRST HIDDEN
@@ -159,7 +169,7 @@ public class Network {
 
     /**
      * Processes given values through the network and returns the networks decision about similarity with training data.
-     * @param values array of doubles which represent some variables depending on your application
+     * @param values array of doubles showing how certain the network is, that the neuron on each index is the correct one
      * @return array same length as the output layer defined in constructor, each value will be between 0 and 1 depending on its
      * probability to be correct, which means higher value, higher probability
      */
@@ -176,19 +186,25 @@ public class Network {
         values2 = new double[outputLayerSize];
         for (int i = 0; i < outputLayerSize; i++) {
             outputLayer.get(i).processNums(values);
-            values2[i] = sigmoid(outputLayer.get(i).getFinalValue());
+            values2[i] = outputLayer.get(i).getFinalValue();
         }
         return values2;
     }
 
     /**
      * Trains the network to act more like you want based on the training examples. It corrects the values, but doesn't
-     * overwrite the values in files so if you want to keep them you should call {@link #saveNetworksValues saveNetworkValues()}
+     * overwrite the values in files so if you want to keep them you have to call {@link #saveNetworksValues saveNetworkValues()}
      * @param data data, which is the network trained on
      * @param learningRate double deciding how big changes should be done to the weights
      * @param printCosts whether to print starting and final cost function or not
      */
-    public void trainWeights(Dataset data, double learningRate, boolean printCosts){
+    @SuppressWarnings("unused")
+    public void train(Dataset data, double learningRate, boolean printCosts){
+        trainWeights(data, learningRate, printCosts);
+        trainBiases(data, learningRate, printCosts);
+    }
+
+    private void trainWeights(Dataset data, double learningRate, boolean printCosts){
         double[][] trainingDataSet = data.getInputData();
         double[][] expectedResults = data.getExpectedResults();
 
@@ -241,7 +257,7 @@ public class Network {
     }
     }
 
-    public void trainBiases(Dataset data, double learningRate, boolean printCosts){
+    private void trainBiases(Dataset data, double learningRate, boolean printCosts){
         double[][] trainingDataSet = data.getInputData();
         double[][] expectedResults = data.getExpectedResults();
         if (printCosts) {
@@ -355,6 +371,7 @@ public class Network {
      * @param directoryPath path to the files
      * @throws FileManagingException if some problem arises while working with files
      */
+    @SuppressWarnings("unused")
     public void saveNetworksValues(String directoryPath) throws FileManagingException{
         try {
             Files.createDirectories(Paths.get(directoryPath + "/neural_networks/network" + networkNo + "/layers/layer0"));
@@ -395,13 +412,27 @@ public class Network {
             throw new FileManagingException(e.getLocalizedMessage());
         }
     }
+    @SuppressWarnings("unused")
+    public double getCorrectPercentage(String directoryPath, ExampleDataFormat exampleDataFormat) throws FileManagingException {
+        Dataset testingData = new Dataset(null, null);
+        loadData(directoryPath, exampleDataFormat, testingData);
+        return getCorrectPercentage(testingData);
+        }
 
-    /**
-     * Sigmoid function which changes any number to number between 1 and 0. The function is not linear, and it is really steep around zero.
-     * @param x the number you want to convert.
-     * @return value of the x calculated with the sigmoid function.
-     */
-    private double sigmoid(double x){
-        return 1 / (1 + Math.exp(-x));
+    public double getCorrectPercentage(Dataset testingData){
+        int correct = 0, total = 0;
+        for (int i = 0; i < testingData.getInputData().length; i++) {
+            total++;
+            if (testingData.getExpectedResults()[i][getIndexWithHighestNo(process(testingData.getInputData()[i]))] == 1) correct ++;
+        }
+        return (double) correct/ (double) total * (double) 1000;
     }
-}
+
+    private int getIndexWithHighestNo(double[] nums){
+        int indexWithHighestNo = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i]>indexWithHighestNo) indexWithHighestNo = i;
+        }
+        return indexWithHighestNo;
+    }
+    }
