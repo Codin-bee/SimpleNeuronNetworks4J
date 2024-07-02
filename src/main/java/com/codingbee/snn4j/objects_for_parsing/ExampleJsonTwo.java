@@ -9,23 +9,24 @@ public class ExampleJsonTwo {
         this.values = values;
     }
 
-    //region Getters and setters without additional logic
-
+    @SuppressWarnings("unused")
     public double[] getExpectedResults() {
         return expectedResults;
     }
 
+    @SuppressWarnings("unused")
     public void setExpectedResults(double[] expectedResults) {
         this.expectedResults = expectedResults;
     }
 
+    @SuppressWarnings("unused")
     public double[] getValues() {
         return values;
     }
 
+    @SuppressWarnings("unused")
     public void setValues(double[] values) {
         this.values = values;
     }
 
-    //endregion
 }

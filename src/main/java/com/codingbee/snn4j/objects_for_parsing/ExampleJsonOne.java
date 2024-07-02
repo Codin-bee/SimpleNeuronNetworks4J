@@ -9,21 +9,23 @@ public class ExampleJsonOne {
         this.values = values;
     }
 
-    //region Getters and setters without additional logic
+    @SuppressWarnings("unused")
     public int getCorrectNeuronIndex() {
         return correctNeuronIndex;
     }
 
+    @SuppressWarnings("unused")
     public void setCorrectNeuronIndex(int correctNeuronIndex) {
         this.correctNeuronIndex = correctNeuronIndex;
     }
 
+    @SuppressWarnings("unused")
     public double[] getValues() {
         return values;
     }
 
+    @SuppressWarnings("unused")
     public void setValues(double[] values) {
         this.values = values;
     }
-    //endregion
 }

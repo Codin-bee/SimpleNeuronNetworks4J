@@ -28,9 +28,9 @@ public class Neuron {
     }
 
     /**
-     *ReLU function which returns the same number if it is positive and if it is negative returns zero.
+     *Activation function currently implemented: Leaky ReLU (a = 0.01)
      * @param x the number you want to convert.
-     * @return value of the x calculated with the ReLU function.
+     * @return value of the x calculated with this function.
      */
     private double activate(double x){
         if(x < 0){
@@ -39,30 +39,32 @@ public class Neuron {
         return x;
     }
 
-    //region Getters and setters without additional logic
-
+    @SuppressWarnings("unused")
     public double getBias() {
         return bias;
     }
 
+    @SuppressWarnings("unused")
     public void setBias(double bias) {
         this.bias = bias;
     }
 
+    @SuppressWarnings("unused")
     public double[] getWeights() {
         return weights;
     }
 
+    @SuppressWarnings("unused")
     public void setWeights(double[] weights) {
         this.weights = weights;
     }
 
-    //endregion
-
+    @SuppressWarnings("unused")
     public double getWeight(int index){
         return weights[index];
     }
 
+    @SuppressWarnings("unused")
     public void setWeight(int index, double weight){
         weights[index] = weight;
     }

@@ -14,21 +14,23 @@ public class Dataset {
         this.expectedResults = expectedResults;
     }
 
-    //region Getters and setters without additional logic
+    @SuppressWarnings("unused")
     public double[][] getInputData() {
         return inputData;
     }
 
+    @SuppressWarnings("unused")
     public void setInputData(double[][] inputData) {
         this.inputData = inputData;
     }
 
+    @SuppressWarnings("unused")
     public double[][] getExpectedResults() {
         return expectedResults;
     }
 
+    @SuppressWarnings("unused")
     public void setExpectedResults(double[][] expectedResults) {
         this.expectedResults = expectedResults;
     }
-    //endregion
 }
