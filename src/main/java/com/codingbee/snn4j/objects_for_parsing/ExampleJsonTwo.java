@@ -4,9 +4,15 @@ public class ExampleJsonTwo {
     double[] expectedResults;
     double[] values;
 
+    @SuppressWarnings("unused")
     public ExampleJsonTwo(double[] expectedResults, double[] values) {
         this.expectedResults = expectedResults;
         this.values = values;
+    }
+
+    @SuppressWarnings("unused")
+    public ExampleJsonTwo(){
+
     }
 
     @SuppressWarnings("unused")

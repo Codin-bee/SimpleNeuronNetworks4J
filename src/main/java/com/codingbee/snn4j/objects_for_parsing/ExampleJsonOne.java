@@ -4,11 +4,15 @@ public class ExampleJsonOne {
     private int correctNeuronIndex;
     private double[] values;
 
+    @SuppressWarnings("unused")
     public ExampleJsonOne(int correctNumberIndex, double[] values) {
         this.correctNeuronIndex = correctNumberIndex;
         this.values = values;
     }
 
+    @SuppressWarnings("unused")
+    public ExampleJsonOne(){
+    }
     @SuppressWarnings("unused")
     public int getCorrectNeuronIndex() {
         return correctNeuronIndex;
