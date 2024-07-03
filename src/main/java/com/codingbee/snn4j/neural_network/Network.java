@@ -205,7 +205,7 @@ public class Network {
     @SuppressWarnings("unused")
     public void train(Dataset data, double learningRate, boolean printCosts){
         trainWeights(data, learningRate, printCosts);
-        trainBiases(data, learningRate, printCosts);
+        //trainBiases(data, learningRate, printCosts);
     }
 
     private void trainWeights(Dataset data, double learningRate, boolean printCosts){
@@ -233,6 +233,8 @@ public class Network {
                             hiddenLayers.get(i).get(j).setWeight(k, originalWeight);
                         }
                     }
+                    double weight = 0;
+                    hiddenLayers.get(i).get(j).setWeight(k, weight);
                 }
             }
         }
@@ -330,7 +332,7 @@ public class Network {
 
     /**
      * Loads training data into given object.
-     * @param directoryPath path to directory with training data. All data has to be named example0.json, example1.json, etc... this is only temporary
+     * @param directoryPath path to directory with training data.
      * @param exampleDataFormat enum deciding how to read the files. More information in {@link ExampleDataFormat}
      * @param data object holding arrays with the data, this method writes values directly into the object
      * @throws FileManagingException if some problem arises while working with files
@@ -343,7 +345,7 @@ public class Network {
                 case JSON_ONE -> {
                     ObjectMapper mapper = new ObjectMapper();
                     File directory = new File(directoryPath);
-                    File[] files = directory.listFiles((dir, name) -> name.startsWith("example") && name.endsWith("json"));
+                    File[] files = directory.listFiles((dir, name) -> name.endsWith("json"));
                     if (files != null) {
                         trainingDataSet = new double[files.length][inputLayerSize];
                         expectedResults = new double[files.length][outputLayerSize];
@@ -429,7 +431,7 @@ public class Network {
             total++;
             if (testingData.getExpectedResults()[i][processAsIndex(testingData.getInputData()[i])] == 1) correct ++;
         }
-        return (double) correct/ (double) total * (double) 1000;
+        return (double) correct/ (double) total * 100.0;
     }
 
     private int getIndexWithHighestNo(double[] nums){
