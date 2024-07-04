@@ -10,10 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -183,7 +180,7 @@ public class Network {
             outputLayer.get(i).processNums(values);
             values2[i] = outputLayer.get(i).getFinalValue();
         }
-        return values2;
+        return normalize(values2);
     }
 
     /**
@@ -333,9 +330,7 @@ public class Network {
                         expectedResults = new double[files.length][outputLayerSize];
                         for (int i = 0; i < files.length; i++) {
                             Arrays.fill(expectedResults[i], 0);
-                            ExampleJsonOne example = mapper.readValue(files[i]
-                                    //new File(directoryPath + "/example" + i + ".json")
-                                    , ExampleJsonOne.class);
+                            ExampleJsonOne example = mapper.readValue(files[i], ExampleJsonOne.class);
                             trainingDataSet[i] = example.getValues();
                             expectedResults[i][example.getCorrectNeuronIndex()] = 1;
                         }
@@ -424,5 +419,14 @@ public class Network {
             if (nums[i]>indexWithHighestNo) indexWithHighestNo = i;
         }
         return indexWithHighestNo;
+    }
+
+    private double[] normalize(double[] nums){
+        Arrays.sort(nums);
+        double min = nums[0], max = nums[nums.length-1], diff = max-min;
+        for (int i = 0; i < nums.length; i++) {
+            nums[i] = (nums[i]-min) / diff;
+        }
+        return nums;
     }
     }
