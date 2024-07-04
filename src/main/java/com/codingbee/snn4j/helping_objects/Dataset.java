@@ -14,6 +14,7 @@ public class Dataset {
         this.expectedResults = expectedResults;
     }
 
+    @SuppressWarnings("unused")
     public Dataset(){
     }
 
