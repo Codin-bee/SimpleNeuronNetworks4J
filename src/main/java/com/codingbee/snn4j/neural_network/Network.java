@@ -205,7 +205,7 @@ public class Network {
     @SuppressWarnings("unused")
     public void train(Dataset data, double learningRate, boolean printCosts){
         trainWeights(data, learningRate, printCosts);
-        //trainBiases(data, learningRate, printCosts);
+        trainBiases(data, learningRate, printCosts);
     }
 
     private void trainWeights(Dataset data, double learningRate, boolean printCosts){
@@ -223,12 +223,12 @@ public class Network {
                     hiddenLayers.get(i).get(j).setWeight(k, originalWeight + learningRate);
                     double costWithFirstNudge = calculateAverageCost(trainingDataSet, expectedResults);
                     if (originalCost > costWithFirstNudge) {
-                        break;
+                        continue;
                     } else {
                         hiddenLayers.get(i).get(j).setWeight(k, originalWeight - learningRate);
                         double costWithRevertedNudge = calculateAverageCost(trainingDataSet, expectedResults);
                         if (costWithRevertedNudge < originalCost) {
-                            break;
+                           continue;
                         } else {
                             hiddenLayers.get(i).get(j).setWeight(k, originalWeight);
                         }
@@ -245,14 +245,10 @@ public class Network {
                 double originalWeight = outputLayer.get(i).getWeight(j);
                 outputLayer.get(i).setWeight(j, originalWeight + learningRate);
                 double costWithFirstNudge = calculateAverageCost(trainingDataSet, expectedResults);
-                if (originalCost > costWithFirstNudge) {
-                    break;
-                } else {
+                if (originalCost < costWithFirstNudge) {
                     outputLayer.get(i).setWeight(j, originalWeight - learningRate);
                     double costWithRevertedNudge = calculateAverageCost(trainingDataSet, expectedResults);
-                    if (costWithRevertedNudge < originalCost) {
-                        break;
-                    } else {
+                    if (costWithRevertedNudge > originalCost) {
                         outputLayer.get(i).setWeight(j, originalWeight);
                     }
                 }
@@ -275,14 +271,10 @@ public class Network {
                     double originalBias = hiddenLayers.get(i).get(j).getBias();
                     hiddenLayers.get(i).get(j).setBias(originalBias + learningRate);
                     double costWithFirstNudge = calculateAverageCost(trainingDataSet, expectedResults);
-                    if (originalCost > costWithFirstNudge) {
-                        break;
-                    } else {
+                    if (originalCost < costWithFirstNudge) {
                         hiddenLayers.get(i).get(j).setBias(originalBias - learningRate);
                         double costWithRevertedNudge = calculateAverageCost(trainingDataSet, expectedResults);
-                        if (costWithRevertedNudge < originalCost) {
-                            break;
-                        } else {
+                        if (costWithRevertedNudge > originalCost) {
                             hiddenLayers.get(i).get(j).setBias(originalBias);
                         }
                     }
