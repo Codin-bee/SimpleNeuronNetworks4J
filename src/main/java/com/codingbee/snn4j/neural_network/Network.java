@@ -333,7 +333,9 @@ public class Network {
                         expectedResults = new double[files.length][outputLayerSize];
                         for (int i = 0; i < files.length; i++) {
                             Arrays.fill(expectedResults[i], 0);
-                            ExampleJsonOne example = mapper.readValue(new File(directoryPath + "/example" + i + ".json"), ExampleJsonOne.class);
+                            ExampleJsonOne example = mapper.readValue(files[i]
+                                    //new File(directoryPath + "/example" + i + ".json")
+                                    , ExampleJsonOne.class);
                             trainingDataSet[i] = example.getValues();
                             expectedResults[i][example.getCorrectNeuronIndex()] = 1;
                         }
