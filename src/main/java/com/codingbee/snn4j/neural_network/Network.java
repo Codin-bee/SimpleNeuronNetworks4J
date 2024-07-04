@@ -200,104 +200,94 @@ public class Network {
      * overwrite the values in files so if you want to keep them you have to call {@link #saveNetworksValues saveNetworkValues()}
      * @param data data, which is the network trained on
      * @param learningRate double deciding how big changes should be done to the weights
-     * @param printCosts whether to print starting and final cost function or not
+     * @param printDebugInfo whether to print debug info like cost function or not
      */
     @SuppressWarnings("unused")
-    public void train(Dataset data, double learningRate, boolean printCosts){
-        trainWeights(data, learningRate, printCosts);
-        trainBiases(data, learningRate, printCosts);
+    public void train(Dataset data, double learningRate, boolean printDebugInfo){
+        trainWeights(data, learningRate, printDebugInfo);
+        trainBiases(data, learningRate, printDebugInfo);
     }
 
-    private void trainWeights(Dataset data, double learningRate, boolean printCosts){
+    private void trainWeights(Dataset data, double learningRate, boolean printDebugInfo){
         double[][] trainingDataSet = data.getInputData();
         double[][] expectedResults = data.getExpectedResults();
 
-        if (printCosts) {
+        if (printDebugInfo) {
             System.out.println("Starting cost: " + calculateAverageCost(trainingDataSet, expectedResults));
         }
         for (int i = 0; i < hiddenLayersSizes.length; i++) {
             for (int j = 0; j < hiddenLayersSizes[i]; j++) {
                 for (int k = 0; k < hiddenLayers.get(i).get(j).getWeights().length; k++) {
-                    double originalCost = calculateAverageCost(trainingDataSet, expectedResults);
+                    double originalCorrectness = getCorrectPercentage(data);
                     double originalWeight = hiddenLayers.get(i).get(j).getWeight(k);
                     hiddenLayers.get(i).get(j).setWeight(k, originalWeight + learningRate);
-                    double costWithFirstNudge = calculateAverageCost(trainingDataSet, expectedResults);
-                    if (originalCost > costWithFirstNudge) {
-                        continue;
-                    } else {
+                    double correctnessWithFirstNudge = getCorrectPercentage(data);
+                    if (originalCorrectness > correctnessWithFirstNudge) {
                         hiddenLayers.get(i).get(j).setWeight(k, originalWeight - learningRate);
-                        double costWithRevertedNudge = calculateAverageCost(trainingDataSet, expectedResults);
-                        if (costWithRevertedNudge < originalCost) {
-                           continue;
-                        } else {
+                        double correctnessWithRevertedNudge = getCorrectPercentage(data);
+                        if (correctnessWithRevertedNudge < originalCorrectness) {
                             hiddenLayers.get(i).get(j).setWeight(k, originalWeight);
                         }
                     }
-                    double weight = 0;
-                    hiddenLayers.get(i).get(j).setWeight(k, weight);
                 }
             }
         }
 
         for (int i = 0; i < outputLayerSize; i++) {
             for (int j = 0; j < outputLayer.get(i).getWeights().length; j++) {
-                double originalCost = calculateAverageCost(trainingDataSet, expectedResults);
+                double originalCorrectness = getCorrectPercentage(data);
                 double originalWeight = outputLayer.get(i).getWeight(j);
                 outputLayer.get(i).setWeight(j, originalWeight + learningRate);
-                double costWithFirstNudge = calculateAverageCost(trainingDataSet, expectedResults);
-                if (originalCost < costWithFirstNudge) {
+                double correctnessWithFirstNudge = getCorrectPercentage(data);
+                if (originalCorrectness > correctnessWithFirstNudge) {
                     outputLayer.get(i).setWeight(j, originalWeight - learningRate);
-                    double costWithRevertedNudge = calculateAverageCost(trainingDataSet, expectedResults);
-                    if (costWithRevertedNudge > originalCost) {
+                    double correctnessWithRevertedNudge = getCorrectPercentage(data);
+                    if (correctnessWithRevertedNudge < originalCorrectness) {
                         outputLayer.get(i).setWeight(j, originalWeight);
                     }
                 }
             }
         }
-        if (printCosts) {
+        if (printDebugInfo) {
             System.out.println("Cost after training: " + calculateAverageCost(trainingDataSet, expectedResults));
     }
     }
 
-    private void trainBiases(Dataset data, double learningRate, boolean printCosts){
+    private void trainBiases(Dataset data, double learningRate, boolean printDebugInfo){
         double[][] trainingDataSet = data.getInputData();
         double[][] expectedResults = data.getExpectedResults();
-        if (printCosts) {
+        if (printDebugInfo) {
             System.out.println("Starting cost: " + calculateAverageCost(trainingDataSet, expectedResults));
         }
         for (int i = 0; i < hiddenLayersSizes.length; i++) {
             for (int j = 0; j < hiddenLayersSizes[i]; j++) {
-                    double originalCost = calculateAverageCost(trainingDataSet, expectedResults);
+                    double originalCorrectness = getCorrectPercentage(data);
                     double originalBias = hiddenLayers.get(i).get(j).getBias();
                     hiddenLayers.get(i).get(j).setBias(originalBias + learningRate);
-                    double costWithFirstNudge = calculateAverageCost(trainingDataSet, expectedResults);
-                    if (originalCost < costWithFirstNudge) {
+                    double correctnessWithFirstNudge = calculateAverageCost(trainingDataSet, expectedResults);
+                    if (originalCorrectness > correctnessWithFirstNudge) {
                         hiddenLayers.get(i).get(j).setBias(originalBias - learningRate);
-                        double costWithRevertedNudge = calculateAverageCost(trainingDataSet, expectedResults);
-                        if (costWithRevertedNudge > originalCost) {
+                        double correctnessWithRevertedNudge = getCorrectPercentage(data);
+                        if (correctnessWithRevertedNudge < originalCorrectness) {
                             hiddenLayers.get(i).get(j).setBias(originalBias);
                         }
                     }
             }
         }
         for (int i = 0; i < outputLayerSize; i++) {
-            double originalCost = calculateAverageCost(trainingDataSet, expectedResults);
+            double originalCorrectness = getCorrectPercentage(data);
             double originalBias = outputLayer.get(i).getBias();
             outputLayer.get(i).setBias(originalBias + learningRate);
-            double costWithFirstNudge = calculateAverageCost(trainingDataSet, expectedResults);
-            if (originalCost > costWithFirstNudge) {
-                break;
-            } else {
+            double correctnessWithFirstNudge = getCorrectPercentage(data);
+            if (originalCorrectness > correctnessWithFirstNudge) {
                 outputLayer.get(i).setBias(originalBias - learningRate);
-                double costWithRevertedNudge = calculateAverageCost(trainingDataSet, expectedResults);
-                if (costWithRevertedNudge < originalCost) {
-                    break;
-                } else {
+                double correctnessWithRevertedNudge = calculateAverageCost(trainingDataSet, expectedResults);
+                if (correctnessWithRevertedNudge < originalCorrectness) {
                     outputLayer.get(i).setBias(originalBias);
                 }
             }
         }
-        if (printCosts) {
+        if (printDebugInfo) {
             System.out.println("Cost after training: " + calculateAverageCost(trainingDataSet, expectedResults));
         }
 
