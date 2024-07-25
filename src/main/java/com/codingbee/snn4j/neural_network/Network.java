@@ -180,7 +180,7 @@ public class Network {
             outputLayer.get(i).processNums(values);
             values2[i] = outputLayer.get(i).getFinalValue();
         }
-        return normalize(values2);
+        return (values2);
     }
 
     /**
