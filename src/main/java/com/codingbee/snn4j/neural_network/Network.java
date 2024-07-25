@@ -509,8 +509,12 @@ public class Network {
 
     private int getIndexWithHighestNo(double[] nums){
         int indexWithHighestNo = 0;
+        double highestNo = 0;
         for (int i = 0; i < nums.length; i++) {
-            if (nums[i]>indexWithHighestNo) indexWithHighestNo = i;
+            if (nums[i]>highestNo){
+                highestNo = nums[i];
+                indexWithHighestNo = i;
+            }
         }
         return indexWithHighestNo;
     }
