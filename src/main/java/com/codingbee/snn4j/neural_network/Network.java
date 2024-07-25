@@ -250,6 +250,96 @@ public class Network {
     }
     }
 
+    public void train2(Dataset data, int iterations, boolean printDebugInfo){
+        double[][] trainingDataSet = data.getInputData();
+        double[][] expectedResults = data.getExpectedResults();
+
+        if (printDebugInfo) {
+            System.out.println("Starting cost: " + calculateAverageCost(trainingDataSet, expectedResults));
+        }
+        double  alfa = 0.005,
+                beta1 = 0.9,
+                beta2 = 0.999,
+                epsilon = 0.00000001,
+                time = 0;
+        int longestLayer = Math.max(Arrays.stream(hiddenLayersSizes).max().getAsInt(), outputLayerSize);
+
+        double[][][]
+                weightM = new double[hiddenLayers.size()+1][longestLayer][0],
+                weightV = new double[hiddenLayers.size()+1][longestLayer][0];
+        double[][]
+                biasM = new double[hiddenLayers.size()+1][longestLayer],
+                biasV = new double[hiddenLayers.size()+1][longestLayer];
+
+        for (int i = 0; i < iterations; i++) {
+
+            //WEIGHTS
+            time++;
+            for (int j = 0; j < hiddenLayersSizes.length; j++) {
+                for (int k = 0; k < hiddenLayersSizes[k]; k++) {
+                    for (int l = 0; l < hiddenLayers.get(j).get(k).getWeights().length; l++) {
+                        double w = hiddenLayers.get(j).get(k).getWeight(l);
+                        weightM[j][k][l] = beta1 * weightM[j][k][l] + (1 - beta1) * differentiateWeight(hiddenLayers.get(j).get(k), l, data);//del L/ del w
+                        weightV[j][k][l] = beta2 * weightV[j][k][l] + (1 - beta2) * Math.pow((differentiateWeight(hiddenLayers.get(j).get(k), l, data)), 2);//del L/ del w
+                        double m2 = weightM[j][k][l] / Math.pow((1 - beta1), time);
+                        double v2 = weightV[j][k][l] / Math.pow((1 - beta2), time);
+                        hiddenLayers.get(j).get(k).setWeight(l, w - m2 * (alfa / (Math.sqrt(weightV[j][k][l]) + epsilon)));
+                    }
+                }
+            }
+            for (int j = 0; j < outputLayerSize; j++) {
+                for (int k = 0; k < hiddenLayersSizes[hiddenLayersSizes.length - 1]; k++) {
+                    double w = outputLayer.get(j).getWeight(k);
+                    weightM[hiddenLayers.size()][j][k] = beta1 * weightM[hiddenLayers.size()][j][k] + (1 - beta1) * differentiateWeight(outputLayer.get(j), k, data);//del L/ del w
+                    weightV[hiddenLayers.size()][j][k] = beta2 * weightV[hiddenLayers.size()][j][k] + (1 - beta2) * Math.pow(differentiateWeight(outputLayer.get(j), k, data), 2);//del L/ del w
+                    double m2 = weightM[hiddenLayers.size()][j][k] / Math.pow((1 - beta1), time);
+                    double v2 = weightV[hiddenLayers.size()][j][k] / Math.pow((1 - beta2), time);
+                    outputLayer.get(j).setWeight(k, w - m2 * (alfa / (Math.sqrt(v2)) + epsilon ));
+                }
+            }
+            //BIASES
+            for (int j = 0; j < hiddenLayersSizes.length; j++) {
+                for (int k = 0; k < hiddenLayersSizes[k]; k++) {
+                    double b = hiddenLayers.get(j).get(k).getBias();
+                    biasM[j][k] = beta1 * biasM[j][k] + (1-beta1) * differentiateBias(hiddenLayers.get(j).get(k), data);
+                    biasV[j][k] = beta2 * biasV[j][k] + (1-beta2) * Math.pow(differentiateBias(hiddenLayers.get(j).get(k), data),2);
+                    double m2 = biasM[j][k] / Math.pow((1-beta1), time);
+                    double v2 = biasV[j][k] / Math.pow((1-beta2), time);
+                }
+
+            }
+            for (int j = 0; j < outputLayerSize; j++) {
+                double b = outputLayer.get(j).getBias();
+                biasM[hiddenLayers.size()][j] = beta1 * biasM[hiddenLayers.size()][j] + (1-beta1) * differentiateBias(outputLayer.get(j), data);
+                biasV[hiddenLayers.size()][j] = beta2 * biasV[hiddenLayers.size()][j] + (1-beta2) * Math.pow(differentiateBias(outputLayer.get(j), data),2);
+                double m2 = biasM[hiddenLayers.size()][j] / Math.pow((1-beta1), time);
+                double v2 = biasV[hiddenLayers.size()][j] / Math.pow((1-beta2), time);
+            }
+
+        }
+        if (printDebugInfo) {
+            System.out.println("Cost after training: " + calculateAverageCost(trainingDataSet, expectedResults));
+        }
+    }
+
+    private double differentiateWeight(Neuron neuron, int weightNo, Dataset data){
+        double nudge = 0.005;
+        double originalCost = calculateAverageCost(data.getInputData(), data.getExpectedResults());
+        neuron.setWeight(weightNo, neuron.getWeight(weightNo) + nudge);
+        double newCost = calculateAverageCost(data.getInputData(), data.getExpectedResults());
+        neuron.setWeight(weightNo, neuron.getWeight(weightNo) - nudge);
+        return (originalCost-newCost) / nudge ;
+    }
+
+    private double differentiateBias(Neuron neuron,  Dataset data){
+        double nudge = 0.005;
+        double originalCost = calculateAverageCost(data.getInputData(), data.getExpectedResults());
+        neuron.setBias(neuron.getBias() + nudge);
+        double newCost = calculateAverageCost(data.getInputData(), data.getExpectedResults());
+        neuron.setBias(neuron.getBias() - nudge);
+        return (originalCost-newCost) / nudge ;
+    }
+
     private void trainBiases(Dataset data, double learningRate, boolean printDebugInfo){
         double[][] trainingDataSet = data.getInputData();
         double[][] expectedResults = data.getExpectedResults();
