@@ -276,7 +276,7 @@ public class Network {
             //WEIGHTS
             time++;
             for (int j = 0; j < hiddenLayersSizes.length; j++) {
-                for (int k = 0; k < hiddenLayersSizes[k]; k++) {
+                for (int k = 0; k < hiddenLayersSizes[j]; k++) {
                     for (int l = 0; l < hiddenLayers.get(j).get(k).getWeights().length; l++) {
                         double w = hiddenLayers.get(j).get(k).getWeight(l);
                         weightM[j][k][l] = beta1 * weightM[j][k][l] + (1 - beta1) * differentiateWeight(hiddenLayers.get(j).get(k), l, data);//del L/ del w
@@ -299,7 +299,7 @@ public class Network {
             }
             //BIASES
             for (int j = 0; j < hiddenLayersSizes.length; j++) {
-                for (int k = 0; k < hiddenLayersSizes[k]; k++) {
+                for (int k = 0; k < hiddenLayersSizes[j]; k++) {
                     double b = hiddenLayers.get(j).get(k).getBias();
                     biasM[j][k] = beta1 * biasM[j][k] + (1-beta1) * differentiateBias(hiddenLayers.get(j).get(k), data);
                     biasV[j][k] = beta2 * biasV[j][k] + (1-beta2) * Math.pow(differentiateBias(hiddenLayers.get(j).get(k), data),2);
