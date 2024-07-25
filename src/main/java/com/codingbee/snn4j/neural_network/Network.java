@@ -265,8 +265,8 @@ public class Network {
         int longestLayer = Math.max(Arrays.stream(hiddenLayersSizes).max().getAsInt(), outputLayerSize);
 
         double[][][]
-                weightM = new double[hiddenLayers.size()+1][longestLayer][0],
-                weightV = new double[hiddenLayers.size()+1][longestLayer][0];
+                weightM = new double[hiddenLayers.size()+1][longestLayer][784],///HELLL NAAAH
+                weightV = new double[hiddenLayers.size()+1][longestLayer][784];
         double[][]
                 biasM = new double[hiddenLayers.size()+1][longestLayer],
                 biasV = new double[hiddenLayers.size()+1][longestLayer];
