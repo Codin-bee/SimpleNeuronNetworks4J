@@ -520,8 +520,7 @@ public class Network {
     }
 
     private double[] normalize(double[] nums){
-        Arrays.sort(nums);
-        double min = nums[0], max = nums[nums.length-1], diff = max-min;
+        double min = Arrays.stream(nums).min().getAsDouble(), max = Arrays.stream(nums).max().getAsDouble(), diff = max-min;
         for (int i = 0; i < nums.length; i++) {
             nums[i] = (nums[i]-min) / diff;
         }
