@@ -201,7 +201,7 @@ public class Network {
             System.out.println("Starting cost: " + calculateAverageCost(trainingDataSet, expectedResults));
             System.out.println("Starting correct percentage: " + getCorrectPercentage(data));
         }
-        double  alfa = 0.0001,
+        double  alfa = 0.001,
                 beta1 = 0.9,
                 beta2 = 0.999,
                 epsilon = 0.00000001,
@@ -227,8 +227,8 @@ public class Network {
                         double gradient = differentiateWeight(hiddenLayers.get(j).get(k), l, data);
                         weightM[j][k][l] = beta1 * weightM[j][k][l] + (1 - beta1) * gradient;//del L/ del w
                         weightV[j][k][l] = beta2 * weightV[j][k][l] + (1 - beta2) * Math.pow(gradient, 2);//del L/ del w
-                        mHat = weightM[j][k][l] / Math.pow((1 - beta1), time);
-                        vHat = weightV[j][k][l] / Math.pow((1 - beta2), time);
+                        mHat = weightM[j][k][l] / (1 - Math.pow(beta1, time));
+                        vHat = weightV[j][k][l] / (1 - Math.pow(beta2, time));
                         hiddenLayers.get(j).get(k).setWeight(l, hiddenLayers.get(j).get(k).getWeight(l) - mHat * (alfa / (Math.sqrt(vHat) + epsilon)));
                     }
                 }
@@ -237,8 +237,8 @@ public class Network {
                 for (int k = 0; k < hiddenLayersSizes[hiddenLayersSizes.length - 1]; k++) {
                     weightM[hiddenLayers.size()][j][k] = beta1 * weightM[hiddenLayers.size()][j][k] + (1 - beta1) * differentiateWeight(outputLayer.get(j), k, data);//del L/ del w
                     weightV[hiddenLayers.size()][j][k] = beta2 * weightV[hiddenLayers.size()][j][k] + (1 - beta2) * Math.pow(differentiateWeight(outputLayer.get(j), k, data), 2);//del L/ del w
-                    mHat = weightM[hiddenLayers.size()][j][k] / Math.pow((1 - beta1), time);
-                    vHat = weightV[hiddenLayers.size()][j][k] / Math.pow((1 - beta2), time);
+                    mHat = weightM[hiddenLayers.size()][j][k] / (1 - Math.pow(beta1, time));
+                    vHat = weightV[hiddenLayers.size()][j][k] / (1 - Math.pow(beta2, time));
                     outputLayer.get(j).setWeight(k, outputLayer.get(j).getWeight(k) - mHat * (alfa / (Math.sqrt(vHat)) + epsilon ));
                 }
             }
@@ -247,8 +247,8 @@ public class Network {
                 for (int k = 0; k < hiddenLayersSizes[j]; k++) {
                     biasM[j][k] = beta1 * biasM[j][k] + (1-beta1) * differentiateBias(hiddenLayers.get(j).get(k), data);
                     biasV[j][k] = beta2 * biasV[j][k] + (1-beta2) * Math.pow(differentiateBias(hiddenLayers.get(j).get(k), data),2);
-                    mHat = biasM[j][k] / Math.pow((1-beta1), time);
-                    vHat = biasV[j][k] / Math.pow((1-beta2), time);
+                    mHat = biasM[j][k] / (1 - Math.pow(beta1, time));
+                    vHat = biasV[j][k] / (1 - Math.pow(beta2, time));
                     hiddenLayers.get(j).get(k).setBias(hiddenLayers.get(j).get(k).getBias() - mHat * ( alfa / (Math.sqrt(vHat) + epsilon )));
                 }
 
@@ -256,8 +256,8 @@ public class Network {
             for (int j = 0; j < outputLayerSize; j++) {
                 biasM[hiddenLayers.size()][j] = beta1 * biasM[hiddenLayers.size()][j] + (1-beta1) * differentiateBias(outputLayer.get(j), data);
                 biasV[hiddenLayers.size()][j] = beta2 * biasV[hiddenLayers.size()][j] + (1-beta2) * Math.pow(differentiateBias(outputLayer.get(j), data),2);
-                mHat = biasM[hiddenLayers.size()][j] / Math.pow((1-beta1), time);
-                vHat = biasV[hiddenLayers.size()][j] / Math.pow((1-beta2), time);
+                mHat = biasM[hiddenLayers.size()][j] / (1 - Math.pow(beta1, time));
+                vHat = biasV[hiddenLayers.size()][j] / (1 - Math.pow(beta2, time));
                 outputLayer.get(j).setBias(outputLayer.get(j).getBias() - mHat * ( alfa / (Math.sqrt(vHat) + epsilon )));
             }
             if (printDebugInfo){
@@ -297,7 +297,7 @@ public class Network {
         neuron.setBias(originalBias - nudge);
         double costWithNegativeNudge = calculateAverageCost(data.getInputData(), data.getExpectedResults());
 
-        neuron.setBias(neuron.getBias() - nudge);
+        neuron.setBias(originalBias);
 
         return (costWithPositiveNudge - costWithNegativeNudge) / (2 * nudge) ;
     }
