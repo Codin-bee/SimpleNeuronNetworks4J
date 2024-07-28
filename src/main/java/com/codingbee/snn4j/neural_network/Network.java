@@ -201,7 +201,7 @@ public class Network {
             System.out.println("Starting cost: " + calculateAverageCost(trainingDataSet, expectedResults));
             System.out.println("Starting correct percentage: " + getCorrectPercentage(data));
         }
-        double  alfa = 0.001,
+        double  alfa = 0.0001,
                 beta1 = 0.9,
                 beta2 = 0.999,
                 epsilon = 0.00000001,
