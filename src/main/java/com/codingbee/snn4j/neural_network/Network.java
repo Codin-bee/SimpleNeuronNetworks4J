@@ -201,7 +201,7 @@ public class Network {
             System.out.println("Starting cost: " + calculateAverageCost(trainingDataSet, expectedResults));
             System.out.println("Starting correct percentage: " + getCorrectPercentage(data));
         }
-        double  alfa = 0.005,
+        double  alfa = 0.001,
                 beta1 = 0.9,
                 beta2 = 0.999,
                 epsilon = 0.00000001,
@@ -261,8 +261,8 @@ public class Network {
                 outputLayer.get(j).setBias(outputLayer.get(j).getBias() - mHat * ( alfa / (Math.sqrt(vHat) + epsilon )));
             }
             if (printDebugInfo){
-                System.out.println("Cost after " + time + ". iteration: " + calculateAverageCost(trainingDataSet, expectedResults));
-                System.out.println("Correct percentage after " + time + ". iteration: " + getCorrectPercentage(data));
+                System.out.println("Cost after " + (int) time + ". iteration: " + calculateAverageCost(trainingDataSet, expectedResults));
+                System.out.println("Correct percentage after " + (int) time + ". iteration: " + getCorrectPercentage(data));
             }
 
         }
