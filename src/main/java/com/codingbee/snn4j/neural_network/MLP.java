@@ -64,15 +64,17 @@ public class MLP {
     }
 
     /**
-     * Generates random values for neuron initialization.
+     * Generates random values for neuron initialization in given directory.
      * @param dirPath path where directories will be generated
      * @throws FileManagingException if some problem arises while working with files
      */
     @SuppressWarnings("unused")
-    public void createRandomNeuronValuesInDir(String dirPath) throws FileManagingException {
+    public void generateRandomNeuronsInDir(String dirPath) throws FileManagingException {
         try {
             Random rand = new Random();
+
             Files.createDirectories(Paths.get(dirPath + networkName + "/layers/layer0"));
+
             for (int i = 0; i < hiddenLayersSizes[0]; i++) {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + networkName + "/layers/layer0/neuron" + i + ".txt"));
                 writer.write(String.valueOf(Math.random()));
@@ -121,8 +123,8 @@ public class MLP {
         try {
             List<Neuron> tempNeurons = new ArrayList<>();
             for (int j = 0; j < hiddenLayersSizes[0]; j++) {
-                BufferedReader reader = new BufferedReader(new FileReader(dirPath + networkName + "/layers/layer" + 0
-                        + "/neuron" + j + ".txt"));
+                BufferedReader reader = new BufferedReader(new FileReader(dirPath + networkName + "/layers/layer0/neuron"
+                        + j + ".txt"));
                 double bias = Double.parseDouble(reader.readLine());
                 double[] weights = new double[inputLayerSize];
 
@@ -425,13 +427,13 @@ public class MLP {
             throw new FileManagingException(e.getLocalizedMessage());
         }
     }
-    @SuppressWarnings("unused")
-    public double getCorrectPercentage(String directoryPath, ExampleDataFormat exampleDataFormat) throws FileManagingException, MethodCallingException {
-        Dataset testingData = new Dataset(null, null);
-        loadData(directoryPath, exampleDataFormat, testingData);
-        return getCorrectPercentage(testingData);
-        }
 
+    /**
+     * Returns how correct the network is on  the testing data as a percentage.
+     * @param testingData the data u want to test the network on
+     * @return percentage of how many answers the network got correct
+     * @throws MethodCallingException if the method is called on network that hasn't been initialized
+     */
     public double getCorrectPercentage(Dataset testingData) throws MethodCallingException {
         int correct = 0, total = 0;
         for (int i = 0; i < testingData.getInputData().length; i++) {
@@ -441,6 +443,11 @@ public class MLP {
         return (double) correct/ (double) total * 100.0;
     }
 
+    /**
+     * Simple method used to find the element with the highest value.
+     * @param nums array where the algorithm searches.
+     * @return index of the element with the highest value
+     */
     private int getIndexWithHighestNo(double[] nums){
         int indexWithHighestNo = 0;
         double highestNo = 0;
