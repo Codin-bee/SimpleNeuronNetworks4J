@@ -1,5 +1,7 @@
 package com.codingbee.snn4j.neural_network;
 
+import com.codingbee.snn4j.exceptions.IncorrectDataException;
+
 public class Neuron {
     public static final double LAST = 0;
     private double currentValue;
@@ -12,6 +14,9 @@ public class Neuron {
     }
 
     public void processNums(double[] nums){
+        if (nums.length > weights.length){
+            throw new IncorrectDataException("");
+        }
         for (int i = 0; i < nums.length; i++) {
             currentValue += nums[i] * weights[i];
         }
@@ -28,7 +33,7 @@ public class Neuron {
     }
 
     /**
-     *Activation function currently implemented: Leaky ReLU (a = 0.01)
+     *Activation function, currently implemented: Leaky ReLU (a = 0.01)
      * @param x the number you want to convert.
      * @return value of the x calculated with this function.
      */
