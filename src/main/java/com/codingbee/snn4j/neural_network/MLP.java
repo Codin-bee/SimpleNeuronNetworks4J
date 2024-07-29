@@ -10,44 +10,54 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.codingbee.snn4j.enums.ExampleDataFormat;
+import com.codingbee.snn4j.exceptions.DevelopmentException;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
+import com.codingbee.snn4j.exceptions.MethodCallingException;
 import com.codingbee.snn4j.helping_objects.Dataset;
 import com.codingbee.snn4j.objects_for_parsing.ExampleJsonOne;
 
 
-public class Network {
-    private final int networkNo;
+public class MLP {
+    private final String networkName;
     private final List<List<Neuron>> hiddenLayers;
     private final List<Neuron> outputLayer;
     private final int[] hiddenLayersSizes;
     private final int inputLayerSize;
     private final int outputLayerSize;
+    private boolean initialized = false;
 
-    /**Creates new Network object based on the parameters it is given.
+    /**Creates new MLP(Multi-layer perceptron) based on the parameters it is given.
      *
-     * @param inputLayerSize amount of parameters passed to the input layer of the network. Must be higher than 0.
-     * @param outputLayerSize the number of outcomes in the output layer. Must be higher than 0.
-     * @param hiddenLayersSizes array of numbers which determine how many neurons will each hidden layer have. If it is null no hidden layer will be crated.
-     * @param networkNo number which the network will be assigned to in the file system. Needs to be unique from the rest to work properly.
+     * @param inputLayerSize the number of neurons in the input layer. Must be higher than 0.
+     * @param outputLayerSize the number of neurons in the output layer. Must be higher than 0.
+     * @param hiddenLayersSizes array of numbers which determine how many neurons will each hidden layer have. If it is null no hidden layer will be created. Every value of array must be higher than zero.
+     * @param MLPName name which the MLP will be assigned to in the file system. Needs to be unique or else the MLPs with the same name in file system will overwrite each other's values.Can not be an empty String("").
      *
-     * @throws IncorrectDataException if requirements of the parameters are not fulfilled.
+     * @throws IncorrectDataException if requirements of any parameter are not fulfilled.
      */
-    public Network(int inputLayerSize, int outputLayerSize, int[] hiddenLayersSizes, int networkNo) throws IncorrectDataException {
-        if (inputLayerSize<1) throw new IncorrectDataException("Network constructor - input layer size");
-        if (outputLayerSize<1) throw new IncorrectDataException("Network constructor - output layer size");
-        if (hiddenLayersSizes!=null) for (int hiddenLayerSize : hiddenLayersSizes) {
-            if (hiddenLayerSize < 1) throw new IncorrectDataException("Network constructor - hidden layers sizes");
+    public MLP(int inputLayerSize, int outputLayerSize, int[] hiddenLayersSizes, String MLPName) throws IncorrectDataException {
+        if (inputLayerSize<1) throw new IncorrectDataException("MLP constructor - input layer size must be higher than zero");
+        if (outputLayerSize<1) throw new IncorrectDataException("MLP constructor - output layer size must be higher than zero");
+        if (hiddenLayersSizes!=null) {
+            for (int hiddenLayerSize : hiddenLayersSizes) {
+                if (hiddenLayerSize < 1) throw new IncorrectDataException("MLP constructor - all hidden layers sizes must be higher than zero");
+            }
         }
+        if (MLPName.isEmpty()) throw new IncorrectDataException("MLP constructor - MLP name must not be an empty String");
+
         this.inputLayerSize = inputLayerSize;
         this.outputLayerSize = outputLayerSize;
         this.hiddenLayersSizes = hiddenLayersSizes;
-        this.networkNo = networkNo;
+        this.networkName = MLPName;
         hiddenLayers = new ArrayList<>();
         outputLayer = new ArrayList<>();
 
@@ -56,16 +66,15 @@ public class Network {
     /**
      * Generates random values for neuron initialization.
      * @param dirPath path where directories will be generated
-     * @param initAfterwards boolean value, if true neurons will be initialized after values were created
      * @throws FileManagingException if some problem arises while working with files
      */
     @SuppressWarnings("unused")
-    public void createRandomNeuronValuesInDir(String dirPath, boolean initAfterwards) throws FileManagingException {
+    public void createRandomNeuronValuesInDir(String dirPath) throws FileManagingException {
         try {
             Random rand = new Random();
-            Files.createDirectories(Paths.get(dirPath + "/neural_networks/network" + networkNo + "/layers/layer0"));
+            Files.createDirectories(Paths.get(dirPath + networkName + "/layers/layer0"));
             for (int i = 0; i < hiddenLayersSizes[0]; i++) {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + "/neural_networks/network" + networkNo + "/layers/layer0/neuron" + i + ".txt"));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + networkName + "/layers/layer0/neuron" + i + ".txt"));
                 writer.write(String.valueOf(Math.random()));
                 for (int j = 0; j < inputLayerSize; j++) {
                     writer.newLine();
@@ -74,10 +83,10 @@ public class Network {
                 writer.close();
             }
             for (int i = 1; i < hiddenLayersSizes.length; i++) {
-                Files.createDirectories(Paths.get(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + i));
+                Files.createDirectories(Paths.get(dirPath + networkName + "/layers/layer" + i));
 
                 for (int j = 0; j < hiddenLayersSizes[i]; j++) {
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + i + "/neuron" + j + ".txt"));
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + networkName + "/layers/layer" + i + "/neuron" + j + ".txt"));
                     writer.write(String.valueOf(Math.random()));
                     for (int k = 0; k < hiddenLayersSizes[i-1]; k++) {
                         writer.newLine();
@@ -86,9 +95,9 @@ public class Network {
                     writer.close();
                 }
             }
-            Files.createDirectories(Paths.get(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + hiddenLayersSizes.length));
+            Files.createDirectories(Paths.get(dirPath + networkName + "/layers/layer" + hiddenLayersSizes.length));
             for (int i = 0; i < outputLayerSize; i++) {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + "/neural_networks/network" + networkNo + "/layers/layer"
+                BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + networkName + "/layers/layer"
                         + hiddenLayersSizes.length + "/neuron" + i + ".txt"));
                 writer.write(String.valueOf(Neuron.LAST));
                 for (int j = 0; j < hiddenLayersSizes[hiddenLayersSizes.length-1]; j++) {
@@ -96,9 +105,6 @@ public class Network {
                     writer.write(String.valueOf(rand.nextGaussian() * Math.sqrt(2.0 / inputLayerSize)));
                 }
                 writer.close();
-            }
-            if (initAfterwards){
-                initNeuronsFromDir(dirPath);
             }
         } catch (IOException e) {
             throw new FileManagingException(e.getLocalizedMessage());
@@ -115,7 +121,7 @@ public class Network {
         try {
             List<Neuron> tempNeurons = new ArrayList<>();
             for (int j = 0; j < hiddenLayersSizes[0]; j++) {
-                BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + 0
+                BufferedReader reader = new BufferedReader(new FileReader(dirPath + networkName + "/layers/layer" + 0
                         + "/neuron" + j + ".txt"));
                 double bias = Double.parseDouble(reader.readLine());
                 double[] weights = new double[inputLayerSize];
@@ -130,7 +136,7 @@ public class Network {
             for (int i = 1; i < hiddenLayersSizes.length; i++) {
                 List<Neuron> tempNeurons2 = new ArrayList<>();
                 for (int j = 0; j < hiddenLayersSizes[i]; j++) {
-                    BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + i
+                    BufferedReader reader = new BufferedReader(new FileReader(dirPath + networkName + "/layers/layer" + i
                         + "/neuron" + j + ".txt"));
                     double bias = Double.parseDouble(reader.readLine());
                     double[] weights = new double[hiddenLayersSizes[i-1]];
@@ -144,7 +150,7 @@ public class Network {
             }
 
             for (int i = 0; i < outputLayerSize; i++) {
-                BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/neural_networks/network" + networkNo + "/layers/layer" + hiddenLayersSizes.length + "/neuron" + i + ".txt"));
+                BufferedReader reader = new BufferedReader(new FileReader(dirPath + networkName + "/layers/layer" + hiddenLayersSizes.length + "/neuron" + i + ".txt"));
                 double bias = Double.parseDouble(reader.readLine());
                 double[] weights = new double[hiddenLayersSizes[hiddenLayersSizes.length-1]];
                 for (int k = 0; k < weights.length; k++) {
@@ -157,6 +163,7 @@ public class Network {
         }catch (IOException e){
             throw new FileManagingException(e.getLocalizedMessage());
         }
+        initialized = true;
     }
 
     /**
@@ -165,7 +172,10 @@ public class Network {
      * @return array same length as the output layer defined in constructor, each value will be between 0 and 1 depending on its
      * probability to be correct, which means: higher value, higher probability
      */
-    public double[] processAsProbabilities(double[] values){
+    public double[] processAsProbabilities(double[] values) throws MethodCallingException {
+        if(!initialized){
+            throw new MethodCallingException("Can't process data - network hasn't been initialized yet");
+        }
         double[] values2;
         for (int i = 0; i < hiddenLayersSizes.length; i++) {
             values2 = new double[hiddenLayersSizes[i]];
@@ -188,12 +198,15 @@ public class Network {
      * @param values array of doubles showing how certain the network is, that the neuron on each index is the correct one
      * @return the index of neuron with the largest probability to be correct
      */
-    public int processAsIndex(double[] values){
+    public int processAsIndex(double[] values) throws MethodCallingException{
         return getIndexWithHighestNo(processAsProbabilities(values));
     }
 
     @SuppressWarnings("unused")
-    public void train2(Dataset data, int iterations, boolean printDebugInfo){
+    public void train(Dataset data, int iterations, boolean printDebugInfo) throws MethodCallingException {
+        if(!initialized){
+            throw new MethodCallingException("Can't process data - network hasn't been initialized yet");
+        }
         double[][] trainingDataSet = data.getInputData();
         double[][] expectedResults = data.getExpectedResults();
 
@@ -272,7 +285,7 @@ public class Network {
         }
     }
 
-    private double differentiateWeight(Neuron neuron, int weightNo, Dataset data){
+    private double differentiateWeight(Neuron neuron, int weightNo, Dataset data) throws MethodCallingException {
         double nudge = 0.000001;
         double originalWeight = neuron.getWeight(weightNo);
 
@@ -287,7 +300,7 @@ public class Network {
         return (costWithPositiveNudge - costWithNegativeNudge) / (2 * nudge);
     }
 
-    private double differentiateBias(Neuron neuron,  Dataset data){
+    private double differentiateBias(Neuron neuron,  Dataset data) throws MethodCallingException {
         double nudge = 0.000001;
         double originalBias = neuron.getBias();
 
@@ -308,7 +321,10 @@ public class Network {
      * @param expectedResults 2D array of results you expect to get after processing the training data set
      * @return the average cost function
      */
-    public double calculateAverageCost(double[][] trainingDataSet, double[][] expectedResults){
+    public double calculateAverageCost(double[][] trainingDataSet, double[][] expectedResults) throws MethodCallingException {
+        if(!initialized){
+            throw new MethodCallingException("Can't process data - network hasn't been initialized yet");
+        }
         double costsSummed = 0;
         int numberOfCostsInSum = 0;
         for (int i =0; i < trainingDataSet.length; i++) {
@@ -329,7 +345,7 @@ public class Network {
      * @throws FileManagingException if some problem arises while working with files
      */
     public void loadData(String directoryPath, ExampleDataFormat exampleDataFormat, Dataset data) throws FileManagingException {
-        double[][] trainingDataSet;
+        double[][] inputData;
         double[][] expectedResults;
         try {
             switch (exampleDataFormat) {
@@ -338,23 +354,23 @@ public class Network {
                     File directory = new File(directoryPath);
                     File[] files = directory.listFiles((dir, name) -> name.endsWith("json"));
                     if (files != null) {
-                        trainingDataSet = new double[files.length][inputLayerSize];
+                        inputData = new double[files.length][inputLayerSize];
                         expectedResults = new double[files.length][outputLayerSize];
                         for (int i = 0; i < files.length; i++) {
                             Arrays.fill(expectedResults[i], 0);
                             ExampleJsonOne example = mapper.readValue(files[i], ExampleJsonOne.class);
-                            trainingDataSet[i] = example.getValues();
+                            inputData[i] = example.getValues();
                             expectedResults[i][example.getCorrectNeuronIndex()] = 1;
                         }
 
-                        data.setInputData(trainingDataSet);
+                        data.setInputData(inputData);
                         data.setExpectedResults(expectedResults);
                     }
                 }
                 case JSON_TWO -> {
-
+                    throw new DevelopmentException("Data format not implemented yet.");
                 }
-                default -> throw new IncorrectDataException("Data format not implemented yet.");
+                default -> throw new DevelopmentException("Data format not implemented yet.");
             }
         } catch (IncorrectDataException e) {
             throw new IncorrectDataException(e.getLocalizedMessage());
@@ -371,9 +387,9 @@ public class Network {
     @SuppressWarnings("unused")
     public void saveNetworksValues(String directoryPath) throws FileManagingException{
         try {
-            Files.createDirectories(Paths.get(directoryPath + "/neural_networks/network" + networkNo + "/layers/layer0"));
+            Files.createDirectories(Paths.get(directoryPath + networkName + "/layers/layer0"));
             for (int i = 0; i < hiddenLayersSizes[0]; i++) {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(directoryPath + "/neural_networks/network" + networkNo + "/layers/layer0/neuron" + i + ".txt"));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(directoryPath +  networkName + "/layers/layer0/neuron" + i + ".txt"));
                 writer.write(String.valueOf(hiddenLayers.getFirst().get(i).getBias()));
                 for (int j = 0; j < inputLayerSize; j++) {
                     writer.newLine();
@@ -382,10 +398,10 @@ public class Network {
                 writer.close();
             }
             for (int i = 1; i < hiddenLayersSizes.length; i++) {
-                Files.createDirectories(Paths.get(directoryPath + "/neural_networks/network" + networkNo + "/layers/layer" + i));
+                Files.createDirectories(Paths.get(directoryPath + networkName + "/layers/layer" + i));
 
                 for (int j = 0; j < hiddenLayersSizes[i]; j++) {
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(directoryPath + "/neural_networks/network" + networkNo + "/layers/layer" + i + "/neuron" + j + ".txt"));
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(directoryPath + networkName + "/layers/layer" + i + "/neuron" + j + ".txt"));
                     writer.write(String.valueOf(hiddenLayers.get(i).get(j).getBias()));
                     for (int k = 0; k < hiddenLayersSizes[i-1]; k++) {
                         writer.newLine();
@@ -394,9 +410,9 @@ public class Network {
                     writer.close();
                 }
             }
-            Files.createDirectories(Paths.get(directoryPath + "/neural_networks/network" + networkNo + "/layers/layer" + hiddenLayersSizes.length));
+            Files.createDirectories(Paths.get(directoryPath + networkName + "/layers/layer" + hiddenLayersSizes.length));
             for (int i = 0; i < outputLayerSize; i++) {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(directoryPath + "/neural_networks/network" + networkNo + "/layers/layer"
+                BufferedWriter writer = new BufferedWriter(new FileWriter(directoryPath + networkName + "/layers/layer"
                         + hiddenLayersSizes.length + "/neuron" + i + ".txt"));
                 writer.write(String.valueOf(outputLayer.get(i).getBias()));
                 for (int j = 0; j < outputLayer.get(i).getWeights().length; j++) {
@@ -410,13 +426,13 @@ public class Network {
         }
     }
     @SuppressWarnings("unused")
-    public double getCorrectPercentage(String directoryPath, ExampleDataFormat exampleDataFormat) throws FileManagingException {
+    public double getCorrectPercentage(String directoryPath, ExampleDataFormat exampleDataFormat) throws FileManagingException, MethodCallingException {
         Dataset testingData = new Dataset(null, null);
         loadData(directoryPath, exampleDataFormat, testingData);
         return getCorrectPercentage(testingData);
         }
 
-    public double getCorrectPercentage(Dataset testingData){
+    public double getCorrectPercentage(Dataset testingData) throws MethodCallingException {
         int correct = 0, total = 0;
         for (int i = 0; i < testingData.getInputData().length; i++) {
             total++;
