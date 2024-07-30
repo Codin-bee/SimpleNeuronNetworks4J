@@ -1,17 +1,17 @@
 package com.codingbee.snn4j.objects_for_parsing;
 
-public class ExampleJsonOne {
+public class JsonOne {
     private int correctNeuronIndex;
     private double[] values;
 
     @SuppressWarnings("unused")
-    public ExampleJsonOne(int correctNumberIndex, double[] values) {
-        this.correctNeuronIndex = correctNumberIndex;
+    public JsonOne(int correctNeuronIndex, double[] values) {
+        this.correctNeuronIndex = correctNeuronIndex;
         this.values = values;
     }
 
     @SuppressWarnings("unused")
-    public ExampleJsonOne(){
+    public JsonOne(){
     }
     @SuppressWarnings("unused")
     public int getCorrectNeuronIndex() {

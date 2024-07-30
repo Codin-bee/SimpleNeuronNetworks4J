@@ -1,17 +1,17 @@
 package com.codingbee.snn4j.objects_for_parsing;
 
-public class ExampleJsonTwo {
+public class JsonTwo {
     double[] expectedResults;
     double[] values;
 
     @SuppressWarnings("unused")
-    public ExampleJsonTwo(double[] expectedResults, double[] values) {
+    public JsonTwo(double[] expectedResults, double[] values) {
         this.expectedResults = expectedResults;
         this.values = values;
     }
 
     @SuppressWarnings("unused")
-    public ExampleJsonTwo(){
+    public JsonTwo(){
 
     }
 
