@@ -341,56 +341,6 @@ public class MLP {
         }
         return costsSummed/numberOfCostsInSum;
     }
-    
-    /**
-     * Loads training data into given object.
-     * @param directoryPath path to directory with training data.
-     * @param dataFormat enum deciding how to read the files. More information in {@link DataFormat}
-     * @param data object holding arrays with the data, this method writes values directly into the object
-     * @throws FileManagingException if some problem arises while working with files
-     */
-    @SuppressWarnings("unused")
-    public void loadData(String directoryPath, DataFormat dataFormat, Dataset data) throws FileManagingException {
-        double[][] inputData;
-        double[][] expectedResults;
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            File directory = new File(directoryPath);
-            File[] files = directory.listFiles((dir, name) -> name.endsWith("json"));
-            if (files != null) {
-                inputData = new double[files.length][inputLayerSize];
-                expectedResults = new double[files.length][outputLayerSize];
-
-                switch (dataFormat) {
-                    case JSON_ONE -> {
-                        for (int i = 0; i < files.length; i++) {
-                            Arrays.fill(expectedResults[i], 0);
-                            JsonOne example = mapper.readValue(files[i], JsonOne.class);
-                            inputData[i] = example.getValues();
-                            expectedResults[i][example.getCorrectNeuronIndex()] = 1;
-                        }
-
-                    }
-                    case JSON_TWO -> {
-                        for (int i = 0; i < files.length; i++) {
-                            JsonTwo example = mapper.readValue(files[i], JsonTwo.class);
-                            inputData[i] = example.getValues();
-                            expectedResults[i] = example.getExpectedResults();
-                        }
-                        throw new DevelopmentException("Data format not implemented yet.");
-                    }
-
-                    default -> throw new DevelopmentException("Data format not implemented yet.");
-                }
-                data.setInputData(inputData);
-                data.setExpectedResults(expectedResults);
-            }
-        } catch (IncorrectDataException e) {
-            throw new IncorrectDataException(e.getLocalizedMessage());
-        } catch (IOException e) {
-            throw new FileManagingException(e.getLocalizedMessage());
-        }
-    }
 
     /**
      * Saves networks values to files.
