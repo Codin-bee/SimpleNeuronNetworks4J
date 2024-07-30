@@ -15,15 +15,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.codingbee.snn4j.enums.ExampleDataFormat;
+import com.codingbee.snn4j.enums.DataFormat;
 import com.codingbee.snn4j.exceptions.DevelopmentException;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.codingbee.snn4j.exceptions.MethodCallingException;
 import com.codingbee.snn4j.helping_objects.Dataset;
-import com.codingbee.snn4j.objects_for_parsing.ExampleJsonOne;
+import com.codingbee.snn4j.objects_for_parsing.JsonOne;
+import com.codingbee.snn4j.objects_for_parsing.JsonTwo;
+
 
 
 public class MLP {
@@ -338,41 +341,49 @@ public class MLP {
         }
         return costsSummed/numberOfCostsInSum;
     }
-
+    
     /**
      * Loads training data into given object.
      * @param directoryPath path to directory with training data.
-     * @param exampleDataFormat enum deciding how to read the files. More information in {@link ExampleDataFormat}
+     * @param dataFormat enum deciding how to read the files. More information in {@link DataFormat}
      * @param data object holding arrays with the data, this method writes values directly into the object
      * @throws FileManagingException if some problem arises while working with files
      */
-    public void loadData(String directoryPath, ExampleDataFormat exampleDataFormat, Dataset data) throws FileManagingException {
+    @SuppressWarnings("unused")
+    public void loadData(String directoryPath, DataFormat dataFormat, Dataset data) throws FileManagingException {
         double[][] inputData;
         double[][] expectedResults;
         try {
-            switch (exampleDataFormat) {
-                case JSON_ONE -> {
-                    ObjectMapper mapper = new ObjectMapper();
-                    File directory = new File(directoryPath);
-                    File[] files = directory.listFiles((dir, name) -> name.endsWith("json"));
-                    if (files != null) {
-                        inputData = new double[files.length][inputLayerSize];
-                        expectedResults = new double[files.length][outputLayerSize];
+            ObjectMapper mapper = new ObjectMapper();
+            File directory = new File(directoryPath);
+            File[] files = directory.listFiles((dir, name) -> name.endsWith("json"));
+            if (files != null) {
+                inputData = new double[files.length][inputLayerSize];
+                expectedResults = new double[files.length][outputLayerSize];
+
+                switch (dataFormat) {
+                    case JSON_ONE -> {
                         for (int i = 0; i < files.length; i++) {
                             Arrays.fill(expectedResults[i], 0);
-                            ExampleJsonOne example = mapper.readValue(files[i], ExampleJsonOne.class);
+                            JsonOne example = mapper.readValue(files[i], JsonOne.class);
                             inputData[i] = example.getValues();
                             expectedResults[i][example.getCorrectNeuronIndex()] = 1;
                         }
 
-                        data.setInputData(inputData);
-                        data.setExpectedResults(expectedResults);
                     }
+                    case JSON_TWO -> {
+                        for (int i = 0; i < files.length; i++) {
+                            JsonTwo example = mapper.readValue(files[i], JsonTwo.class);
+                            inputData[i] = example.getValues();
+                            expectedResults[i] = example.getExpectedResults();
+                        }
+                        throw new DevelopmentException("Data format not implemented yet.");
+                    }
+
+                    default -> throw new DevelopmentException("Data format not implemented yet.");
                 }
-                case JSON_TWO -> {
-                    throw new DevelopmentException("Data format not implemented yet.");
-                }
-                default -> throw new DevelopmentException("Data format not implemented yet.");
+                data.setInputData(inputData);
+                data.setExpectedResults(expectedResults);
             }
         } catch (IncorrectDataException e) {
             throw new IncorrectDataException(e.getLocalizedMessage());
@@ -382,7 +393,7 @@ public class MLP {
     }
 
     /**
-     * Saves networks values back to files.
+     * Saves networks values to files.
      * @param directoryPath path to the files
      * @throws FileManagingException if some problem arises while working with files
      */
