@@ -40,7 +40,7 @@ Then reload your build system files changes and the library should be in your ex
 ## How do I use it?
 My goal is to create as good documentation in the code as possible so it is really easy to use. But i know how hard it can be to make the first step so i will provide simple tutorial for the basic features.
 
-First thing u have to do is create the MLP.
+First thing u have to do is create the network. We will use the MLP class for it, which stands for multi-layer perceptron whichis one of the neural network architectures.
 ```Java
 MLP myNetwork = new MLP(784, 10, new int[]{10, 10}, "my network");
 ```
