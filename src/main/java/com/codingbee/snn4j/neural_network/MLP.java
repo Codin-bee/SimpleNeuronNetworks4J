@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Random;
 
 
+import com.codingbee.snn4j.algorithms.AlgorithmManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.codingbee.snn4j.enums.DataFormat;
@@ -204,7 +205,7 @@ public class MLP {
      * @return the index of neuron with the largest probability to be correct
      */
     public int processAsIndex(double[] values) throws MethodCallingException{
-        return getIndexWithHighestNo(processAsProbabilities(values));
+        return new AlgorithmManager().getIndexWithHighestNo(processAsProbabilities(values));
     }
 
     @SuppressWarnings("unused")
@@ -404,20 +405,4 @@ public class MLP {
         return (double) correct/ (double) total * 100.0;
     }
 
-    /**
-     * Simple method used to find the element with the highest value.
-     * @param nums array where the algorithm searches.
-     * @return index of the element with the highest value
-     */
-    private int getIndexWithHighestNo(double[] nums){
-        int indexWithHighestNo = 0;
-        double highestNo = 0;
-        for (int i = 0; i < nums.length; i++) {
-            if (nums[i]>highestNo){
-                highestNo = nums[i];
-                indexWithHighestNo = i;
-            }
-        }
-        return indexWithHighestNo;
-    }
     }
