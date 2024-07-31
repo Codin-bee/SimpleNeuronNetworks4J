@@ -19,7 +19,7 @@ public class DataGenerator {
                 ObjectMapper mapper = new ObjectMapper();
                 AlgorithmManager algorithmManager = new AlgorithmManager();
                 for (int i = 0; i < data.getInputData().length; i++) {
-                    JsonOne example = new JsonOne(algorithmManager.getIndexWithHighestNo(data.getInputData()[i]), data.getExpectedResults()[i]);
+                    JsonOne example = new JsonOne(algorithmManager.getIndexWithHighestVal(data.getInputData()[i]), data.getExpectedResults()[i]);
                     try {
                         mapper.writeValue(new File(dirPath + "/example" + i), example);
                     } catch (IOException e) {
