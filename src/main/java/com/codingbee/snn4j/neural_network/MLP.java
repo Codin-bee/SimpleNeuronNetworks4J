@@ -2,7 +2,6 @@ package com.codingbee.snn4j.neural_network;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,17 +16,11 @@ import java.util.Random;
 
 
 import com.codingbee.snn4j.algorithms.AlgorithmManager;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.codingbee.snn4j.enums.DataFormat;
-import com.codingbee.snn4j.exceptions.DevelopmentException;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.codingbee.snn4j.exceptions.MethodCallingException;
 import com.codingbee.snn4j.helping_objects.Dataset;
-import com.codingbee.snn4j.objects_for_parsing.JsonOne;
-import com.codingbee.snn4j.objects_for_parsing.JsonTwo;
-
 
 
 public class MLP {
@@ -205,7 +198,7 @@ public class MLP {
      * @return the index of neuron with the largest probability to be correct
      */
     public int processAsIndex(double[] values) throws MethodCallingException{
-        return new AlgorithmManager().getIndexWithHighestNo(processAsProbabilities(values));
+        return new AlgorithmManager().getIndexWithHighestVal(processAsProbabilities(values));
     }
 
     @SuppressWarnings("unused")
