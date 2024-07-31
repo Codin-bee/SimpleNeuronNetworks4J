@@ -13,9 +13,9 @@ public class Neuron {
         this.bias = bias;
     }
 
-    public void processNums(double[] nums){
+    public void processNums(double[] nums) throws IncorrectDataException{
         if (nums.length > weights.length){
-            throw new IncorrectDataException("");
+            throw new IncorrectDataException("Neuron - processing numbers - the array is longer than the amount of weights the network was initialized with");
         }
         for (int i = 0; i < nums.length; i++) {
             currentValue += nums[i] * weights[i];
