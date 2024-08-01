@@ -9,14 +9,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 
 import com.codingbee.snn4j.algorithms.AlgorithmManager;
 
+import com.codingbee.snn4j.exceptions.DevelopmentException;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.codingbee.snn4j.exceptions.MethodCallingException;
@@ -31,6 +29,7 @@ public class MLP {
     private final int inputLayerSize;
     private final int outputLayerSize;
     private boolean initialized = false;
+    private TrainingSettings trainingSettings = new TrainingSettings();
 
     /**Creates new MLP(Multi-layer perceptron) based on the parameters it is given.
      *
@@ -213,21 +212,26 @@ public class MLP {
             System.out.println("Starting cost: " + calculateAverageCost(trainingDataSet, expectedResults));
             System.out.println("Starting correct percentage: " + getCorrectPercentage(data));
         }
-        double  alfa = 0.001,
-                beta1 = 0.9,
-                beta2 = 0.999,
-                epsilon = 0.00000001,
+        double  alfa = trainingSettings.getLearningRate(),
+                beta1 = trainingSettings.getExponentialDecayRateOne(),
+                beta2 = trainingSettings.getExponentialDecayRateTwo(),
+                epsilon = trainingSettings.getEpsilon(),
                 time = 0,
                 mHat,
                 vHat;
-        int longestLayer = Math.max(Arrays.stream(hiddenLayersSizes).max().getAsInt(), outputLayerSize);
+        OptionalInt longestHiddenLayer = Arrays.stream(hiddenLayersSizes).max();
+        if(longestHiddenLayer.isEmpty()){
+            throw new DevelopmentException("This exception should never occur.");
+        }
+        int longestNonInputLayer = Math.max(longestHiddenLayer.getAsInt(), outputLayerSize);
+        int longestLayer = Math.max(longestNonInputLayer, inputLayerSize);
 
         double[][][]
-                weightM = new double[hiddenLayers.size()+1][longestLayer][784],///HELLL NAAAH
-                weightV = new double[hiddenLayers.size()+1][longestLayer][784];
+                weightM = new double[hiddenLayers.size()+1][longestNonInputLayer][longestLayer],
+                weightV = new double[hiddenLayers.size()+1][longestNonInputLayer][longestLayer];
         double[][]
-                biasM = new double[hiddenLayers.size()+1][longestLayer],
-                biasV = new double[hiddenLayers.size()+1][longestLayer];
+                biasM = new double[hiddenLayers.size()+1][longestNonInputLayer],
+                biasV = new double[hiddenLayers.size()+1][longestNonInputLayer];
 
         for (int i = 0; i < iterations; i++) {
             time++;
@@ -237,8 +241,8 @@ public class MLP {
                 for (int k = 0; k < hiddenLayersSizes[j]; k++) {
                     for (int l = 0; l < hiddenLayers.get(j).get(k).getWeights().length; l++) {
                         double gradient = differentiateWeight(hiddenLayers.get(j).get(k), l, data);
-                        weightM[j][k][l] = beta1 * weightM[j][k][l] + (1 - beta1) * gradient;//del L/ del w
-                        weightV[j][k][l] = beta2 * weightV[j][k][l] + (1 - beta2) * Math.pow(gradient, 2);//del L/ del w
+                        weightM[j][k][l] = beta1 * weightM[j][k][l] + (1 - beta1) * gradient;
+                        weightV[j][k][l] = beta2 * weightV[j][k][l] + (1 - beta2) * Math.pow(gradient, 2);
                         mHat = weightM[j][k][l] / (1 - Math.pow(beta1, time));
                         vHat = weightV[j][k][l] / (1 - Math.pow(beta2, time));
                         hiddenLayers.get(j).get(k).setWeight(l, hiddenLayers.get(j).get(k).getWeight(l) - mHat * (alfa / (Math.sqrt(vHat) + epsilon)));
@@ -398,4 +402,13 @@ public class MLP {
         return (double) correct/ (double) total * 100.0;
     }
 
+    @SuppressWarnings("unused")
+    public TrainingSettings getTrainingSettings() {
+        return trainingSettings;
     }
+
+    @SuppressWarnings("unused")
+    public void setTrainingSettings(TrainingSettings trainingSettings) {
+        this.trainingSettings = trainingSettings;
+    }
+}
