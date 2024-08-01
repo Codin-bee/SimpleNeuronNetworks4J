@@ -1,5 +1,6 @@
 package com.codingbee.snn4j.helping_objects;
 
+import com.codingbee.snn4j.algorithms.AlgorithmManager;
 import com.codingbee.snn4j.enums.DataFormat;
 import com.codingbee.snn4j.exceptions.DevelopmentException;
 import com.codingbee.snn4j.exceptions.FileManagingException;
@@ -21,6 +22,7 @@ public class Dataset {
      * @param inputData the values inserted into input array
      * @param expectedResults the values expected in the output layer
      */
+    @SuppressWarnings("unused")
     public Dataset(double[][] inputData, double[][] expectedResults) {
         this.inputData = inputData;
         this.expectedResults = expectedResults;
@@ -79,6 +81,35 @@ public class Dataset {
             throw new IncorrectDataException(e.getLocalizedMessage());
         } catch (IOException e) {
             throw new FileManagingException(e.getLocalizedMessage());
+        }
+    }
+
+    public void saveIntoDir(String dirPath, DataFormat format) throws FileManagingException {
+        switch (format){
+            case DataFormat.JSON_ONE -> {
+                ObjectMapper mapper = new ObjectMapper();
+                AlgorithmManager algorithmManager = new AlgorithmManager();
+                for (int i = 0; i < inputData.length; i++) {
+                    JsonOne example = new JsonOne(algorithmManager.getIndexWithHighestVal(inputData[i]), expectedResults[i]);
+                    try {
+                        mapper.writeValue(new File(dirPath + "/example" + i), example);
+                    } catch (IOException e) {
+                        throw new FileManagingException(e.getLocalizedMessage());
+                    }
+                }
+            }
+            case DataFormat.JSON_TWO -> {
+                ObjectMapper mapper = new ObjectMapper();
+                for (int i = 0; i < inputData.length; i++) {
+                    JsonTwo example = new JsonTwo(inputData[i], expectedResults[i]);
+                    try {
+                        mapper.writeValue(new File(dirPath + "/example" + i), example);
+                    } catch (IOException e) {
+                        throw new FileManagingException(e.getLocalizedMessage());
+                    }
+                }
+            }
+            default -> throw new DevelopmentException("Data format not implemented yet.");
         }
     }
 
