@@ -69,7 +69,7 @@ public class MLP {
         try {
             Random rand = new Random();
 
-            Files.createDirectories(Paths.get(dirPath + networkName + "/layers/layer0"));
+            Files.createDirectories(Paths.get(dirPath + "/" + networkName + "/layers/layer0"));
 
             for (int i = 0; i < hiddenLayersSizes[0]; i++) {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + networkName + "/layers/layer0/neuron" + i + ".txt"));
@@ -119,7 +119,7 @@ public class MLP {
         try {
             List<Neuron> tempNeurons = new ArrayList<>();
             for (int j = 0; j < hiddenLayersSizes[0]; j++) {
-                BufferedReader reader = new BufferedReader(new FileReader(dirPath + networkName + "/layers/layer0/neuron"
+                BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/" + networkName + "/layers/layer0/neuron"
                         + j + ".txt"));
                 double bias = Double.parseDouble(reader.readLine());
                 double[] weights = new double[inputLayerSize];
@@ -348,7 +348,7 @@ public class MLP {
     @SuppressWarnings("unused")
     public void saveNetworksValues(String directoryPath) throws FileManagingException{
         try {
-            Files.createDirectories(Paths.get(directoryPath + networkName + "/layers/layer0"));
+            Files.createDirectories(Paths.get(directoryPath + "/" + networkName + "/layers/layer0"));
             for (int i = 0; i < hiddenLayersSizes[0]; i++) {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(directoryPath +  networkName + "/layers/layer0/neuron" + i + ".txt"));
                 writer.write(String.valueOf(hiddenLayers.getFirst().get(i).getBias()));

@@ -67,9 +67,7 @@ public class Dataset {
                             JsonTwo example = mapper.readValue(files[i], JsonTwo.class);
                             inputData[i] = example.getValues();
                             expectedResults[i] = example.getExpectedResults();
-
                         }
-                        throw new DevelopmentException("Data format not implemented yet.");
                     }
 
                     default -> throw new DevelopmentException("Data format not implemented yet.");
