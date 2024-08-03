@@ -72,7 +72,7 @@ public class MLP {
             Files.createDirectories(Paths.get(dirPath + "/" + networkName + "/layers/layer0"));
 
             for (int i = 0; i < hiddenLayersSizes[0]; i++) {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + networkName + "/layers/layer0/neuron" + i + ".txt"));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + "/" + networkName + "/layers/layer0/neuron" + i + ".txt"));
                 writer.write(String.valueOf(Math.random()));
                 for (int j = 0; j < inputLayerSize; j++) {
                     writer.newLine();
@@ -81,10 +81,10 @@ public class MLP {
                 writer.close();
             }
             for (int i = 1; i < hiddenLayersSizes.length; i++) {
-                Files.createDirectories(Paths.get(dirPath + networkName + "/layers/layer" + i));
+                Files.createDirectories(Paths.get(dirPath + "/" + networkName + "/layers/layer" + i));
 
                 for (int j = 0; j < hiddenLayersSizes[i]; j++) {
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + networkName + "/layers/layer" + i + "/neuron" + j + ".txt"));
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + "/" + networkName + "/layers/layer" + i + "/neuron" + j + ".txt"));
                     writer.write(String.valueOf(Math.random()));
                     for (int k = 0; k < hiddenLayersSizes[i-1]; k++) {
                         writer.newLine();
@@ -93,9 +93,9 @@ public class MLP {
                     writer.close();
                 }
             }
-            Files.createDirectories(Paths.get(dirPath + networkName + "/layers/layer" + hiddenLayersSizes.length));
+            Files.createDirectories(Paths.get(dirPath + "/" + networkName + "/layers/layer" + hiddenLayersSizes.length));
             for (int i = 0; i < outputLayerSize; i++) {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + networkName + "/layers/layer"
+                BufferedWriter writer = new BufferedWriter(new FileWriter(dirPath + "/" + networkName + "/layers/layer"
                         + hiddenLayersSizes.length + "/neuron" + i + ".txt"));
                 writer.write(String.valueOf(Neuron.LAST));
                 for (int j = 0; j < hiddenLayersSizes[hiddenLayersSizes.length-1]; j++) {
