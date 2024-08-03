@@ -134,7 +134,7 @@ public class MLP {
             for (int i = 1; i < hiddenLayersSizes.length; i++) {
                 List<Neuron> tempNeurons2 = new ArrayList<>();
                 for (int j = 0; j < hiddenLayersSizes[i]; j++) {
-                    BufferedReader reader = new BufferedReader(new FileReader(dirPath + networkName + "/layers/layer" + i
+                    BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/" + networkName + "/layers/layer" + i
                         + "/neuron" + j + ".txt"));
                     double bias = Double.parseDouble(reader.readLine());
                     double[] weights = new double[hiddenLayersSizes[i-1]];
@@ -148,7 +148,7 @@ public class MLP {
             }
 
             for (int i = 0; i < outputLayerSize; i++) {
-                BufferedReader reader = new BufferedReader(new FileReader(dirPath + networkName + "/layers/layer" + hiddenLayersSizes.length + "/neuron" + i + ".txt"));
+                BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/" + networkName + "/layers/layer" + hiddenLayersSizes.length + "/neuron" + i + ".txt"));
                 double bias = Double.parseDouble(reader.readLine());
                 double[] weights = new double[hiddenLayersSizes[hiddenLayersSizes.length-1]];
                 for (int k = 0; k < weights.length; k++) {
