@@ -2,7 +2,7 @@
 Shortened name SNN4J.
 
 ## What is this library?
-SSN4J is simple library for Java, which allows you to create simple neuron networks, train them and test them. It currently supports the MLP(multi-layer perceptron) architecture of neural network. Basic example of project you could do with this library is the number recognition AI using the MNIST database. But keep in mind this library is supposed to be more of a learning resource and not used in serious projects. It is supposed to help understanding the theory but is not optimized or multi-threaded.
+SNN4J is simple library for Java, which allows you to create simple neuron networks, train them and test them. It currently supports the MLP (multi-layer perceptron) architecture of neural network. Basic example of project you could do with this library is the number recognition AI using the MNIST database. But keep in mind this library is supposed to be more of a learning resource and not used in production. It is supposed to help understanding the theory but is not optimized or multi-threaded.
 
 ## How do I download it?
 1. If you use Maven, add to your pom.xml: 
@@ -38,7 +38,7 @@ dependencies {
 Then reload your build system files changes and the library should be in your external libraries folder.
 
 ## How do I use it?
-My goal is to create as good documentation in the code as possible so it is really easy to use. But i know how hard it can be to make the first step so i will provide simple tutorial for the basic features.
+My goal is to create as good documentation in the code as possible so it is really easy to use. But I know how hard it can be to make the first step so I will provide simple tutorial for the basic features.
 
 First thing u have to do is create the network. We will use the MLP class for it, which stands for multi-layer perceptron which is one of the neural network architectures.
 ```Java
