@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.*;
 
 public class Dataset {
     private double[][] inputData;
@@ -82,6 +82,7 @@ public class Dataset {
         }
     }
 
+    @SuppressWarnings("unused")
     public void saveIntoDir(String dirPath, DataFormat format) throws FileManagingException {
         switch (format){
             case DataFormat.JSON_ONE -> {
@@ -109,6 +110,47 @@ public class Dataset {
             }
             default -> throw new DevelopmentException("Data format not implemented yet.");
         }
+    }
+
+    /**
+     * Randomly shuffles the training examples in the Dataset.
+     */
+    @SuppressWarnings("unused")
+    public void shuffle(){
+        Random rand = new Random();
+        int indexOne, indexTwo;
+        double[] tempArray;
+        for (int i = 0; i < inputData.length; i++) {
+            indexOne = rand.nextInt(inputData.length + 1) - 1;
+            indexTwo = rand.nextInt(inputData.length + 1) - 1;
+
+            tempArray = inputData[indexOne];
+            inputData[indexOne] = inputData[indexTwo];
+            inputData[indexTwo] = tempArray;
+
+            tempArray = expectedResults[indexOne];
+            expectedResults[indexOne] = expectedResults[indexTwo];
+            expectedResults[indexTwo] = tempArray;
+        }
+    }
+
+    /**
+     * Merges list of datasets into one.
+     * @param datasets list of datasets to be merged
+     * @return one dataset containing all the examples from the datasets in the list
+     */
+    @SuppressWarnings("unused")
+    public static Dataset mergeDatasets(List<Dataset> datasets){
+        List<double[]> inputs = new ArrayList<>();
+        List<double[]> outputs = new ArrayList<>();
+        for (Dataset dataset : datasets) {
+            inputs.addAll(Arrays.asList(dataset.getInputData()));
+            outputs.addAll(Arrays.asList(dataset.getExpectedResults()));
+        }
+        double[][] inputData = inputs.toArray(new double[inputs.size()][]);
+        double[][] outputData = outputs.toArray(new double[outputs.size()][]);
+
+        return new Dataset(inputData, outputData);
     }
 
     @SuppressWarnings("unused")
