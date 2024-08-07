@@ -35,7 +35,7 @@ dependencies {
 
 ```
 
-Then reload your build system files changes and the library should be in your external libraries folder.
+After that reload your build system files changes and the library should be in your external libraries folder.
 
 ## How do I use it?
 My goal is to create as good documentation in the code as possible so it is really easy to use. But i know how hard it can be to make the first step so i will provide simple tutorial for the basic features.
@@ -58,13 +58,25 @@ network.initNeuronsFromDir("src/main/resources");
 ```
 Now our network is fully set-up and we can do whatever we want with it. I will devide the functionalities into three sections.
 
-### 1. Training
-Coming soon, stay tuned!
+### 1. Training, data preparation
+First we have to prepare the dataset we will train our network on.
+```Java
+double[][] inputData = new double[1][];
+double[][] expectedResults = new double[1][];
+//Values initialization
+Dataset data = new Dataset(inputData, expectedResults);
+```
+The first array are the values passed to the network and the second one are values we want to get aftr it process the input. Now we can train our network calling the train method.
+```Java
+myNetwork.train(data, 100, true);
+```
+First parameter is obviously the dataset, second one is number of iterations(epochs) and last one is boolean, deciding if you want to print debug info while training.
+
 
 ### 2. Processing - actual ussage
 Coming soon, stay tuned!
 
-### 3. Debuging, analysing
+### 3. Debuging, analysing, tuning
 Coming soon, stay tuned!
 
 
