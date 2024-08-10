@@ -121,8 +121,8 @@ public class Dataset {
         int indexOne, indexTwo;
         double[] tempArray;
         for (int i = 0; i < inputData.length; i++) {
-            indexOne = rand.nextInt(inputData.length + 1) - 1;
-            indexTwo = rand.nextInt(inputData.length + 1) - 1;
+            indexOne = rand.nextInt(inputData.length + 1);
+            indexTwo = rand.nextInt(inputData.length + 1);
 
             tempArray = inputData[indexOne];
             inputData[indexOne] = inputData[indexTwo];
