@@ -63,7 +63,7 @@ First we have to prepare the dataset we will train our network on.
 ```Java
 double[][] inputData = new double[1][];
 double[][] expectedResults = new double[1][];
-//Values initialization
+//Your own value initialization
 Dataset data = new Dataset(inputData, expectedResults);
 ```
 The first array are the values passed to the network and the second one are values we want to get aftr it process the input. Now we can train our network calling the train method.
@@ -74,12 +74,16 @@ First parameter is obviously the dataset, second one is number of iterations(epo
 
 
 ### 2. Processing - actual ussage
-Coming soon, stay tuned!
+Tutorial coming soon, stay tuned or just experiment yourself!
 
 ### 3. Debuging, analysing, tuning
-Coming soon, stay tuned!
+Tutorial coming soon, stay tuned or just experiment yourself!
 
 
 ## I found a bug!
 That can definitely happen, this library is still in developement and it will probably be for a long time.
 Please feel free to contact me via github or my e-mail thecodingbee.dev@gmail.com and provide some information about the bug so I can fix it for you.
+
+
+## Is this project abandoned ?
+Not really. Actually it is the exact opposite, I am working on much better and richer architecture right now, which will implement c++ under the hood. But there is a lot of work so it will take some time until i return to work on this main repository.
