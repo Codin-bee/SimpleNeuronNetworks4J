@@ -79,6 +79,9 @@ Tutorial coming soon, stay tuned or just experiment yourself!
 ### 3. Debuging, analysing, tuning
 Tutorial coming soon, stay tuned or just experiment yourself!
 
+## Have you got already working code I can use?
+Of course here is link to my repository I used to train on of my projects. Just make sure you install the MNIST database if you are going to use it.
+https://github.com/Codin-bee/DigitRecognition
 
 ## I found a bug!
 That can definitely happen, this library is still in developement and it will probably be for a long time.
