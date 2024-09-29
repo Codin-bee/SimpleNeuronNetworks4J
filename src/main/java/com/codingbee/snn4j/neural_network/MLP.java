@@ -7,9 +7,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Arrays;
+import java.util.OptionalInt;
 
 
 import com.codingbee.snn4j.algorithms.AlgorithmManager;
@@ -18,6 +23,7 @@ import com.codingbee.snn4j.exceptions.DevelopmentException;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.codingbee.snn4j.exceptions.MethodCallingException;
+
 import com.codingbee.snn4j.helping_objects.Dataset;
 
 
@@ -29,7 +35,9 @@ public class MLP {
     private final int inputLayerSize;
     private final int outputLayerSize;
     private boolean initialized = false;
+    private String networkFolder;
     private TrainingSettings trainingSettings = new TrainingSettings();
+    private DebuggingSettings debuggingSettings = new DebuggingSettings();
 
     /**Creates new MLP(Multi-layer perceptron) based on the parameters it is given.
      *
@@ -69,6 +77,7 @@ public class MLP {
         try {
             Random rand = new Random();
 
+            networkFolder = dirPath;
             Files.createDirectories(Paths.get(dirPath + "/" + networkName + "/layers/layer0"));
 
             for (int i = 0; i < hiddenLayersSizes[0]; i++) {
@@ -117,6 +126,7 @@ public class MLP {
     @SuppressWarnings("unused")
     public void initNeuronsFromDir(String dirPath) throws FileManagingException {
         try {
+            networkFolder = dirPath;
             List<Neuron> tempNeurons = new ArrayList<>();
             for (int j = 0; j < hiddenLayersSizes[0]; j++) {
                 BufferedReader reader = new BufferedReader(new FileReader(dirPath + "/" + networkName + "/layers/layer0/neuron"
@@ -201,14 +211,14 @@ public class MLP {
     }
 
     @SuppressWarnings("unused")
-    public void train(Dataset data, int iterations, boolean printDebugInfo) throws MethodCallingException {
+    public void train(Dataset data, int iterations, boolean saveProgress, boolean debugMode) throws MethodCallingException, FileManagingException {
         if(!initialized){
             throw new MethodCallingException("Can't process data - network hasn't been initialized yet");
         }
         double[][] trainingDataSet = data.getInputData();
         double[][] expectedResults = data.getExpectedResults();
 
-        if (printDebugInfo) {
+        if (debugMode && debuggingSettings.isStartEndPrint()) {
             System.out.println("Starting cost: " + calculateAverageCost(trainingDataSet, expectedResults));
             System.out.println("Starting correct percentage: " + getCorrectPercentage(data));
         }
@@ -276,13 +286,36 @@ public class MLP {
                 vHat = biasV[hiddenLayers.size()][j] / (1 - Math.pow(beta2, time));
                 outputLayer.get(j).setBias(outputLayer.get(j).getBias() - mHat * ( alfa / (Math.sqrt(vHat) + epsilon )));
             }
-            if (printDebugInfo){
-                System.out.println("Cost after " + (int) time + ". iteration: " + calculateAverageCost(trainingDataSet, expectedResults));
-                System.out.println("Correct percentage after " + (int) time + ". iteration: " + getCorrectPercentage(data));
+            if (debugMode){
+
+                if (debuggingSettings.isEveryIterationPrint()) {
+                    System.out.println("Cost after " + (int) time + ". iteration: " + calculateAverageCost(trainingDataSet, expectedResults));
+                    System.out.println("Correct percentage after " + (int) time + ". iteration: " + getCorrectPercentage(data));
+                }
+
+                if(debuggingSettings.isSaveCostValues()){
+                    if(time == 1){
+                        try {
+                            Files.createFile(Path.of(debuggingSettings.getCostSavingFilePath()));
+                        } catch (IOException e) {
+                            throw new FileManagingException("Error while " + e.getLocalizedMessage());
+                        }
+                    }
+                    try (FileWriter writer = new FileWriter(debuggingSettings.getCostSavingFilePath())){
+                        writer.append(String.valueOf(calculateAverageCost(trainingDataSet, expectedResults)));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+            }
+
+            if (saveProgress) {
+                saveNetworksValues(networkFolder);
             }
 
         }
-        if (printDebugInfo) {
+        if (debugMode && debuggingSettings.isStartEndPrint()) {
             System.out.println("Cost after training: " + calculateAverageCost(trainingDataSet, expectedResults));
             System.out.println("Correct percentage after training: " + getCorrectPercentage(data));
         }
@@ -410,5 +443,15 @@ public class MLP {
     @SuppressWarnings("unused")
     public void setTrainingSettings(TrainingSettings trainingSettings) {
         this.trainingSettings = trainingSettings;
+    }
+
+    @SuppressWarnings("unused")
+    public DebuggingSettings getDebuggingSettings() {
+        return debuggingSettings;
+    }
+
+    @SuppressWarnings("unused")
+    public void setDebuggingSettings(DebuggingSettings debuggingSettings) {
+        this.debuggingSettings = debuggingSettings;
     }
 }
