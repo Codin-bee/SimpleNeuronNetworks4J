@@ -207,7 +207,7 @@ public class MLP {
      * @return the index of neuron with the largest probability to be correct
      */
     public int processAsIndex(double[] values) throws MethodCallingException{
-        return new AlgorithmManager().getIndexWithHighestVal(processAsProbabilities(values));
+        return AlgorithmManager.getIndexWithHighestVal(processAsProbabilities(values));
     }
 
     @SuppressWarnings("unused")

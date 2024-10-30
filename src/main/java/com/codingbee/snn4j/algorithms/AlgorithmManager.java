@@ -10,7 +10,7 @@ public class AlgorithmManager {
      * @return index of the element with the highest value
      * @throws IncorrectDataException in case the inserted array is null
      */
-    public int getIndexWithHighestVal(double[] nums) throws IncorrectDataException {
+    public static int getIndexWithHighestVal(double[] nums) throws IncorrectDataException {
         if(nums == null){
             throw new IncorrectDataException("Get index with highest value - the array must not be null");
         }
