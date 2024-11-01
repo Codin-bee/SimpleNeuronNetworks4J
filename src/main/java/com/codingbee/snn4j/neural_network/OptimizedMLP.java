@@ -1,7 +1,9 @@
 package com.codingbee.snn4j.neural_network;
 
+import com.codingbee.snn4j.algorithms.AlgorithmManager;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
+import com.codingbee.snn4j.exceptions.MethodCallingException;
 import com.codingbee.snn4j.interfaces.RandomWeightGenerator;
 
 import java.io.BufferedReader;
@@ -44,7 +46,7 @@ public class OptimizedMLP {
         this.outputLayerSize = outputLayerSize;
         this.hiddenLayersSizes = hiddenLayersSizes;
         this.networkPath = networkPath;
-        initWeightMatricies();
+        initWeightMatrices();
     }
 
     @SuppressWarnings("unused")
@@ -122,24 +124,39 @@ public class OptimizedMLP {
     }
 
     @SuppressWarnings("unused")
-    public double[] processAsProbabilities(double[] input){
-        double[] layerInput = input;
-        double[] layerOutput = null;
-        for (int i = 0; i < weights.length; i++) {
-            layerOutput = new double[weights[i].length];
-            for (int j = 0; j < weights[i].length; j++) {
-                for (int k = 0; k < weights[i][j].length; k++) {
-                    layerOutput[j] = layerInput[k] * weights[i][j][k];
+    public double[] processAsValues(double[] input) throws MethodCallingException {
+        if (initialized) {
+            double[] layerInput = input;
+            double[] layerOutput = null;
+            for (int i = 0; i < weights.length; i++) {
+                layerOutput = new double[weights[i].length];
+                for (int j = 0; j < weights[i].length; j++) {
+                    for (int k = 0; k < weights[i][j].length; k++) {
+                        layerOutput[j] = layerInput[k] * weights[i][j][k];
+                    }
+                    layerOutput[j] += biases[i][j];
+                    layerOutput[j] = leakyReLU(layerOutput[j], 0.001);
                 }
-                layerOutput[j] += biases[i][j];
-                //activate
+                layerInput = layerOutput;
             }
-            layerInput = layerOutput;
+            return layerOutput;
+        }else{
+            throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
         }
-        return layerOutput;
+    }
+
+    public double[] processAsProbabilities(double[] input) throws MethodCallingException {
+        double[] probabilities = processAsValues(input);
+        softmax(probabilities, 1);
+        return probabilities;
+    }
+
+    @SuppressWarnings("unused")
+    public int processAsIndex(double[] input) throws MethodCallingException {
+        return AlgorithmManager.getIndexWithHighestVal(processAsValues(input));
     }
     //region Private Methods
-    public void initWeightMatricies(){
+    public void initWeightMatrices(){
         if (hiddenLayersSizes != null){
             weights = new double[1 + hiddenLayersSizes.length][][];
             weights[0] = new double[hiddenLayersSizes[0]][inputLayerSize];
@@ -156,6 +173,24 @@ public class OptimizedMLP {
             weights = new double[1][inputLayerSize][outputLayerSize];
             biases = new double[0][outputLayerSize];
         }
+    }
+
+    public void softmax(double[] values, double temp){
+        double sum = 0;
+        for (int i = 0; i < values.length; i++) {
+            values[i] = Math.exp(values[i] / temp);
+            sum += values[i];
+        }
+        for (int i = 0; i < values.length; i++) {
+            values[i] /= sum;
+        }
+    }
+
+    public double leakyReLU(double x, double alpha){
+        if(x < 0){
+            return 0;
+        }
+        return x * alpha;
     }
     //endregion
     //region Getters and Setters
