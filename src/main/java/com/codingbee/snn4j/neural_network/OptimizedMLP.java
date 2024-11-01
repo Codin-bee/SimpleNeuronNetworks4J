@@ -51,8 +51,7 @@ public class OptimizedMLP {
         initWeightMatrices();
     }
 
-
-    /*Initialization and saving*/
+    //region Initialization and Saving
 
     /**
      * Initializes the networks values(weights and biases) from given directory
@@ -158,9 +157,9 @@ public class OptimizedMLP {
         }
         initialized = true;
     }
+    //endregion
 
-
-    /*Processing*/
+    //region Processing
 
     /**
      * Processes given values and returns activations of neurons in output layer
@@ -213,11 +212,9 @@ public class OptimizedMLP {
     public int processAsIndex(double[] input) throws MethodCallingException {
         return AlgorithmManager.getIndexWithHighestVal(processAsValues(input));
     }
+    //endregion
 
-
-    /*Training and analyzing*/
-
-
+    //region Training and analyzing
     @SuppressWarnings("unused")
     public void train(Dataset data, int epochs, boolean debugMode) throws MethodCallingException {
         double alpha = trainingSettings.getLearningRate();
@@ -297,6 +294,7 @@ public class OptimizedMLP {
         }
         return (percentage / count) * 100;
     }
+    //endregion
 
     //region Private Methods
     private void initWeightMatrices(){
@@ -363,6 +361,7 @@ public class OptimizedMLP {
     }
 
     //endregion
+
     //region Getters and Setters
     @SuppressWarnings("unused")
     public TrainingSettings getTrainingSettings() {

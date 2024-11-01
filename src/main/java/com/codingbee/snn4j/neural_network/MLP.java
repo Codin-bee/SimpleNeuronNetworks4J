@@ -67,13 +67,16 @@ public class MLP {
 
     }
 
+
+    //region Initialization and Saving
+
     /**
      * Generates random values for neuron initialization in given directory.
      * @param dirPath path where directories will be generated
      * @throws FileManagingException if some problem arises while working with files
      */
     @SuppressWarnings("unused")
-    public void generateRandomNeuronsInDir(String dirPath) throws FileManagingException {
+    public void initializeWithRandomValues(String dirPath) throws FileManagingException {
         try {
             Random rand = new Random();
 
@@ -124,7 +127,7 @@ public class MLP {
      * @throws FileManagingException if some problem arises while working with files
      */
     @SuppressWarnings("unused")
-    public void initNeuronsFromDir(String dirPath) throws FileManagingException {
+    public void initializeFromFiles(String dirPath) throws FileManagingException {
         try {
             networkFolder = dirPath;
             List<Neuron> tempNeurons = new ArrayList<>();
@@ -175,6 +178,56 @@ public class MLP {
     }
 
     /**
+     * Saves networks values to files.
+     * @param directoryPath path to the files
+     * @throws FileManagingException if some problem arises while working with files
+     */
+    @SuppressWarnings("unused")
+    public void saveToFiles(String directoryPath) throws FileManagingException{
+        try {
+            Files.createDirectories(Paths.get(directoryPath + "/" + networkName + "/layers/layer0"));
+            for (int i = 0; i < hiddenLayersSizes[0]; i++) {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(directoryPath + "/" +  networkName + "/layers/layer0/neuron" + i + ".txt"));
+                writer.write(String.valueOf(hiddenLayers.getFirst().get(i).getBias()));
+                for (int j = 0; j < inputLayerSize; j++) {
+                    writer.newLine();
+                    writer.write(String.valueOf(hiddenLayers.getFirst().get(i).getWeight(j)));
+                }
+                writer.close();
+            }
+            for (int i = 1; i < hiddenLayersSizes.length; i++) {
+                Files.createDirectories(Paths.get(directoryPath + "/" + networkName + "/layers/layer" + i));
+
+                for (int j = 0; j < hiddenLayersSizes[i]; j++) {
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(directoryPath + "/" + networkName + "/layers/layer" + i + "/neuron" + j + ".txt"));
+                    writer.write(String.valueOf(hiddenLayers.get(i).get(j).getBias()));
+                    for (int k = 0; k < hiddenLayersSizes[i-1]; k++) {
+                        writer.newLine();
+                        writer.write(String.valueOf(hiddenLayers.get(i).get(j).getWeight(k)));
+                    }
+                    writer.close();
+                }
+            }
+            Files.createDirectories(Paths.get(directoryPath + "/" + networkName + "/layers/layer" + hiddenLayersSizes.length));
+            for (int i = 0; i < outputLayerSize; i++) {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(directoryPath + "/" + networkName + "/layers/layer"
+                        + hiddenLayersSizes.length + "/neuron" + i + ".txt"));
+                writer.write(String.valueOf(outputLayer.get(i).getBias()));
+                for (int j = 0; j < outputLayer.get(i).getWeights().length; j++) {
+                    writer.newLine();
+                    writer.write(String.valueOf(outputLayer.get(i).getWeight(j)));
+                }
+                writer.close();
+            }
+        }catch (IOException e){
+            throw new FileManagingException(e.getLocalizedMessage());
+        }
+    }
+    //endregion
+
+    //region Processing
+
+    /**
      * Processes given values through the network and returns the networks decision about similarity with training data.
      * @param values array of doubles showing how certain the network is, that the neuron on each index is the correct one
      * @return array same length as the output layer defined in constructor, each value will be between 0 and 1 depending on its
@@ -209,6 +262,9 @@ public class MLP {
     public int processAsIndex(double[] values) throws MethodCallingException{
         return AlgorithmManager.getIndexWithHighestVal(processAsProbabilities(values));
     }
+    //endregion
+
+    //region Training and analyzing
 
     @SuppressWarnings("unused")
     public void train(Dataset data, int iterations, boolean saveProgress, boolean debugMode) throws MethodCallingException, FileManagingException {
@@ -311,7 +367,7 @@ public class MLP {
             }
 
             if (saveProgress) {
-                saveNetworksValues(networkFolder);
+                saveToFiles(networkFolder);
             }
 
         }
@@ -321,6 +377,45 @@ public class MLP {
         }
     }
 
+    /**
+     * Calculates cost function of given data.
+     * @param trainingDataSet 2D array of training values
+     * @param expectedResults 2D array of results you expect to get after processing the training data set
+     * @return the average cost function
+     */
+    public double calculateAverageCost(double[][] trainingDataSet, double[][] expectedResults) throws MethodCallingException {
+        if(!initialized){
+            throw new MethodCallingException("Can't process data - network hasn't been initialized yet");
+        }
+        double costsSummed = 0;
+        int numberOfCostsInSum = 0;
+        for (int i =0; i < trainingDataSet.length; i++) {
+            double[] received = processAsProbabilities(trainingDataSet[i]);
+            for (int j = 0; j < outputLayerSize; j++) {
+                costsSummed += Math.pow(received[j] - expectedResults[i][j], 2);
+            }
+            numberOfCostsInSum++;
+        }
+        return costsSummed/numberOfCostsInSum;
+    }
+
+    /**
+     * Returns how correct the network is on  the testing data as a percentage.
+     * @param testingData the data u want to test the network on
+     * @return percentage of how many answers the network got correct
+     * @throws MethodCallingException if the method is called on network that hasn't been initialized
+     */
+    public double getCorrectPercentage(Dataset testingData) throws MethodCallingException {
+        int correct = 0, total = 0;
+        for (int i = 0; i < testingData.getInputData().length; i++) {
+            total++;
+            if (testingData.getExpectedResults()[i][processAsIndex(testingData.getInputData()[i])] == 1) correct ++;
+        }
+        return (double) correct/ (double) total * 100.0;
+    }
+    //endregion
+
+    //region Private Methods
     private double differentiateWeight(Neuron neuron, int weightNo, Dataset data) throws MethodCallingException {
         double nudge = 0.000001;
         double originalWeight = neuron.getWeight(weightNo);
@@ -350,91 +445,9 @@ public class MLP {
 
         return (costWithPositiveNudge - costWithNegativeNudge) / (2 * nudge) ;
     }
+    //endregion
 
-    /**
-     * Calculates cost function of given data.
-     * @param trainingDataSet 2D array of training values
-     * @param expectedResults 2D array of results you expect to get after processing the training data set
-     * @return the average cost function
-     */
-    public double calculateAverageCost(double[][] trainingDataSet, double[][] expectedResults) throws MethodCallingException {
-        if(!initialized){
-            throw new MethodCallingException("Can't process data - network hasn't been initialized yet");
-        }
-        double costsSummed = 0;
-        int numberOfCostsInSum = 0;
-        for (int i =0; i < trainingDataSet.length; i++) {
-            double[] received = processAsProbabilities(trainingDataSet[i]);
-            for (int j = 0; j < outputLayerSize; j++) {
-                costsSummed += Math.pow(received[j] - expectedResults[i][j], 2);
-            }
-            numberOfCostsInSum++;
-        }
-        return costsSummed/numberOfCostsInSum;
-    }
-
-    /**
-     * Saves networks values to files.
-     * @param directoryPath path to the files
-     * @throws FileManagingException if some problem arises while working with files
-     */
-    @SuppressWarnings("unused")
-    public void saveNetworksValues(String directoryPath) throws FileManagingException{
-        try {
-            Files.createDirectories(Paths.get(directoryPath + "/" + networkName + "/layers/layer0"));
-            for (int i = 0; i < hiddenLayersSizes[0]; i++) {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(directoryPath + "/" +  networkName + "/layers/layer0/neuron" + i + ".txt"));
-                writer.write(String.valueOf(hiddenLayers.getFirst().get(i).getBias()));
-                for (int j = 0; j < inputLayerSize; j++) {
-                    writer.newLine();
-                    writer.write(String.valueOf(hiddenLayers.getFirst().get(i).getWeight(j)));
-                }
-                writer.close();
-            }
-            for (int i = 1; i < hiddenLayersSizes.length; i++) {
-                Files.createDirectories(Paths.get(directoryPath + "/" + networkName + "/layers/layer" + i));
-
-                for (int j = 0; j < hiddenLayersSizes[i]; j++) {
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(directoryPath + "/" + networkName + "/layers/layer" + i + "/neuron" + j + ".txt"));
-                    writer.write(String.valueOf(hiddenLayers.get(i).get(j).getBias()));
-                    for (int k = 0; k < hiddenLayersSizes[i-1]; k++) {
-                        writer.newLine();
-                        writer.write(String.valueOf(hiddenLayers.get(i).get(j).getWeight(k)));
-                    }
-                    writer.close();
-                }
-            }
-            Files.createDirectories(Paths.get(directoryPath + "/" + networkName + "/layers/layer" + hiddenLayersSizes.length));
-            for (int i = 0; i < outputLayerSize; i++) {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(directoryPath + "/" + networkName + "/layers/layer"
-                        + hiddenLayersSizes.length + "/neuron" + i + ".txt"));
-                writer.write(String.valueOf(outputLayer.get(i).getBias()));
-                for (int j = 0; j < outputLayer.get(i).getWeights().length; j++) {
-                    writer.newLine();
-                    writer.write(String.valueOf(outputLayer.get(i).getWeight(j)));
-                }
-                writer.close();
-            }
-        }catch (IOException e){
-            throw new FileManagingException(e.getLocalizedMessage());
-        }
-    }
-
-    /**
-     * Returns how correct the network is on  the testing data as a percentage.
-     * @param testingData the data u want to test the network on
-     * @return percentage of how many answers the network got correct
-     * @throws MethodCallingException if the method is called on network that hasn't been initialized
-     */
-    public double getCorrectPercentage(Dataset testingData) throws MethodCallingException {
-        int correct = 0, total = 0;
-        for (int i = 0; i < testingData.getInputData().length; i++) {
-            total++;
-            if (testingData.getExpectedResults()[i][processAsIndex(testingData.getInputData()[i])] == 1) correct ++;
-        }
-        return (double) correct/ (double) total * 100.0;
-    }
-
+    //region Getters and Setters
     @SuppressWarnings("unused")
     public TrainingSettings getTrainingSettings() {
         return trainingSettings;
@@ -454,4 +467,5 @@ public class MLP {
     public void setDebuggingSettings(DebuggingSettings debuggingSettings) {
         this.debuggingSettings = debuggingSettings;
     }
+    //endregion
 }
