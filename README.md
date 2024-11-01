@@ -48,13 +48,13 @@ The first parameter in the constructor defines how many neurons the input layer 
 
 Next we have to generate random weights and biases, which we will tune later by training, but they have to be generated randomly at the start. We do it using this method:
 ```Java
-myNetwork.generateRandomNeuronsInDir("src/main/resources/networks");
+myNetwork.initializeWithRandomValues("src/main/resources/networks");
 ```
 At the given path the library creates directory with the name of the network specified in the constructor. Inside directory for every layer will be created, containing one text file for each neuron.
 
 When we have the network in our file system we just load it into the actual network, simply by calling:
 ```Java
-network.initNeuronsFromDir("src/main/resources");
+network.initializeFromFiles("src/main/resources");
 ```
 Now our network is fully set-up, and we can do whatever we want with it. I will divide the functionalities into three sections.
 
@@ -79,7 +79,7 @@ int index = myNetwork.processAsIndex(new int[]{1, 2, 3});
 ```
 or it can return activations of all output neurons:
 ```Java
-double[] activations = myNetwork.processAsProbabilities(new double[]{1, 2, 3});
+double[] activations = myNetwork.processAsValues(new double[]{1, 2, 3});
 ```
 
 ### 3. Debugging, analysing, tuning
@@ -96,7 +96,7 @@ double cost = myNetwork.calculateAverageCost(inputData, expectedResults);
 ```Java
 Dataset dataset = new Dataset();
 //Data initialization
-double cost = myNetwork.calculateAverageCost(dataset);
+double cost = myNetwork.getCorrectPercentage(dataset);
 ```
 
 ## Have you got already working code I can use?

@@ -233,7 +233,7 @@ public class MLP {
      * @return array same length as the output layer defined in constructor, each value will be between 0 and 1 depending on its
      * probability to be correct, which means: higher value, higher probability
      */
-    public double[] processAsProbabilities(double[] values) throws MethodCallingException {
+    public double[] processAsValues(double[] values) throws MethodCallingException {
         if(!initialized){
             throw new MethodCallingException("Can't process data - network hasn't been initialized yet");
         }
@@ -260,7 +260,7 @@ public class MLP {
      * @return the index of neuron with the largest probability to be correct
      */
     public int processAsIndex(double[] values) throws MethodCallingException{
-        return AlgorithmManager.getIndexWithHighestVal(processAsProbabilities(values));
+        return AlgorithmManager.getIndexWithHighestVal(processAsValues(values));
     }
     //endregion
 
@@ -390,7 +390,7 @@ public class MLP {
         double costsSummed = 0;
         int numberOfCostsInSum = 0;
         for (int i =0; i < trainingDataSet.length; i++) {
-            double[] received = processAsProbabilities(trainingDataSet[i]);
+            double[] received = processAsValues(trainingDataSet[i]);
             for (int j = 0; j < outputLayerSize; j++) {
                 costsSummed += Math.pow(received[j] - expectedResults[i][j], 2);
             }
