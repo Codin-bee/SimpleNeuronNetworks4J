@@ -4,6 +4,7 @@ import com.codingbee.snn4j.algorithms.AlgorithmManager;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.codingbee.snn4j.exceptions.MethodCallingException;
+import com.codingbee.snn4j.helping_objects.Dataset;
 import com.codingbee.snn4j.interfaces.RandomWeightGenerator;
 
 import java.io.BufferedReader;
@@ -11,6 +12,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 
+@SuppressWarnings("unused")
 public class OptimizedMLP {
     private String networkPath;
     private double[][][] weights;
@@ -113,9 +115,9 @@ public class OptimizedMLP {
             }
         }
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/biases.txt"))) {
-            for (int i = 0; i < biases.length; i++) {
-                for (int j = 0; j < biases[i].length; j++) {
-                    writer.write(biases[i][j] + " ");
+            for (double[] layerBiases : biases) {
+                for (double bias : layerBiases) {
+                    writer.write(bias + " ");
                 }
                 writer.newLine();
             }
@@ -213,9 +215,91 @@ public class OptimizedMLP {
     }
 
 
-    //cost, train, percentage
+    /*Training and analyzing*/
+
+
+    @SuppressWarnings("unused")
+    public void train(Dataset data, int epochs, boolean debugMode) throws MethodCallingException {
+        double alpha = trainingSettings.getLearningRate();
+        double beta_1 = trainingSettings.getExponentialDecayRateOne();
+        double beta_2 = trainingSettings.getExponentialDecayRateTwo();
+        double epsilon = trainingSettings.getEpsilon();
+        double beta_3 = 1 - beta_1;
+        double beta_4 = 1 - beta_2;
+        double time = 0, m_hat, v_hat, g;
+        double[][][] m_weight = new double[weights.length][][];
+        double[][][] v_weight = new double[weights.length][][];
+        for (int i = 0; i < m_weight.length; i++) {
+            m_weight[i] = new double[weights[i].length][];
+            v_weight[i] = new double[weights[i].length][];
+            for (int j = 0; j < m_weight[i].length; j++) {
+                m_weight[i][j] = new double[weights[i][j].length];
+                v_weight[i][j] = new double[weights[i][j].length];
+            }
+        }
+        double[][] m_bias = new double[biases.length][];
+        double[][] v_bias = new double[biases.length][];
+        for (int i = 0; i < m_bias[i].length; i++) {
+            m_bias[i] = new double[biases[i].length];
+            v_bias[i] = new double[biases[i].length];
+        }
+        for (int i = 0; i < epochs; i++) {
+            time++;
+            for (int j = 0; j < weights.length; j++) {
+                for (int k = 0; k < weights[i].length; k++) {
+                    for (int l = 0; l < weights[i][j].length; l++) {
+                        g = calculateWeightGradient(j, k, l, data);
+                        m_weight[j][k][l] = beta_1 * m_weight[j][k][l] + beta_3 * g;
+                        v_weight[j][k][l] = beta_2 * v_weight[j][k][l] + beta_4 * Math.pow(g, 2);
+                        m_hat = m_weight[j][k][l] / (1 - Math.pow(beta_1, time));
+                        v_hat = v_weight[j][k][l] / (1 - Math.pow(beta_2, time));
+                        m_weight[j][k][l] = m_weight[j][k][l] - m_hat * (alpha / (Math.sqrt(v_hat) + epsilon));
+                    }
+                }
+            }
+            for (int j = 0; j < biases.length; j++) {
+                for (int k = 0; k < biases[i].length; k++) {
+                    g = calculateBiasGradient(j, k, data);
+                    m_bias[i][j] = beta_1 * m_bias[i][j] + beta_3 * g;
+                    v_bias[i][j] = beta_2 * v_bias[i][j] + beta_4 * Math.pow(g, 2);
+                    m_hat = m_bias[i][j] / (1 - Math.pow(beta_1, time));
+                    v_hat = v_bias[i][j] / (1 - Math.pow(beta_2, time));
+                    m_bias[i][j] = m_bias[i][j] - m_hat * (alpha / (Math.sqrt(v_hat) + epsilon));
+                }
+            }
+        }
+    }
+
+    public double calculateAverageCost(Dataset data) throws MethodCallingException {
+        double cost = 0;
+        double count = 0;
+        for (int i = 0; i < data.getInputData().length; i++) {
+            double[] output = processAsProbabilities(data.getInputData()[i]);
+            for (int j = 0; j < data.getInputData()[i].length; j++) {
+                cost += output[j] * data.getExpectedResults()[i][j];
+            }
+            count++;
+        }
+        return cost / count;
+    }
+
+    @SuppressWarnings("unused")
+    public double getCorrectPercentage(Dataset data) throws MethodCallingException {
+        double percentage = 0;
+        double count = 0;
+        for (int i = 0; i < data.getInputData().length; i++) {
+            int receivedIndex = processAsIndex(data.getInputData()[i]);
+            int correctIndex = AlgorithmManager.getIndexWithHighestVal(data.getExpectedResults()[i]);
+            count++;
+            if (receivedIndex == correctIndex){
+                percentage++;
+            }
+        }
+        return (percentage / count) * 100;
+    }
+
     //region Private Methods
-    public void initWeightMatrices(){
+    private void initWeightMatrices(){
         if (hiddenLayersSizes != null){
             weights = new double[1 + hiddenLayersSizes.length][][];
             weights[0] = new double[hiddenLayersSizes[0]][inputLayerSize];
@@ -234,7 +318,8 @@ public class OptimizedMLP {
         }
     }
 
-    public void softmax(double[] values, double temp){
+    @SuppressWarnings("all")
+    private void softmax(double[] values, double temp){
         double sum = 0;
         for (int i = 0; i < values.length; i++) {
             values[i] = Math.exp(values[i] / temp);
@@ -245,12 +330,38 @@ public class OptimizedMLP {
         }
     }
 
-    public double leakyReLU(double x, double alpha){
+    @SuppressWarnings("all")
+    private double leakyReLU(double x, double alpha){
         if(x < 0){
             return 0;
         }
         return x * alpha;
     }
+
+    private double calculateWeightGradient(int layer, int to, int from, Dataset data) throws MethodCallingException {
+        double nudge = 0.0000001;
+        double original = weights[layer][to][from];
+        weights[layer][to][from] = original + nudge;
+        double positiveNudge = calculateAverageCost(data);
+        weights[layer][to][from] = original - nudge;
+        double negativeNudge = calculateAverageCost(data);
+        double gradient = (positiveNudge - negativeNudge) / 2 * nudge;
+        weights[layer][to][from] = original;
+        return gradient;
+    }
+
+    private double calculateBiasGradient(int layer, int neuron, Dataset data) throws MethodCallingException {
+        double nudge = 0.0000001;
+        double original = biases[layer][neuron];
+        biases[layer][neuron] = original + nudge;
+        double positiveNudge = calculateAverageCost(data);
+        biases[layer][neuron] = original - nudge;
+        double negativeNudge = calculateAverageCost(data);
+        double gradient = (positiveNudge - negativeNudge) / 2 * nudge;
+        biases[layer][neuron] = original;
+        return gradient;
+    }
+
     //endregion
     //region Getters and Setters
     @SuppressWarnings("unused")
