@@ -22,8 +22,8 @@ public class OptimizedMLP {
     private TrainingSettings trainingSettings = new TrainingSettings();
     private DebuggingSettings debuggingSettings = new DebuggingSettings();
 
-    /**Creates new MLP(Multi-layer perceptron) based on the parameters it is given.
-     *
+    /**
+     *Creates new MLP(Multi-layer perceptron) based on the parameters it is given.
      * @param inputLayerSize the number of neurons in the input layer. Must be higher than 0.
      * @param outputLayerSize the number of neurons in the output layer. Must be higher than 0.
      * @param hiddenLayersSizes array of numbers which determine how many neurons will each hidden layer have. If it is null no hidden layer will be created. Every value of array must be higher than zero.
@@ -49,10 +49,17 @@ public class OptimizedMLP {
         initWeightMatrices();
     }
 
-    @SuppressWarnings("unused")
-    public void initializeFromFiles() throws FileManagingException {
+
+    /*Initialization and saving*/
+
+    /**
+     * Initializes the networks values(weights and biases) from given directory
+     * @param path path to the directory, where values are saved
+     * @throws FileManagingException if any error occurs while working with files
+     */
+    public void initializeFromFiles(String path) throws FileManagingException {
         for (int i = 0; i < weights.length; i++) {
-            try(BufferedReader reader = new BufferedReader(new FileReader(networkPath + "/weights/w" + i + ".txt"))){
+            try(BufferedReader reader = new BufferedReader(new FileReader(path + "/weights/w" + i + ".txt"))){
                 for (int j = 0; j < weights[i].length; j++) {
                     for (int k = 0; k < weights[i][j].length; k++) {
                         String[] values = reader.readLine().split(" ");
@@ -64,7 +71,7 @@ public class OptimizedMLP {
             }
         }
 
-        try(BufferedReader reader = new BufferedReader(new FileReader(networkPath + "/biases.txt"))){
+        try(BufferedReader reader = new BufferedReader(new FileReader(path + "/biases.txt"))){
             for (int i = 0; i < biases.length; i++) {
                 for (int j = 0; j < biases[i].length; j++) {
                     String[] values = reader.readLine().split(" ");
@@ -77,10 +84,24 @@ public class OptimizedMLP {
         initialized = true;
     }
 
+    /**
+     * Initializes the networks values(weights and biases) from the model save path specified in the constructor
+     * @throws FileManagingException if any error occurs while working with files
+     */
     @SuppressWarnings("unused")
-    public void saveToFiles() throws FileManagingException {
+    public void initializeFromFiles() throws FileManagingException{
+        initializeFromFiles(networkPath);
+    }
+
+    /**
+     * Saves the networks values to the given path
+     * @param path path to the directory where values will be saved
+     * @throws FileManagingException if any exception occurs while working with files
+     */
+    @SuppressWarnings("unused")
+    public void saveToFiles(String path) throws FileManagingException {
         for (int i = 0; i < weights.length; i++) {
-            try(BufferedWriter writer = new BufferedWriter(new FileWriter(networkPath + "/weights/w" + i + ".txt"))){
+            try(BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/weights/w" + i + ".txt"))){
                 for (int j = 0; j < weights[i].length; j++) {
                     for (int k = 0; k < weights[i][j].length; k++) {
                         writer.write(weights[i][j][k] + " ");
@@ -91,7 +112,7 @@ public class OptimizedMLP {
                 throw new FileManagingException(e.getLocalizedMessage());
             }
         }
-        try(BufferedWriter writer = new BufferedWriter(new FileWriter(networkPath + "/biases.txt"))) {
+        try(BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/biases.txt"))) {
             for (int i = 0; i < biases.length; i++) {
                 for (int j = 0; j < biases[i].length; j++) {
                     writer.write(biases[i][j] + " ");
@@ -103,6 +124,19 @@ public class OptimizedMLP {
         }
     }
 
+    /**
+     * Saves the network values to the save path defined in the constructor
+     * @throws FileManagingException if any error occurs while working with files
+     */
+    @SuppressWarnings("unused")
+    public void saveToFiles() throws FileManagingException {
+        saveToFiles(networkPath);
+    }
+
+    /**
+     * Initializes the networks values(weights and biases) using random weight generator passed as a parameter
+     * @param gen RandomWeightGenerator used to generate all random weights and biases
+     */
     @SuppressWarnings("unused")
     public void initializeWithRandomValues(RandomWeightGenerator gen){
         for (int i = 0; i < weights.length; i++) {
@@ -123,6 +157,15 @@ public class OptimizedMLP {
         initialized = true;
     }
 
+
+    /*Processing*/
+
+    /**
+     * Processes given values and returns activations of neurons in output layer
+     * @param input the values to be processed
+     * @return activations of output neurons
+     * @throws MethodCallingException if the network has not been initialized yet
+     */
     @SuppressWarnings("unused")
     public double[] processAsValues(double[] input) throws MethodCallingException {
         if (initialized) {
@@ -145,16 +188,32 @@ public class OptimizedMLP {
         }
     }
 
+    /**
+     * Processes given values and return the probabilities for each of output neurons
+     * @param input the values to be processed
+     * @return probabilities for each of the output neurons
+     * @throws MethodCallingException if the network has not been initialized yet
+     */
+    @SuppressWarnings("unused")
     public double[] processAsProbabilities(double[] input) throws MethodCallingException {
         double[] probabilities = processAsValues(input);
         softmax(probabilities, 1);
         return probabilities;
     }
 
+    /**
+     * Processes given values and returns the index of output neuron with the highest activation
+     * @param input the values to be processed
+     * @return index of the output neuron with the highest activation
+     * @throws MethodCallingException if the network has not been initialized yet
+     */
     @SuppressWarnings("unused")
     public int processAsIndex(double[] input) throws MethodCallingException {
         return AlgorithmManager.getIndexWithHighestVal(processAsValues(input));
     }
+
+
+    //cost, train, percentage
     //region Private Methods
     public void initWeightMatrices(){
         if (hiddenLayersSizes != null){
