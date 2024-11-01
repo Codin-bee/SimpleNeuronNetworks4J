@@ -10,26 +10,26 @@ public class GetIndexWithHighestNoTest {
     @Test
     public void getIndexWithHighestNoZest1(){
         int expected = 2;
-        int actual = new AlgorithmManager().getIndexWithHighestVal(new double[]{1, 3, 8, 2 , 6});
+        int actual = AlgorithmManager.getIndexWithHighestVal(new double[]{1, 3, 8, 2 , 6});
         Assertions.assertEquals(expected, actual);
     }
     @Test
     public void getIndexWithHighestNoZest2(){
         int expected = 2;
-        int actual = new AlgorithmManager().getIndexWithHighestVal(new double[]{1, 3, 8, 2 , 6});
+        int actual = AlgorithmManager.getIndexWithHighestVal(new double[]{1, 3, 8, 2 , 6});
         Assertions.assertEquals(expected, actual);
     }
     //Ege case: highest value at multiple indexes
     @Test
     public void getIndexWithHighestNoZest3(){
         int expected = 0;
-        int actual = new AlgorithmManager().getIndexWithHighestVal(new double[]{12, 4, 9, 7 , 12});
+        int actual = AlgorithmManager.getIndexWithHighestVal(new double[]{12, 4, 9, 7 , 12});
         Assertions.assertEquals(expected, actual);
     }
     //Edge case: passed array is null
     @Test
     public void getIndexWithHighestNoZest4(){
-        IncorrectDataException actual = Assertions.assertThrows(IncorrectDataException.class, () -> new AlgorithmManager().getIndexWithHighestVal(null));
+        IncorrectDataException actual = Assertions.assertThrows(IncorrectDataException.class, () -> AlgorithmManager.getIndexWithHighestVal(null));
         IncorrectDataException expected = new IncorrectDataException("Get index with highest value - the array must not be null");
         Assertions.assertEquals(expected.getLocalizedMessage(), actual.getLocalizedMessage());
     }
