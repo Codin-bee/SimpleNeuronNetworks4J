@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.OptionalInt;
 
 
+import com.codingbee.snn4j.algorithms.ActivationFunctions;
 import com.codingbee.snn4j.algorithms.AlgorithmManager;
 
 import com.codingbee.snn4j.exceptions.DevelopmentException;
@@ -262,6 +263,20 @@ public class MLP {
     public int processAsIndex(double[] values) throws MethodCallingException{
         return AlgorithmManager.getIndexWithHighestVal(processAsValues(values));
     }
+
+    /**
+     * Processes given values and return the probabilities for each of output neurons
+     * @param input the values to be processed
+     * @return probabilities for each of the output neurons
+     * @throws MethodCallingException if the network has not been initialized yet
+     */
+    @SuppressWarnings("unused")
+    public double[] processAsProbabilities(double[] input) throws MethodCallingException {
+        double[] probabilities = processAsValues(input);
+        ActivationFunctions.softmaxInPlace(probabilities, 1);
+        return probabilities;
+    }
+
     //endregion
 
     //region Training and analyzing
