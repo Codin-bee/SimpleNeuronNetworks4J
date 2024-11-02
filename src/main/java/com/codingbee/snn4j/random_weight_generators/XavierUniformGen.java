@@ -5,16 +5,16 @@ import com.codingbee.snn4j.interfaces.RandomWeightGenerator;
 import java.util.Random;
 
 /**
- * Xavier initialization with Gaussian(normal) distribution, works best in combination
+ * Xavier initialization with uniform distribution, works best in combination
  * with Sigmoid and Tanh activation functions
  */
 @SuppressWarnings("unused")
-public class XavierGaussianGen implements RandomWeightGenerator {
+public class XavierUniformGen implements RandomWeightGenerator {
     Random gen = new Random();
     @Override
     public double getWeight(int inputs, int outputs) {
-        gen.nextGaussian(0, (double) 2 / (inputs + outputs));
-        return 0;
+        double limit = Math.sqrt(6.0) / Math.sqrt(inputs + outputs);
+        return gen.nextDouble() * 2 * limit - limit;
     }
 
     @Override
