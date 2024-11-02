@@ -144,7 +144,13 @@ public class OptimizedMLP {
         for (int i = 0; i < weights.length; i++) {
             for (int j = 0; j < weights[i].length; j++) {
                 for (int k = 0; k < weights[i][j].length; k++) {
-                    weights[i][j][k] = gen.getWeight();
+                    if (i == 0){
+                        weights[i][j][k] = gen.getWeight(inputLayerSize, weights[0].length);
+                    } else if (i == weights.length - 1) {
+                        weights[i][j][k] = gen.getWeight(weights[weights.length - 1].length, outputLayerSize);
+                    }else{
+                        weights[i][j][k] = gen.getWeight(weights[i].length, weights[i+1].length);
+                    }
                 }
             }
         }
@@ -170,7 +176,9 @@ public class OptimizedMLP {
      */
     @SuppressWarnings("unused")
     public double[] processAsValues(double[] input) throws MethodCallingException {
-        if (initialized) {
+        if (!initialized){
+            throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
+        }
             double[] layerInput = input;
             double[] layerOutput = null;
             for (int i = 0; i < weights.length; i++) {
@@ -185,9 +193,6 @@ public class OptimizedMLP {
                 layerInput = layerOutput;
             }
             return layerOutput;
-        }else{
-            throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
-        }
     }
 
     /**
@@ -198,6 +203,9 @@ public class OptimizedMLP {
      */
     @SuppressWarnings("unused")
     public double[] processAsProbabilities(double[] input) throws MethodCallingException {
+        if (!initialized){
+            throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
+        }
         double[] probabilities = processAsValues(input);
         ActivationFunctions.softmaxInPlace(probabilities, 1);
         return probabilities;
@@ -211,6 +219,9 @@ public class OptimizedMLP {
      */
     @SuppressWarnings("unused")
     public int processAsIndex(double[] input) throws MethodCallingException {
+        if (!initialized){
+            throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
+        }
         return Algorithms.getIndexWithHighestVal(processAsValues(input));
     }
     //endregion
@@ -218,6 +229,9 @@ public class OptimizedMLP {
     //region Training and analyzing
     @SuppressWarnings("unused")
     public void train(Dataset data, int epochs, boolean debugMode) throws MethodCallingException {
+        if (!initialized){
+            throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
+        }
         double alpha = trainingSettings.getLearningRate();
         double beta_1 = trainingSettings.getExponentialDecayRateOne();
         double beta_2 = trainingSettings.getExponentialDecayRateTwo();
@@ -269,33 +283,53 @@ public class OptimizedMLP {
     }
 
     public double calculateAverageCost(Dataset data) throws MethodCallingException {
-        double cost = 0;
-        double count = 0;
-        double[][] inputData = data.getInputData();
-        double[][] expectedOutputData = data.getExpectedResults();
-        for (int i = 0; i < inputData.length; i++) {
-            double[] output = processAsProbabilities(inputData[i]);
-            for (int j = 0; j < inputData[i].length; j++) {
-                cost += output[j] *expectedOutputData[i][j];
-            }
-            count++;
+        if (!initialized){
+            throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
         }
-        return cost / count;
+        return calculateAverageCost(data.getInputData(), data.getExpectedResults());
+    }
+
+    public double calculateAverageCost(double[][] inputData, double[][] expectedOutputData) throws MethodCallingException {
+        if (!initialized){
+            throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
+        }
+        double cost = 0;
+        for (int i = 0; i < inputData.length; i++) {
+            cost += calculateCost(inputData[i], expectedOutputData[i]);
+        }
+        return cost / inputData.length;
+    }
+
+    public double calculateCost(double[] input, double[] expectedOutput) throws MethodCallingException {
+        double cost = 0;
+        double[] output = processAsProbabilities(input);
+        for (int i = 0; i < input.length; i++) {
+            cost += output[i] * expectedOutput[i];
+        }
+        return cost;
     }
 
     @SuppressWarnings("unused")
     public double getCorrectPercentage(Dataset data) throws MethodCallingException {
+        if (!initialized){
+            throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
+        }
+        return getCorrectPercentage(data.getInputData(), data.getExpectedResults());
+    }
+
+    public double getCorrectPercentage(double[][] inputData, double[][] expectedOutputData) throws MethodCallingException {
+        if (!initialized){
+            throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
+        }
         double percentage = 0;
         double count = 0;
-        for (int i = 0; i < data.getInputData().length; i++) {
-            int receivedIndex = processAsIndex(data.getInputData()[i]);
-            int correctIndex = Algorithms.getIndexWithHighestVal(data.getExpectedResults()[i]);
-            count++;
-            if (receivedIndex == correctIndex){
+        for (int i = 0; i < inputData.length; i++) {
+            if (processAsIndex(inputData[i]) == Algorithms.getIndexWithHighestVal(expectedOutputData[i])){
                 percentage++;
             }
+            count++;
         }
-        return (percentage / count) * 100;
+        return  (percentage / count) * 100;
     }
     //endregion
 
