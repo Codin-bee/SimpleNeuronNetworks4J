@@ -1,6 +1,6 @@
 package com.codingbee.snn4j.helping_objects;
 
-import com.codingbee.snn4j.algorithms.AlgorithmManager;
+import com.codingbee.snn4j.algorithms.Algorithms;
 import com.codingbee.snn4j.enums.DataFormat;
 import com.codingbee.snn4j.exceptions.DevelopmentException;
 import com.codingbee.snn4j.exceptions.FileManagingException;
@@ -87,9 +87,8 @@ public class Dataset {
         switch (format){
             case DataFormat.JSON_ONE -> {
                 ObjectMapper mapper = new ObjectMapper();
-                AlgorithmManager algorithmManager = new AlgorithmManager();
                 for (int i = 0; i < inputData.length; i++) {
-                    JsonOne example = new JsonOne(algorithmManager.getIndexWithHighestVal(inputData[i]), expectedResults[i]);
+                    JsonOne example = new JsonOne(Algorithms.getIndexWithHighestVal(inputData[i]), expectedResults[i]);
                     try {
                         mapper.writeValue(new File(dirPath + "/example" + i), example);
                     } catch (IOException e) {

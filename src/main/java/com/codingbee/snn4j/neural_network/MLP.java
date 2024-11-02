@@ -18,7 +18,7 @@ import java.util.OptionalInt;
 
 
 import com.codingbee.snn4j.algorithms.ActivationFunctions;
-import com.codingbee.snn4j.algorithms.AlgorithmManager;
+import com.codingbee.snn4j.algorithms.Algorithms;
 
 import com.codingbee.snn4j.exceptions.DevelopmentException;
 import com.codingbee.snn4j.exceptions.FileManagingException;
@@ -261,7 +261,7 @@ public class MLP {
      * @return the index of neuron with the largest probability to be correct
      */
     public int processAsIndex(double[] values) throws MethodCallingException{
-        return AlgorithmManager.getIndexWithHighestVal(processAsValues(values));
+        return Algorithms.getIndexWithHighestVal(processAsValues(values));
     }
 
     /**

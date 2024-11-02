@@ -2,7 +2,7 @@ package com.codingbee.snn4j.algorithms;
 
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 
-public class AlgorithmManager {
+public class Algorithms {
     /**
      * Simple method used to find the element with the highest value.
      * Special case: If the highest value is found at more indexes returns the lowest of the indexes.

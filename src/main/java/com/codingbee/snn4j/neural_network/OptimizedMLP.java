@@ -1,7 +1,7 @@
 package com.codingbee.snn4j.neural_network;
 
 import com.codingbee.snn4j.algorithms.ActivationFunctions;
-import com.codingbee.snn4j.algorithms.AlgorithmManager;
+import com.codingbee.snn4j.algorithms.Algorithms;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.codingbee.snn4j.exceptions.MethodCallingException;
@@ -211,7 +211,7 @@ public class OptimizedMLP {
      */
     @SuppressWarnings("unused")
     public int processAsIndex(double[] input) throws MethodCallingException {
-        return AlgorithmManager.getIndexWithHighestVal(processAsValues(input));
+        return Algorithms.getIndexWithHighestVal(processAsValues(input));
     }
     //endregion
 
@@ -289,7 +289,7 @@ public class OptimizedMLP {
         double count = 0;
         for (int i = 0; i < data.getInputData().length; i++) {
             int receivedIndex = processAsIndex(data.getInputData()[i]);
-            int correctIndex = AlgorithmManager.getIndexWithHighestVal(data.getExpectedResults()[i]);
+            int correctIndex = Algorithms.getIndexWithHighestVal(data.getExpectedResults()[i]);
             count++;
             if (receivedIndex == correctIndex){
                 percentage++;
