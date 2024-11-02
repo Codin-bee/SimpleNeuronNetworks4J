@@ -1,5 +1,6 @@
 package com.codingbee.snn4j.neural_network;
 
+import com.codingbee.snn4j.algorithms.ActivationFunctions;
 import com.codingbee.snn4j.algorithms.AlgorithmManager;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
@@ -179,7 +180,7 @@ public class OptimizedMLP {
                         layerOutput[j] = layerInput[k] * weights[i][j][k];
                     }
                     layerOutput[j] += biases[i][j];
-                    layerOutput[j] = leakyReLU(layerOutput[j], 0.001);
+                    layerOutput[j] = ActivationFunctions.leakyReLU(layerOutput[j], 0.001);
                 }
                 layerInput = layerOutput;
             }
@@ -198,7 +199,7 @@ public class OptimizedMLP {
     @SuppressWarnings("unused")
     public double[] processAsProbabilities(double[] input) throws MethodCallingException {
         double[] probabilities = processAsValues(input);
-        softmax(probabilities, 1);
+        ActivationFunctions.softmaxInPlace(probabilities, 1);
         return probabilities;
     }
 
@@ -270,10 +271,12 @@ public class OptimizedMLP {
     public double calculateAverageCost(Dataset data) throws MethodCallingException {
         double cost = 0;
         double count = 0;
-        for (int i = 0; i < data.getInputData().length; i++) {
-            double[] output = processAsProbabilities(data.getInputData()[i]);
-            for (int j = 0; j < data.getInputData()[i].length; j++) {
-                cost += output[j] * data.getExpectedResults()[i][j];
+        double[][] inputData = data.getInputData();
+        double[][] expectedOutputData = data.getExpectedResults();
+        for (int i = 0; i < inputData.length; i++) {
+            double[] output = processAsProbabilities(inputData[i]);
+            for (int j = 0; j < inputData[i].length; j++) {
+                cost += output[j] *expectedOutputData[i][j];
             }
             count++;
         }
@@ -314,26 +317,6 @@ public class OptimizedMLP {
             weights = new double[1][inputLayerSize][outputLayerSize];
             biases = new double[0][outputLayerSize];
         }
-    }
-
-    @SuppressWarnings("all")
-    private void softmax(double[] values, double temp){
-        double sum = 0;
-        for (int i = 0; i < values.length; i++) {
-            values[i] = Math.exp(values[i] / temp);
-            sum += values[i];
-        }
-        for (int i = 0; i < values.length; i++) {
-            values[i] /= sum;
-        }
-    }
-
-    @SuppressWarnings("all")
-    private double leakyReLU(double x, double alpha){
-        if(x < 0){
-            return 0;
-        }
-        return x * alpha;
     }
 
     private double calculateWeightGradient(int layer, int to, int from, Dataset data) throws MethodCallingException {
