@@ -15,12 +15,10 @@ public class LeakyReLU implements ActivationFunction {
         }
     }
 
-    @SuppressWarnings("unused")
     public void setAlpha(double alpha){
         this.alpha = alpha;
     }
 
-    @SuppressWarnings("unused")
     public double getAlpha(){
         return alpha;
     }

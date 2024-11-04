@@ -3,12 +3,9 @@ package com.codingbee.snn4j.activation_functions;
 import com.codingbee.snn4j.interfaces.ActivationFunction;
 
 @SuppressWarnings("unused")
-public class ReLU implements ActivationFunction {
+public class Sigmoid implements ActivationFunction {
     @Override
     public double activate(double n) {
-        if (n < 0) {
-            return 0;
-        }
-        return n;
+        return 1 / (1 + Math.exp(-n));
     }
 }
