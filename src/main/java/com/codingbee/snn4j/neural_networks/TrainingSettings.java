@@ -1,4 +1,4 @@
-package com.codingbee.snn4j.neural_network;
+package com.codingbee.snn4j.neural_networks;
 
 public class TrainingSettings {
     private double learningRate, exponentialDecayRateOne, exponentialDecayRateTwo, epsilon;
