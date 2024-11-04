@@ -1,7 +1,7 @@
-package com.codingbee.snn4j.neural_network.mlp;
+package com.codingbee.snn4j.neural_networks.mlp;
 
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
-import com.codingbee.snn4j.neural_network.MLP;
+import com.codingbee.snn4j.neural_networks.MLP;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 

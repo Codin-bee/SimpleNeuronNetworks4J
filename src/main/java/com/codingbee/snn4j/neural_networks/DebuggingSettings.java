@@ -1,4 +1,4 @@
-package com.codingbee.snn4j.neural_network;
+package com.codingbee.snn4j.neural_networks;
 
 public class DebuggingSettings {
     private boolean startEndPrint;

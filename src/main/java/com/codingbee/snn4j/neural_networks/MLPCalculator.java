@@ -1,4 +1,4 @@
-package com.codingbee.snn4j.neural_network;
+package com.codingbee.snn4j.neural_networks;
 
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 
