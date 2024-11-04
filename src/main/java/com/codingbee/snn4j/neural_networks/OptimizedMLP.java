@@ -1,9 +1,9 @@
-package com.codingbee.snn4j.neural_network;
+package com.codingbee.snn4j.neural_networks;
 
-import com.codingbee.snn4j.activation_functions.LeakyReLU;
 import com.codingbee.snn4j.activation_functions.ReLU;
 import com.codingbee.snn4j.algorithms.ActivationFunctions;
 import com.codingbee.snn4j.algorithms.Algorithms;
+import com.codingbee.snn4j.exceptions.DevelopmentException;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.codingbee.snn4j.exceptions.MethodCallingException;
@@ -144,29 +144,34 @@ public class OptimizedMLP {
      * @param gen RandomWeightGenerator used to generate all random weights and biases
      */
     @SuppressWarnings("unused")
-    public void initializeWithRandomValues(RandomWeightGenerator gen){
-        for (int i = 0; i < weights.length; i++) {
-            for (int j = 0; j < weights[i].length; j++) {
-                for (int k = 0; k < weights[i][j].length; k++) {
-                    if (i == 0){
-                        weights[i][j][k] = gen.getWeight(inputLayerSize, weights[0].length);
-                    } else if (i == weights.length - 1) {
-                        weights[i][j][k] = gen.getWeight(weights[weights.length - 1].length, outputLayerSize);
-                    }else{
-                        weights[i][j][k] = gen.getWeight(weights[i].length, weights[i+1].length);
+    public void initializeWithRandomValues(RandomWeightGenerator gen) throws DevelopmentException {
+        try {
+            for (int i = 0; i < weights.length; i++) {
+                for (int j = 0; j < weights[i].length; j++) {
+                    for (int k = 0; k < weights[i][j].length; k++) {
+                        if (i == 0) {
+                            weights[i][j][k] = gen.getWeight(inputLayerSize, weights[0].length);
+                        } else if (i == weights.length - 1) {
+                            weights[i][j][k] = gen.getWeight(weights[weights.length - 1].length, outputLayerSize);
+                        } else {
+                            weights[i][j][k] = gen.getWeight(weights[i].length, weights[i + 1].length);
+                        }
                     }
                 }
             }
-        }
-        for (int i = 0; i < biases.length - 1; i++) {
-            for (int j = 0; j < biases[i].length; j++) {
-                biases[i][j] = gen.getHiddenLayerBias();
+            for (int i = 0; i < biases.length - 1; i++) {
+                for (int j = 0; j < biases[i].length; j++) {
+                    biases[i][j] = gen.getHiddenLayerBias();
+                }
             }
+            for (int i = 0; i < biases[biases.length - 1].length; i++) {
+                biases[biases.length - 1][i] = gen.getOutputLayerBias();
+            }
+            initialized = true;
+        }catch (MethodCallingException e){
+            throw new DevelopmentException("An error occurred because of wrong inside logic of method," +
+                    " detailed description: " + e.getLocalizedMessage());
         }
-        for (int i = 0; i < biases[biases.length - 1].length; i++) {
-            biases[biases.length - 1][i] = gen.getOutputLayerBias();
-        }
-        initialized = true;
     }
     //endregion
 
@@ -231,6 +236,15 @@ public class OptimizedMLP {
     //endregion
 
     //region Training and analyzing
+
+    /**
+     * Trains the model using backpropagation for given amount of epochs
+     * @param data the data for the model to be trained on
+     * @param epochs number of epochs(iterations) of the training
+     * @param debugMode whether to print debug info or not,the level of debugging is based on debugging
+     *                  settings, see {@link DebuggingSettings} for details, and use {@link #setDebuggingSettings}
+     * @throws MethodCallingException if the network has not been initialized or any of passed arguments are invalid
+     */
     @SuppressWarnings("unused")
     public void train(Dataset data, int epochs, boolean debugMode) throws MethodCallingException {
         if (!initialized){
