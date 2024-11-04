@@ -5,15 +5,15 @@ import com.codingbee.snn4j.interfaces.RandomWeightGenerator;
 import java.util.Random;
 
 /**
- * Xavier initialization with Gaussian(normal) distribution, works best in combination
- * with Sigmoid and Tanh activation functions
+ * He initialization with Gaussian(normal) distribution, works best in combination
+ * with ReLU and leaky ReLU activation functions
  */
 @SuppressWarnings("unused")
-public class XavierGaussianGen implements RandomWeightGenerator {
+public class HeGaussianGen implements RandomWeightGenerator {
     Random gen = new Random();
     @Override
     public double getWeight(int inputs, int outputs) {
-        return gen.nextGaussian(0, (double) 2 / (inputs + outputs));
+        return gen.nextGaussian(0, (double) 2 / inputs);
     }
 
     @Override
