@@ -1,11 +1,14 @@
 package com.codingbee.snn4j.neural_network;
 
+import com.codingbee.snn4j.activation_functions.LeakyReLU;
+import com.codingbee.snn4j.activation_functions.ReLU;
 import com.codingbee.snn4j.algorithms.ActivationFunctions;
 import com.codingbee.snn4j.algorithms.Algorithms;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.codingbee.snn4j.exceptions.MethodCallingException;
 import com.codingbee.snn4j.helping_objects.Dataset;
+import com.codingbee.snn4j.interfaces.ActivationFunction;
 import com.codingbee.snn4j.interfaces.RandomWeightGenerator;
 
 import java.io.BufferedReader;
@@ -24,6 +27,7 @@ public class OptimizedMLP {
     private boolean initialized = false;
     private TrainingSettings trainingSettings = new TrainingSettings();
     private DebuggingSettings debuggingSettings = new DebuggingSettings();
+    private ActivationFunction activationFunction = new ReLU();
 
     /**
      *Creates new MLP(Multi-layer perceptron) based on the parameters it is given.
@@ -188,7 +192,7 @@ public class OptimizedMLP {
                         layerOutput[j] = layerInput[k] * weights[i][j][k];
                     }
                     layerOutput[j] += biases[i][j];
-                    layerOutput[j] = ActivationFunctions.leakyReLU(layerOutput[j], 0.001);
+                    layerOutput[j] = activationFunction.activate(layerOutput[j]);
                 }
                 layerInput = layerOutput;
             }
@@ -380,34 +384,36 @@ public class OptimizedMLP {
     //endregion
 
     //region Getters and Setters
-    @SuppressWarnings("unused")
     public TrainingSettings getTrainingSettings() {
         return trainingSettings;
     }
 
-    @SuppressWarnings("unused")
     public void setTrainingSettings(TrainingSettings trainingSettings) {
         this.trainingSettings = trainingSettings;
     }
 
-    @SuppressWarnings("unused")
     public DebuggingSettings getDebuggingSettings() {
         return debuggingSettings;
     }
 
-    @SuppressWarnings("unused")
     public void setDebuggingSettings(DebuggingSettings debuggingSettings) {
         this.debuggingSettings = debuggingSettings;
     }
 
-    @SuppressWarnings("unused")
     public String getNetworkPath() {
         return networkPath;
     }
 
-    @SuppressWarnings("unused")
     public void setNetworkPath(String networkPath) {
         this.networkPath = networkPath;
+    }
+
+    public ActivationFunction getActivationFunction() {
+        return activationFunction;
+    }
+
+    public void setActivationFunction(ActivationFunction activationFunction) {
+        this.activationFunction = activationFunction;
     }
 
     //endregion
