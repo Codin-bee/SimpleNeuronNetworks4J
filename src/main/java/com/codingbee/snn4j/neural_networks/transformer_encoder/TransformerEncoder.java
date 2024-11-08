@@ -1,5 +1,6 @@
 package com.codingbee.snn4j.neural_networks.transformer_encoder;
 
+import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.codingbee.snn4j.exceptions.MethodCallingException;
 
 import java.util.Arrays;
@@ -28,6 +29,8 @@ public class TransformerEncoder {
     //Layer normalization parameters
     double[][] betas = new double[layers][d_model];
     double[][] gammas = new double[layers][d_model];
+    //Unembedding matrix
+    double[][] unembeddingMatrix = new double[d_model][];
 
     public TransformerEncoder(int dictionarySize, int contextSize, int layers, int layerHeads, int d_model, int d_ffn) {
         this.dictionarySize = dictionarySize;
@@ -87,7 +90,9 @@ public class TransformerEncoder {
     }
 
     private void applyFFNs(int layer, double[][] values){
-
+        for (int i = 0; i < values.length; i++) {
+            //apply for each vector
+        }
     }
 
     private void applyNormalization(int layer, int type, double[][] values){
@@ -95,11 +100,57 @@ public class TransformerEncoder {
     }
 
     private double[][] calculateOutput(double[][] embeddings){
-        return null;
+        return multiplyMatrices(embeddings, unembeddingMatrix);
     }
 
     private double[][] addMatrices(double[][] matrixA, double[][] matrixB){
-        double[][] matrixC = new double[matrixA.length][];
+        if (matrixA == null || matrixB == null){
+            throw new IncorrectDataException("The passed matrices can not be null");
+        }
+        if (matrixA.length != matrixB.length){
+            throw new IncorrectDataException("The matrices have to have same dimensions in order to add them," +
+                    " but the number of rows in each is not the same");
+        }
+        if (matrixA[0].length != matrixB[0].length){
+            throw new IncorrectDataException("The matrices have to have same dimensions in order to add them," +
+                    " but the number of columns in each is not the same");
+        }
+
+        double[][] matrixC = new double[matrixA.length][matrixA[0].length];
+        try {
+            for (int i = 0; i < matrixA.length; i++) {
+                for (int j = 0; j < matrixA[0].length; j++) {
+                    matrixC[i][j] = matrixA[i][j] + matrixB[i][j];
+                }
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new IncorrectDataException("The passed matrices need to have" +
+                    " same number of columns and rows on each index: " + e.getLocalizedMessage());
+        }
+        return  matrixC;
+    }
+
+    private double[][] multiplyMatrices(double[][] matrixA, double[][] matrixB){
+        if (matrixA == null || matrixB == null){
+            throw new IncorrectDataException("The passed matrices can not be null");
+        }
+        if (matrixA[0].length != matrixB.length){
+            throw new IncorrectDataException("The number of columns in first matrix must be equal to " +
+                    "the number of rows in second matrix in order to multiply them");
+        }
+        double[][] matrixC = new double[matrixA.length][matrixB[0].length];
+        try {
+            for (int i = 0; i < matrixA.length; i++) {
+                for (int j = 0; j < matrixB[0].length; j++) {
+                    for (int k = 0; k < matrixB.length; k++) {
+                        matrixC[i][j] += matrixA[i][k] * matrixB[k][j];
+                    }
+                }
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new IncorrectDataException("The passed matrices need to have" +
+                    " same number of columns and rows on each index: " + e.getLocalizedMessage());
+        }
         return matrixC;
     }
     //endregion
