@@ -1,7 +1,7 @@
 package com.codingbee.snn4j.neural_networks.mlp;
 
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
 public class MLPConstructorTest {

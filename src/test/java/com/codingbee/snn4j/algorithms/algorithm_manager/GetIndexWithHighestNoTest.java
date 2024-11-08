@@ -2,7 +2,7 @@ package com.codingbee.snn4j.algorithms.algorithm_manager;
 
 import com.codingbee.snn4j.algorithms.Algorithms;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
 public class GetIndexWithHighestNoTest {

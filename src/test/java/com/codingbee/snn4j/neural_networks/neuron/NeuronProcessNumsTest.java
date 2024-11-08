@@ -2,7 +2,7 @@ package com.codingbee.snn4j.neural_networks.neuron;
 
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.codingbee.snn4j.neural_networks.mlp.Neuron;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
 public class NeuronProcessNumsTest {
