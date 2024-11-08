@@ -1,9 +1,9 @@
-package com.codingbee.snn4j.neural_networks;
+package com.codingbee.snn4j.neural_networks.mlp;
 
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 
+@SuppressWarnings("unused")
 public class MLPCalculator {
-    @SuppressWarnings("unused")
     public static int getNumberOfParams(int[] layerLengths){
         if (layerLengths == null){
             throw new IncorrectDataException("Given array can not be null");

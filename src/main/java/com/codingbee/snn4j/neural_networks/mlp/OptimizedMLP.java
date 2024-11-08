@@ -1,4 +1,4 @@
-package com.codingbee.snn4j.neural_networks;
+package com.codingbee.snn4j.neural_networks.mlp;
 
 import com.codingbee.snn4j.activation_functions.ReLU;
 import com.codingbee.snn4j.algorithms.ActivationFunctions;
@@ -10,6 +10,8 @@ import com.codingbee.snn4j.exceptions.MethodCallingException;
 import com.codingbee.snn4j.helping_objects.Dataset;
 import com.codingbee.snn4j.interfaces.ActivationFunction;
 import com.codingbee.snn4j.interfaces.RandomWeightGenerator;
+import com.codingbee.snn4j.neural_networks.DebuggingSettings;
+import com.codingbee.snn4j.neural_networks.TrainingSettings;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

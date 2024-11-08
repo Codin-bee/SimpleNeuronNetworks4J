@@ -1,4 +1,4 @@
-package com.codingbee.snn4j.neural_networks;
+package com.codingbee.snn4j.neural_networks.mlp;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -26,6 +26,8 @@ import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.codingbee.snn4j.exceptions.MethodCallingException;
 
 import com.codingbee.snn4j.helping_objects.Dataset;
+import com.codingbee.snn4j.neural_networks.DebuggingSettings;
+import com.codingbee.snn4j.neural_networks.TrainingSettings;
 
 
 public class MLP {
