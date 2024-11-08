@@ -1,5 +1,6 @@
 package com.codingbee.snn4j.activation_functions;
 
+import com.codingbee.snn4j.interface_implementations.activation_functions.LeakyReLU;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 

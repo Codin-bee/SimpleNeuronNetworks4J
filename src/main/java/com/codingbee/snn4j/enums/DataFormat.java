@@ -1,7 +1,7 @@
 package com.codingbee.snn4j.enums;
 
-import com.codingbee.snn4j.objects_for_parsing.JsonOne;
-import com.codingbee.snn4j.objects_for_parsing.JsonTwo;
+import com.codingbee.snn4j.helping_objects.objects_for_parsing.JsonOne;
+import com.codingbee.snn4j.helping_objects.objects_for_parsing.JsonTwo;
 
 public enum DataFormat {
     /**Json containing one number, which is the correct output index(starting at 0), and array of values inserted into input layer,

@@ -1,4 +1,4 @@
-package com.codingbee.snn4j.activation_functions;
+package com.codingbee.snn4j.interface_implementations.activation_functions;
 
 import com.codingbee.snn4j.interfaces.ActivationFunction;
 

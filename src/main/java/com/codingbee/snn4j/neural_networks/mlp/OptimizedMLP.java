@@ -1,6 +1,6 @@
 package com.codingbee.snn4j.neural_networks.mlp;
 
-import com.codingbee.snn4j.activation_functions.ReLU;
+import com.codingbee.snn4j.interface_implementations.activation_functions.ReLU;
 import com.codingbee.snn4j.algorithms.ActivationFunctions;
 import com.codingbee.snn4j.algorithms.Algorithms;
 import com.codingbee.snn4j.exceptions.DevelopmentException;

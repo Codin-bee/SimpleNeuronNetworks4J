@@ -1,4 +1,4 @@
-package com.codingbee.snn4j.random_weight_generators;
+package com.codingbee.snn4j.interface_implementations.random_weight_generators.random_weight_generators;
 
 import com.codingbee.snn4j.exceptions.MethodCallingException;
 import com.codingbee.snn4j.interfaces.RandomWeightGenerator;

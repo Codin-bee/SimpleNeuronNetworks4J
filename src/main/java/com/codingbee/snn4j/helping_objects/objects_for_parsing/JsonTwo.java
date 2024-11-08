@@ -1,4 +1,4 @@
-package com.codingbee.snn4j.objects_for_parsing;
+package com.codingbee.snn4j.helping_objects.objects_for_parsing;
 
 public class JsonTwo {
     double[] expectedResults;

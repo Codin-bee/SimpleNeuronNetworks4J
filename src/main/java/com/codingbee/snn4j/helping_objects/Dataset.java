@@ -5,8 +5,8 @@ import com.codingbee.snn4j.enums.DataFormat;
 import com.codingbee.snn4j.exceptions.DevelopmentException;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
-import com.codingbee.snn4j.objects_for_parsing.JsonOne;
-import com.codingbee.snn4j.objects_for_parsing.JsonTwo;
+import com.codingbee.snn4j.helping_objects.objects_for_parsing.JsonOne;
+import com.codingbee.snn4j.helping_objects.objects_for_parsing.JsonTwo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
