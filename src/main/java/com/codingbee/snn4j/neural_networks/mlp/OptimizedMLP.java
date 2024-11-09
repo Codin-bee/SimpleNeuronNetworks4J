@@ -15,7 +15,6 @@ import com.codingbee.snn4j.neural_networks.TrainingSettings;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @SuppressWarnings("unused")
@@ -120,8 +119,8 @@ public class OptimizedMLP {
                     for (int k = 0; k < weights[i][j].length; k++) {
                         writer.write(weights[i][j][k] + " ");
                     }
+                    writer.write("\n");
                 }
-                writer.write("\n");
             }catch (Exception e){
                 throw new FileManagingException(e.getLocalizedMessage());
             }
