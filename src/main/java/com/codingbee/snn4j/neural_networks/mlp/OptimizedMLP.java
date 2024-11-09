@@ -30,7 +30,6 @@ public class OptimizedMLP {
     private TrainingSettings trainingSettings = new TrainingSettings();
     private DebuggingSettings debuggingSettings = new DebuggingSettings();
     private ActivationFunction activationFunction = new ReLU();
-
     /**
      *Creates new MLP(Multi-layer perceptron) based on the parameters it is given.
      * @param inputLayerSize the number of neurons in the input layer. Must be higher than 0.
@@ -108,6 +107,9 @@ public class OptimizedMLP {
      */
     @SuppressWarnings("unused")
     public void saveToFiles(String path) throws FileManagingException {
+        if (!initialized){
+            throw new MethodCallingException("The network can not be saved, because it has not been initialized yet");
+        }
         for (int i = 0; i < weights.length; i++) {
             try(BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/weights/w" + i + ".txt"))){
                 for (int j = 0; j < weights[i].length; j++) {
