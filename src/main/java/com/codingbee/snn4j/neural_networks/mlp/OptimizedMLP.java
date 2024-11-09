@@ -13,10 +13,10 @@ import com.codingbee.snn4j.interfaces.RandomWeightGenerator;
 import com.codingbee.snn4j.neural_networks.DebuggingSettings;
 import com.codingbee.snn4j.neural_networks.TrainingSettings;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @SuppressWarnings("unused")
 public class OptimizedMLP {
@@ -108,6 +108,12 @@ public class OptimizedMLP {
      */
     @SuppressWarnings("unused")
     public void saveToFiles(String path) throws FileManagingException {
+        try {
+            Files.createDirectories(Paths.get(path + "/weights"));
+        } catch (IOException e) {
+            throw new FileManagingException("Could not create directories");
+        }
+
         for (int i = 0; i < weights.length; i++) {
             try(BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/weights/w" + i + ".txt"))){
                 for (int j = 0; j < weights[i].length; j++) {
