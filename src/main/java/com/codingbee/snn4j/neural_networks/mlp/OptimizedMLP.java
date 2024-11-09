@@ -121,7 +121,7 @@ public class OptimizedMLP {
                         writer.write(weights[i][j][k] + " ");
                     }
                 }
-                writer.newLine();
+                writer.write("\n");
             }catch (Exception e){
                 throw new FileManagingException(e.getLocalizedMessage());
             }
@@ -131,7 +131,7 @@ public class OptimizedMLP {
                 for (double bias : layerBiases) {
                     writer.write(bias + " ");
                 }
-                writer.newLine();
+                writer.write("\n");
             }
         } catch (Exception e) {
             throw new FileManagingException(e.getLocalizedMessage());
