@@ -294,18 +294,18 @@ public class OptimizedMLP {
                         v_weight[j][k][l] = beta_2 * v_weight[j][k][l] + beta_4 * Math.pow(g, 2);
                         m_hat = m_weight[j][k][l] / (1 - Math.pow(beta_1, time));
                         v_hat = v_weight[j][k][l] / (1 - Math.pow(beta_2, time));
-                        m_weight[j][k][l] = m_weight[j][k][l] - m_hat * (alpha / (Math.sqrt(v_hat) + epsilon));
+                        weights[j][k][l] = weights[j][k][l] - m_hat * (alpha / (Math.sqrt(v_hat) + epsilon));
                     }
                 }
             }
             for (int j = 0; j < biases.length; j++) {
                 for (int k = 0; k < biases[j].length; k++) {
                     g = calculateBiasGradient(j, k, data);
-                    m_bias[i][j] = beta_1 * m_bias[i][j] + beta_3 * g;
-                    v_bias[i][j] = beta_2 * v_bias[i][j] + beta_4 * Math.pow(g, 2);
-                    m_hat = m_bias[i][j] / (1 - Math.pow(beta_1, time));
-                    v_hat = v_bias[i][j] / (1 - Math.pow(beta_2, time));
-                    m_bias[i][j] = m_bias[i][j] - m_hat * (alpha / (Math.sqrt(v_hat) + epsilon));
+                    m_bias[j][k] = beta_1 * m_bias[j][k] + beta_3 * g;//
+                    v_bias[j][k] = beta_2 * v_bias[j][k] + beta_4 * Math.pow(g, 2);
+                    m_hat = m_bias[j][k] / (1 - Math.pow(beta_1, time));
+                    v_hat = v_bias[j][k] / (1 - Math.pow(beta_2, time));
+                    biases[j][k] = biases[j][k] - m_hat * (alpha / (Math.sqrt(v_hat) + epsilon));
                 }
             }
             if (debuggingSettings.isEveryIterationPrint() && debugMode){
