@@ -328,7 +328,7 @@ public class OptimizedMLP {
     public double calculateCost(double[] input, double[] expectedOutput) throws MethodCallingException {
         double cost = 0;
         double[] output = processAsProbabilities(input);
-        for (int i = 0; i < input.length; i++) {
+        for (int i = 0; i < expectedOutput.length; i++) {
             cost += output[i] * expectedOutput[i];
         }
         return cost;
