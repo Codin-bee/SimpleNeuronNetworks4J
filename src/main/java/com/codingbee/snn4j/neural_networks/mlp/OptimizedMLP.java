@@ -253,7 +253,7 @@ public class OptimizedMLP {
      * @throws MethodCallingException if the network has not been initialized or any of passed arguments are invalid
      */
     @SuppressWarnings("unused")
-    public void train(Dataset data, int epochs, boolean debugMode) throws MethodCallingException {
+    public void train(Dataset data, int epochs, boolean debugMode) throws MethodCallingException, FileManagingException {
         if (!initialized){
             throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
         }
@@ -295,7 +295,7 @@ public class OptimizedMLP {
                 }
             }
             for (int j = 0; j < biases.length; j++) {
-                for (int k = 0; k < biases[i].length; k++) {
+                for (int k = 0; k < biases[j].length; k++) {
                     g = calculateBiasGradient(j, k, data);
                     m_bias[i][j] = beta_1 * m_bias[i][j] + beta_3 * g;
                     v_bias[i][j] = beta_2 * v_bias[i][j] + beta_4 * Math.pow(g, 2);
@@ -303,6 +303,9 @@ public class OptimizedMLP {
                     v_hat = v_bias[i][j] / (1 - Math.pow(beta_2, time));
                     m_bias[i][j] = m_bias[i][j] - m_hat * (alpha / (Math.sqrt(v_hat) + epsilon));
                 }
+            }
+            if (i % 5 == 0){
+                saveToFiles();
             }
         }
     }
