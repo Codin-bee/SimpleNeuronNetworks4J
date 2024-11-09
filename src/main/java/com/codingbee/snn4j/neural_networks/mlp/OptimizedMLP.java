@@ -276,7 +276,7 @@ public class OptimizedMLP {
         }
         double[][] m_bias = new double[biases.length][];
         double[][] v_bias = new double[biases.length][];
-        for (int i = 0; i < m_bias[i].length; i++) {
+        for (int i = 0; i < biases.length; i++) {//
             m_bias[i] = new double[biases[i].length];
             v_bias[i] = new double[biases[i].length];
         }
