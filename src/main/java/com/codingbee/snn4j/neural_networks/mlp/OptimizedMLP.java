@@ -281,6 +281,10 @@ public class OptimizedMLP {
             v_bias[i] = new double[biases[i].length];
         }
         for (int i = 0; i < epochs; i++) {
+            if (debuggingSettings.isEveryIterationPrint() && debugMode){
+                System.out.println("Cost at the start of epoch " + i + ": " + calculateAverageCost(data));
+                System.out.println("Correct percentage at the start of the epoch " + i + ": " + getCorrectPercentage(data));
+            }
             time++;
             for (int j = 0; j < weights.length; j++) {
                 for (int k = 0; k < weights[j].length; k++) {
@@ -303,6 +307,10 @@ public class OptimizedMLP {
                     v_hat = v_bias[i][j] / (1 - Math.pow(beta_2, time));
                     m_bias[i][j] = m_bias[i][j] - m_hat * (alpha / (Math.sqrt(v_hat) + epsilon));
                 }
+            }
+            if (debuggingSettings.isEveryIterationPrint() && debugMode){
+                System.out.println("Cost at the end of epoch " + i + ": " + calculateAverageCost(data));
+                System.out.println("Correct percentage at the end of the epoch " + i + ": " + getCorrectPercentage(data));
             }
             if (i % 5 == 0){
                 saveToFiles();
