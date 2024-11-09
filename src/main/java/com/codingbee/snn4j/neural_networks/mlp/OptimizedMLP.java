@@ -283,8 +283,8 @@ public class OptimizedMLP {
         for (int i = 0; i < epochs; i++) {
             time++;
             for (int j = 0; j < weights.length; j++) {
-                for (int k = 0; k < weights[i].length; k++) {
-                    for (int l = 0; l < weights[i][j].length; l++) {
+                for (int k = 0; k < weights[j].length; k++) {
+                    for (int l = 0; l < weights[j][k].length; l++) {
                         g = calculateWeightGradient(j, k, l, data);
                         m_weight[j][k][l] = beta_1 * m_weight[j][k][l] + beta_3 * g;
                         v_weight[j][k][l] = beta_2 * v_weight[j][k][l] + beta_4 * Math.pow(g, 2);
