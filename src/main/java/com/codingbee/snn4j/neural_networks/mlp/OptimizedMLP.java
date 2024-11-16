@@ -30,6 +30,8 @@ public class OptimizedMLP {
     private TrainingSettings trainingSettings = new TrainingSettings();
     private DebuggingSettings debuggingSettings = new DebuggingSettings();
     private ActivationFunction activationFunction = new ReLU();
+
+
     /**
      *Creates new MLP(Multi-layer perceptron) based on the parameters it is given.
      * @param inputLayerSize the number of neurons in the input layer. Must be higher than 0.
@@ -39,7 +41,6 @@ public class OptimizedMLP {
      *
      * @throws IncorrectDataException if requirements of any parameter are not fulfilled.
      */
-    @SuppressWarnings("unused")
     public OptimizedMLP(int inputLayerSize, int outputLayerSize, int[] hiddenLayersSizes, String networkPath) throws IncorrectDataException {
         if (inputLayerSize<1) throw new IncorrectDataException("MLP constructor - input layer size must be higher than zero");
         if (outputLayerSize<1) throw new IncorrectDataException("MLP constructor - output layer size must be higher than zero");
@@ -95,7 +96,6 @@ public class OptimizedMLP {
      * Initializes the networks values(weights and biases) from the model save path specified in the constructor
      * @throws FileManagingException if any error occurs while working with files
      */
-    @SuppressWarnings("unused")
     public void initializeFromFiles() throws FileManagingException{
         initializeFromFiles(networkPath);
     }
@@ -105,7 +105,6 @@ public class OptimizedMLP {
      * @param path path to the directory where values will be saved
      * @throws FileManagingException if any exception occurs while working with files
      */
-    @SuppressWarnings("unused")
     public void saveToFiles(String path) throws FileManagingException {
         if (!initialized){
             throw new MethodCallingException("The network can not be saved, because it has not been initialized yet");
@@ -138,7 +137,6 @@ public class OptimizedMLP {
      * Saves the network values to the save path defined in the constructor
      * @throws FileManagingException if any error occurs while working with files
      */
-    @SuppressWarnings("unused")
     public void saveToFiles() throws FileManagingException {
         saveToFiles(networkPath);
     }
@@ -147,7 +145,6 @@ public class OptimizedMLP {
      * Initializes the networks values(weights and biases) using random weight generator passed as a parameter
      * @param gen RandomWeightGenerator used to generate all random weights and biases
      */
-    @SuppressWarnings("unused")
     public void initializeWithRandomValues(RandomWeightGenerator gen) throws DevelopmentException {
         try {
             for (int i = 0; i < weights.length; i++) {
@@ -187,7 +184,6 @@ public class OptimizedMLP {
      * @return activations of output neurons
      * @throws MethodCallingException if the network has not been initialized yet
      */
-    @SuppressWarnings("unused")
     public double[] processAsValues(double[] input) throws MethodCallingException {
         if (!initialized){
             throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
@@ -214,7 +210,6 @@ public class OptimizedMLP {
      * @return probabilities for each of the output neurons
      * @throws MethodCallingException if the network has not been initialized yet
      */
-    @SuppressWarnings("unused")
     public double[] processAsProbabilities(double[] input) throws MethodCallingException {
         if (!initialized){
             throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
@@ -230,7 +225,6 @@ public class OptimizedMLP {
      * @return index of the output neuron with the highest activation
      * @throws MethodCallingException if the network has not been initialized yet
      */
-    @SuppressWarnings("unused")
     public int processAsIndex(double[] input) throws MethodCallingException {
         if (!initialized){
             throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
@@ -249,7 +243,6 @@ public class OptimizedMLP {
      *                  settings, see {@link DebuggingSettings} for details, and use {@link #setDebuggingSettings}
      * @throws MethodCallingException if the network has not been initialized or any of passed arguments are invalid
      */
-    @SuppressWarnings("unused")
     public void train(Dataset data, int epochs, boolean debugMode) throws MethodCallingException {
         if (!initialized){
             throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
@@ -304,6 +297,12 @@ public class OptimizedMLP {
         }
     }
 
+    /**
+     * Calculates the average cost of the network across all the given data.
+     * @param data the dataset to calculate the cost on
+     * @return the average cost of the network across all the data
+     * @throws MethodCallingException when this method is called on network that hasn't been initialized yet
+     */
     public double calculateAverageCost(Dataset data) throws MethodCallingException {
         if (!initialized){
             throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
@@ -311,6 +310,13 @@ public class OptimizedMLP {
         return calculateAverageCost(data.getInputData(), data.getExpectedResults());
     }
 
+    /**
+     * Calculates the average cost of the network across all the given data.
+     * @param inputData the input values for the calculations
+     * @param expectedOutputData expected values of the processing
+     * @return the average cost of the network across all the data
+     * @throws MethodCallingException when this method is called on network that hasn't been initialized yet
+     */
     public double calculateAverageCost(double[][] inputData, double[][] expectedOutputData) throws MethodCallingException {
         if (!initialized){
             throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
@@ -322,6 +328,13 @@ public class OptimizedMLP {
         return cost / inputData.length;
     }
 
+    /**
+     * Calculates cost of the network on given example.
+     * @param input input for the network
+     * @param expectedOutput expected output of the network
+     * @return value of cost function ran on given data
+     * @throws MethodCallingException when the method is called on network that hasn't been initialized yet
+     */
     public double calculateCost(double[] input, double[] expectedOutput) throws MethodCallingException {
         double cost = 0;
         double[] output = processAsProbabilities(input);
@@ -331,7 +344,12 @@ public class OptimizedMLP {
         return cost;
     }
 
-    @SuppressWarnings("unused")
+    /**
+     * Calculates the correctness percentage of the network on given data.
+     * @param data the dataset to calculate the percentage on
+     * @return the correctness percentage of the network on given dataset
+     * @throws MethodCallingException when the method is called on network that hasn't been initialized yet
+     */
     public double getCorrectPercentage(Dataset data) throws MethodCallingException {
         if (!initialized){
             throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
@@ -339,6 +357,13 @@ public class OptimizedMLP {
         return getCorrectPercentage(data.getInputData(), data.getExpectedResults());
     }
 
+    /**
+     * Calculates the correctness percentage of the network on given data.
+     * @param inputData the inputs for the network
+     * @param expectedOutputData expected (correct) outputs of the network
+     * @return the correctness percentage of the network on given data
+     * @throws MethodCallingException when the method is called on network that hasn't been initialized yet
+     */
     public double getCorrectPercentage(double[][] inputData, double[][] expectedOutputData) throws MethodCallingException {
         if (!initialized){
             throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
@@ -356,6 +381,10 @@ public class OptimizedMLP {
     //endregion
 
     //region Private Methods
+
+    /**
+     * Allocates the space needed for all weight matrices of the network.
+     */
     private void initWeightMatrices(){
         if (hiddenLayersSizes != null){
             weights = new double[1 + hiddenLayersSizes.length][][];
@@ -375,6 +404,15 @@ public class OptimizedMLP {
         }
     }
 
+    /**
+     * Calculates gradient of the cost function with respect to the given weight, on the given data.
+     * @param layer layer of the MLP where weight is located
+     * @param to neuron index in next layer
+     * @param from neuron index in the previous layer
+     * @param data the data for calculating cost function
+     * @return the gradient of the cost function with respect to the weight
+     * @throws MethodCallingException when the method is called on network that hasn't been initialized yet
+     */
     private double calculateWeightGradient(int layer, int to, int from, Dataset data) throws MethodCallingException {
         double nudge = 0.0000001;
         double original = weights[layer][to][from];
@@ -387,6 +425,14 @@ public class OptimizedMLP {
         return gradient;
     }
 
+    /**
+     * Calculates gradient of the cost function with respect to the given bias, on the given data.
+     * @param layer layer of the MLP where bias is located
+     * @param neuron the index of the neuron the bias corresponds to in given layer
+     * @param data the data for calculating cost function
+     * @return the gradient of the cost function with respect to the bias
+     * @throws MethodCallingException when the method is called on network that hasn't been initialized yet
+     */
     private double calculateBiasGradient(int layer, int neuron, Dataset data) throws MethodCallingException {
         double nudge = 0.0000001;
         double original = biases[layer][neuron];
@@ -402,37 +448,69 @@ public class OptimizedMLP {
     //endregion
 
     //region Getters and Setters
+
+    /**
+     * Returns the training setting of the network.
+     * @return the training setting of the network
+     */
     public TrainingSettings getTrainingSettings() {
         return trainingSettings;
     }
 
+    /**
+     * Sets the training setting of the network.
+     * @param trainingSettings the new training settings
+     */
     public void setTrainingSettings(TrainingSettings trainingSettings) {
         this.trainingSettings = trainingSettings;
     }
 
+    /**
+     * Returns the debugging settings of the network.
+     * @return the debugging settings of the network.
+     */
     public DebuggingSettings getDebuggingSettings() {
         return debuggingSettings;
     }
 
+    /**
+     * Sets new debugging settings of the network.
+     * @param debuggingSettings the new debugging settings
+     */
     public void setDebuggingSettings(DebuggingSettings debuggingSettings) {
         this.debuggingSettings = debuggingSettings;
     }
 
+    /**
+     * Returns the path the network uses to save its files such as weight matrices.
+     * @return the path to network files
+     */
     public String getNetworkPath() {
         return networkPath;
     }
 
+    /**
+     * Sets new network path to store the network files such as weight matrices.
+     * @param networkPath the new network file path
+     */
     public void setNetworkPath(String networkPath) {
         this.networkPath = networkPath;
     }
 
+    /**
+     * Returns the activation function the network uses between each neuron layer
+     * @return the activation function used by the network
+     */
     public ActivationFunction getActivationFunction() {
         return activationFunction;
     }
 
+    /**
+     * Sets new activation function for the network to use between each neuron layer
+     * @param activationFunction the new activation function
+     */
     public void setActivationFunction(ActivationFunction activationFunction) {
         this.activationFunction = activationFunction;
     }
-
     //endregion
 }
