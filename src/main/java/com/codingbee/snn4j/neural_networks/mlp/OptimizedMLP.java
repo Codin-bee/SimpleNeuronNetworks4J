@@ -55,7 +55,7 @@ public class OptimizedMLP {
         this.outputLayerSize = outputLayerSize;
         this.hiddenLayersSizes = hiddenLayersSizes;
         this.networkPath = networkPath;
-        initWeightMatrices();
+        allocateWeightMatrices();
     }
 
     //region Initialization and Saving
@@ -385,7 +385,7 @@ public class OptimizedMLP {
     /**
      * Allocates the space needed for all weight matrices of the network.
      */
-    private void initWeightMatrices(){
+    private void allocateWeightMatrices(){
         if (hiddenLayersSizes != null){
             weights = new double[1 + hiddenLayersSizes.length][][];
             weights[0] = new double[hiddenLayersSizes[0]][inputLayerSize];
