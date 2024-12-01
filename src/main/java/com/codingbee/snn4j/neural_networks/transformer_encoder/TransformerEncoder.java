@@ -16,6 +16,7 @@ public class TransformerEncoder {
     int d_ffn;
     int d_attention;
     double attentionScalingFactor;
+    boolean initialized;
 
     //Embedding matrix
     double[][] embeddingMatrix = new double[dictionarySize][d_model];
@@ -24,7 +25,7 @@ public class TransformerEncoder {
     double[][][][] quarryMatrices = new double[layers][layerHeads][d_model][d_attention];
     double[][][][] valueMatrices = new double[layers][layerHeads][d_model][d_model];
     //FFN weights and biases
-    double[][][][] ffnWeight = new double[layers][][][];
+    double[][][][] ffnWeights = new double[layers][][][];
     double[][][] ffnBiases = new double[layers][][];
     //Layer normalization parameters
     double[][] betas = new double[layers][d_model];
@@ -45,6 +46,9 @@ public class TransformerEncoder {
     }
 
     public double[][] processSequenceAsValues(int[] sequence) {
+        if (!initialized){
+            throw new MethodCallingException("The network can not process any values because it has not been initialized properly");
+        }
         //Embedding
         double[][] embeddings = embed(sequence);
         applyPosEncoding(embeddings);
@@ -131,6 +135,7 @@ public class TransformerEncoder {
     }
 
     private double[][] multiplyMatrices(double[][] matrixA, double[][] matrixB){
+
         if (matrixA == null || matrixB == null){
             throw new IncorrectDataException("The passed matrices can not be null");
         }
