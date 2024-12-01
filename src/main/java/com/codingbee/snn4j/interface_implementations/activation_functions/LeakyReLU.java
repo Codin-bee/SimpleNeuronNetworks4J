@@ -15,6 +15,15 @@ public class LeakyReLU implements ActivationFunction {
         }
     }
 
+    @Override
+    public float activate(float n) {
+        if (n < 0){
+            return (float) (n * alpha);
+        }else{
+            return n;
+        }
+    }
+
     public void setAlpha(double alpha){
         this.alpha = alpha;
     }

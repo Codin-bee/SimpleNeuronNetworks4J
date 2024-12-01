@@ -11,4 +11,12 @@ public class ReLU implements ActivationFunction {
         }
         return n;
     }
+
+    @Override
+    public float activate(float n) {
+        if (n < 0) {
+            return 0;
+        }
+        return n;
+    }
 }

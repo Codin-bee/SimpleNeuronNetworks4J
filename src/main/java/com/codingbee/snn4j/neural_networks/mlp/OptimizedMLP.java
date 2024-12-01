@@ -20,8 +20,8 @@ import java.io.FileWriter;
 @SuppressWarnings("unused")
 public class OptimizedMLP {
     private String networkPath;
-    private double[][][] weights;
-    private double[][] biases;
+    private float[][][] weights;
+    private float[][] biases;
     private final int[] hiddenLayersSizes;
     private final int inputLayerSize;
     private final int outputLayerSize;
@@ -70,7 +70,7 @@ public class OptimizedMLP {
                 for (int j = 0; j < weights[i].length; j++) {
                     for (int k = 0; k < weights[i][j].length; k++) {
                         String[] values = reader.readLine().split(" ");
-                        weights[i][j][k] = Double.parseDouble(values[k]);
+                        weights[i][j][k] = Float.parseFloat(values[k]);
                     }
                 }
             }catch(Exception e){
@@ -82,7 +82,7 @@ public class OptimizedMLP {
             for (int i = 0; i < biases.length; i++) {
                 for (int j = 0; j < biases[i].length; j++) {
                     String[] values = reader.readLine().split(" ");
-                    biases[i][j] = Double.parseDouble(values[j]);
+                    biases[i][j] = Float.parseFloat(values[j]);
                 }
             }
         }catch(Exception e){
@@ -121,8 +121,8 @@ public class OptimizedMLP {
             }
         }
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/biases.txt"))) {
-            for (double[] layerBiases : biases) {
-                for (double bias : layerBiases) {
+            for (float[] layerBiases : biases) {
+                for (float bias : layerBiases) {
                     writer.write(bias + " ");
                 }
                 writer.newLine();
@@ -150,22 +150,22 @@ public class OptimizedMLP {
                 for (int j = 0; j < weights[i].length; j++) {
                     for (int k = 0; k < weights[i][j].length; k++) {
                         if (i == 0) {
-                            weights[i][j][k] = gen.getWeight(inputLayerSize, weights[0].length);
+                            weights[i][j][k] = (float) gen.getWeight(inputLayerSize, weights[0].length);
                         } else if (i == weights.length - 1) {
-                            weights[i][j][k] = gen.getWeight(weights[weights.length - 1].length, outputLayerSize);
+                            weights[i][j][k] = (float) gen.getWeight(weights[weights.length - 1].length, outputLayerSize);
                         } else {
-                            weights[i][j][k] = gen.getWeight(weights[i].length, weights[i + 1].length);
+                            weights[i][j][k] = (float) gen.getWeight(weights[i].length, weights[i + 1].length);
                         }
                     }
                 }
             }
             for (int i = 0; i < biases.length - 1; i++) {
                 for (int j = 0; j < biases[i].length; j++) {
-                    biases[i][j] = gen.getHiddenLayerBias();
+                    biases[i][j] = (float) gen.getHiddenLayerBias();
                 }
             }
             for (int i = 0; i < biases[biases.length - 1].length; i++) {
-                biases[biases.length - 1][i] = gen.getOutputLayerBias();
+                biases[biases.length - 1][i] = (float) gen.getOutputLayerBias();
             }
             initialized = true;
         }catch (MethodCallingException e){
@@ -302,7 +302,7 @@ public class OptimizedMLP {
      * @return the average cost of the network across all the data
      * @throws MethodCallingException when this method is called on network that hasn't been initialized yet
      */
-    public double calculateAverageCost(Dataset data) throws MethodCallingException {
+    public float calculateAverageCost(Dataset data) throws MethodCallingException {
         if (!initialized){
             throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
         }
@@ -316,7 +316,7 @@ public class OptimizedMLP {
      * @return the average cost of the network across all the data
      * @throws MethodCallingException when this method is called on network that hasn't been initialized yet
      */
-    public double calculateAverageCost(double[][] inputData, double[][] expectedOutputData) throws MethodCallingException {
+    public float calculateAverageCost(double[][] inputData, double[][] expectedOutputData) throws MethodCallingException {
         if (!initialized){
             throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
         }
@@ -324,7 +324,7 @@ public class OptimizedMLP {
         for (int i = 0; i < inputData.length; i++) {
             cost += calculateCost(inputData[i], expectedOutputData[i]);
         }
-        return cost / inputData.length;
+        return (float) (cost / inputData.length);
     }
 
     /**
@@ -334,13 +334,13 @@ public class OptimizedMLP {
      * @return value of cost function ran on given data
      * @throws MethodCallingException when the method is called on network that hasn't been initialized yet
      */
-    public double calculateCost(double[] input, double[] expectedOutput) throws MethodCallingException {
+    public float calculateCost(double[] input, double[] expectedOutput) throws MethodCallingException {
         double cost = 0;
         double[] output = processAsProbabilities(input);
         for (int i = 0; i < input.length; i++) {
             cost += output[i] * expectedOutput[i];
         }
-        return cost;
+        return (float) cost;
     }
 
     /**
@@ -349,7 +349,7 @@ public class OptimizedMLP {
      * @return the correctness percentage of the network on given dataset
      * @throws MethodCallingException when the method is called on network that hasn't been initialized yet
      */
-    public double getCorrectPercentage(Dataset data) throws MethodCallingException {
+    public float getCorrectPercentage(Dataset data) throws MethodCallingException {
         if (!initialized){
             throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
         }
@@ -363,7 +363,7 @@ public class OptimizedMLP {
      * @return the correctness percentage of the network on given data
      * @throws MethodCallingException when the method is called on network that hasn't been initialized yet
      */
-    public double getCorrectPercentage(double[][] inputData, double[][] expectedOutputData) throws MethodCallingException {
+    public float getCorrectPercentage(double[][] inputData, double[][] expectedOutputData) throws MethodCallingException {
         if (!initialized){
             throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
         }
@@ -375,7 +375,7 @@ public class OptimizedMLP {
             }
             count++;
         }
-        return  (percentage / count) * 100;
+        return (float) ((percentage / count) * 100);
     }
     //endregion
 
@@ -386,20 +386,20 @@ public class OptimizedMLP {
      */
     private void allocateWeightMatrices(){
         if (hiddenLayersSizes != null){
-            weights = new double[1 + hiddenLayersSizes.length][][];
-            weights[0] = new double[hiddenLayersSizes[0]][inputLayerSize];
-            weights[hiddenLayersSizes.length] = new double[outputLayerSize][hiddenLayersSizes[hiddenLayersSizes.length-1]];
+            weights = new float[1 + hiddenLayersSizes.length][][];
+            weights[0] = new float[hiddenLayersSizes[0]][inputLayerSize];
+            weights[hiddenLayersSizes.length] = new float[outputLayerSize][hiddenLayersSizes[hiddenLayersSizes.length-1]];
             for (int i = 1; i < weights.length - 1; i++) {
-                weights[i] = new double[hiddenLayersSizes[i]][hiddenLayersSizes[i-1]];
+                weights[i] = new float[hiddenLayersSizes[i]][hiddenLayersSizes[i-1]];
             }
-            biases = new double[hiddenLayersSizes.length + 1][];
+            biases = new float[hiddenLayersSizes.length + 1][];
             for (int i = 0; i < biases.length - 1; i++) {
-                biases[i] = new double[hiddenLayersSizes[i]];
+                biases[i] = new float[hiddenLayersSizes[i]];
             }
-            biases[hiddenLayersSizes.length] = new double[outputLayerSize];
+            biases[hiddenLayersSizes.length] = new float[outputLayerSize];
         }else{
-            weights = new double[1][inputLayerSize][outputLayerSize];
-            biases = new double[0][outputLayerSize];
+            weights = new float[1][inputLayerSize][outputLayerSize];
+            biases = new float[0][outputLayerSize];
         }
     }
 
@@ -413,13 +413,13 @@ public class OptimizedMLP {
      * @throws MethodCallingException when the method is called on network that hasn't been initialized yet
      */
     private double calculateWeightGradient(int layer, int to, int from, Dataset data) throws MethodCallingException {
-        double nudge = 0.0000001;
-        double original = weights[layer][to][from];
+        float nudge = 0.000001f;
+        float original = weights[layer][to][from];
         weights[layer][to][from] = original + nudge;
-        double positiveNudge = calculateAverageCost(data);
+        float positiveNudge = calculateAverageCost(data);
         weights[layer][to][from] = original - nudge;
-        double negativeNudge = calculateAverageCost(data);
-        double gradient = (positiveNudge - negativeNudge) / 2 * nudge;
+        float negativeNudge = calculateAverageCost(data);
+        float gradient = (positiveNudge - negativeNudge) / 2 * nudge;
         weights[layer][to][from] = original;
         return gradient;
     }
@@ -433,13 +433,13 @@ public class OptimizedMLP {
      * @throws MethodCallingException when the method is called on network that hasn't been initialized yet
      */
     private double calculateBiasGradient(int layer, int neuron, Dataset data) throws MethodCallingException {
-        double nudge = 0.0000001;
-        double original = biases[layer][neuron];
+        float nudge = 0.000001f;
+        float original = biases[layer][neuron];
         biases[layer][neuron] = original + nudge;
-        double positiveNudge = calculateAverageCost(data);
+        float positiveNudge = calculateAverageCost(data);
         biases[layer][neuron] = original - nudge;
-        double negativeNudge = calculateAverageCost(data);
-        double gradient = (positiveNudge - negativeNudge) / 2 * nudge;
+        float negativeNudge = calculateAverageCost(data);
+        float gradient = (positiveNudge - negativeNudge) / 2 * nudge;
         biases[layer][neuron] = original;
         return gradient;
     }

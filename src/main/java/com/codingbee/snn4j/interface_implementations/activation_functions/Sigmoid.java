@@ -8,4 +8,9 @@ public class Sigmoid implements ActivationFunction {
     public double activate(double n) {
         return 1 / (1 + Math.exp(-n));
     }
+
+    @Override
+    public float activate(float n) {
+        return (float) (1 / (1 + Math.exp(-n)));
+    }
 }

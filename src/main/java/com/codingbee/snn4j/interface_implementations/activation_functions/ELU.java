@@ -13,6 +13,14 @@ public class ELU implements ActivationFunction {
         return n;
     }
 
+    @Override
+    public float activate(float n) {
+        if (n < 0) {
+            return (float) (alpha * (Math.exp(n) - 1));
+        }
+        return n;
+    }
+
     public double getAlpha() {
         return alpha;
     }
