@@ -1,8 +1,6 @@
 package com.codingbee.snn4j.neural_networks.mlp;
 
 import com.codingbee.snn4j.interface_implementations.activation_functions.ReLU;
-import com.codingbee.snn4j.algorithms.ActivationFunctions;
-import com.codingbee.snn4j.algorithms.Algorithms;
 import com.codingbee.snn4j.exceptions.DevelopmentException;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
@@ -12,6 +10,7 @@ import com.codingbee.snn4j.interfaces.ActivationFunction;
 import com.codingbee.snn4j.interfaces.RandomWeightGenerator;
 import com.codingbee.snn4j.neural_networks.DebuggingSettings;
 import com.codingbee.snn4j.neural_networks.TrainingSettings;
+import com.codingbee.tool_box.algorithms.Algorithms;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -215,7 +214,7 @@ public class OptimizedMLP {
             throw new MethodCallingException("The network can not process anything, because it has not been initialized yet");
         }
         double[] probabilities = processAsValues(input);
-        ActivationFunctions.softmaxInPlace(probabilities, 1);
+        Algorithms.softmaxInPlace(probabilities, 1);
         return probabilities;
     }
 

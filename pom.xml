@@ -12,8 +12,8 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jackson.version>2.14.0</jackson.version> <!-- Updated Jackson version -->
-        <junit.jupiter.version>5.11.0-M2</junit.jupiter.version> <!-- JUnit Jupiter version -->
+        <jackson.version>2.14.0</jackson.version>
+        <junit.jupiter.version>5.11.0-M2</junit.jupiter.version>
     </properties>
 
     <repositories>
@@ -33,53 +33,18 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- JUnit Pioneer for additional testing features (e.g., testing private methods) -->
-        <dependency>
-            <groupId>org.junit-pioneer</groupId>
-            <artifactId>junit-pioneer</artifactId>
-            <version>1.4.2</version>
-            <scope>test</scope>
-        </dependency>
-
         <!-- Jackson Databind for JSON processing -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
+            <version>2.14.0</version>
         </dependency>
 
         <!-- Custom Toolbox Methods -->
         <dependency>
             <groupId>com.github.Codin-bee</groupId>
             <artifactId>ToolBox</artifactId>
-            <version>ceb5cab9d6f948d6698f5e0a09822a3d64a3453d</version>
+            <version>afb8ad19a692ff2e8330b2a0ba6c41fdc57207a6</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <!-- Maven Compiler Plugin for Java 21 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
-                <configuration>
-                    <source>21</source>
-                    <target>21</target>
-                </configuration>
-            </plugin>
-
-            <!-- Maven Surefire Plugin to run JUnit tests during build -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version>
-                <configuration>
-                    <includes>
-                        <include>**/*Test.java</include>
-                    </includes>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
