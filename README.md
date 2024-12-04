@@ -2,7 +2,7 @@
 Shortened name SNN4J.
 
 ## What is this library?
-SNN4J is simple library for Java, which allows you to create simple neuron networks, train them and test them. It currently supports the MLP (multi-layer perceptron) architecture of neural network. Basic example of project you could do with this library is the number recognition AI using the MNIST database. But keep in mind this library is supposed to serve as a learning resource and not to be used in any big projects, where it may be better to use some high-performance library which can utilize GPUs and your specific CPU architecture. It is supposed to help understanding the theory but is not optimized or multithreaded.
+SNN4J is simple library for Java, which allows you to create simple neuron networks, train them and test them. It currently supports the MLP (multi-layer perceptron) architecture of neural network. Basic example of project you could do with this library is the number recognition AI using the MNIST database. But keep in mind this library is supposed to serve as a learning resource and not to be used in any big projects, where it may be better to use some high-performance library which can utilize GPUs and your specific CPU architecture. It is supposed to help understanding the theory but is not optimized or multithreaded. There is also branch for the KAN architecture (Kolmogorov-Arnold network) but it is still in developement, it will be added as soon as I have working polished version.
 
 ## How do I download it?
 1. If you use Maven, add to your pom.xml: 
@@ -98,6 +98,9 @@ Dataset dataset = new Dataset();
 //Data initialization
 double cost = myNetwork.getCorrectPercentage(dataset);
 ```
+
+### What about the other architectures?
+All the object have the same interface methods, just in some cases they use different data-types, or the arguments are slightly changed up. The Javadoc documentation provided should be enough, but you can reach me to ask any questions if needed, do not be afraid.
 
 ## Have you got already working code I can use?
 Of course here is link to my repository I used to train on of my projects. Just make sure you install the MNIST database if you are going to use it.
