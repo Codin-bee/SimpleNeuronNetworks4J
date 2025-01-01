@@ -65,8 +65,8 @@ public class OptimizedMLP {
         for (int i = 0; i < weights.length; i++) {
             try(BufferedReader reader = new BufferedReader(new FileReader(path + "/weights/w" + i + ".txt"))){
                 for (int j = 0; j < weights[i].length; j++) {
+                    String[] values = reader.readLine().split(" ");
                     for (int k = 0; k < weights[i][j].length; k++) {
-                        String[] values = reader.readLine().split(" ");
                         weights[i][j][k] = Float.parseFloat(values[k]);
                     }
                 }
