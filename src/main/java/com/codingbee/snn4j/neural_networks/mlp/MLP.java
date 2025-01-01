@@ -16,16 +16,12 @@ import java.util.Random;
 import java.util.Arrays;
 import java.util.OptionalInt;
 
-import com.codingbee.snn4j.exceptions.DevelopmentException;
-import com.codingbee.snn4j.exceptions.FileManagingException;
-import com.codingbee.snn4j.exceptions.IncorrectDataException;
-import com.codingbee.snn4j.exceptions.MethodCallingException;
-
 import com.codingbee.snn4j.helping_objects.Dataset;
 import com.codingbee.snn4j.neural_networks.DebuggingSettings;
 import com.codingbee.snn4j.neural_networks.TrainingSettings;
 
 import com.codingbee.tool_box.algorithms.Algorithms;
+import com.codingbee.tool_box.exceptions.*;
 
 
 public class MLP {
