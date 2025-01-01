@@ -1,6 +1,6 @@
 package com.codingbee.snn4j.neural_networks.mlp;
 
-import com.codingbee.snn4j.exceptions.IncorrectDataException;
+import com.codingbee.tool_box.exceptions.IncorrectDataException;
 
 public class Neuron {
     public static final double LAST = 0;
