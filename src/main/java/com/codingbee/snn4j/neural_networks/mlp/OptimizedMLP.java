@@ -11,6 +11,7 @@ import com.codingbee.tool_box.exceptions.*;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -114,6 +115,14 @@ public class OptimizedMLP {
         if (!initialized){
             throw new MethodCallingException("The network can not be saved, because it has not been initialized yet");
         }
+        try {
+            //Ignored because false can be returned because of existing directories
+            boolean mainCreated = new File(path).mkdirs();
+            boolean weightCreated = new File(path + "\\weights").mkdirs();
+        } catch (Exception e) {
+            throw new FileManagingException("Could not create directories" + e.getLocalizedMessage());
+        }
+
         for (int i = 0; i < weights.length; i++) {
             try(BufferedWriter writer = new BufferedWriter(new FileWriter(path + "\\weights\\w" + i + ".txt"))){
                 for (int j = 0; j < weights[i].length; j++) {
