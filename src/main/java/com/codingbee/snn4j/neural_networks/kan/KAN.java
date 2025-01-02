@@ -4,6 +4,7 @@ import com.codingbee.tool_box.exceptions.MethodCallingException;
 
 @SuppressWarnings("unused")
 public class KAN {
+    //Indexed: layer, to, from, param
     private float[][][][] functionParameters;
     private float[][] biases;
     private final int inputSize;

@@ -4,6 +4,7 @@ public class DebuggingSettings {
     private boolean startEndPrint;
     private boolean everyIterationPrint;
     private boolean saveCostValues;
+    private boolean savePeriodically;
     private String costSavingFilePath;
 
     @SuppressWarnings("unused")
@@ -46,6 +47,16 @@ public class DebuggingSettings {
     @SuppressWarnings("unused")
     public void setSaveCostValues(boolean saveCostValues) {
         this.saveCostValues = saveCostValues;
+    }
+
+    @SuppressWarnings("unused")
+    public boolean isSavePeriodically() {
+        return savePeriodically;
+    }
+
+    @SuppressWarnings("unused")
+    public void setSavePeriodically(boolean savePeriodically) {
+        this.savePeriodically = savePeriodically;
     }
 
     @SuppressWarnings("unused")
