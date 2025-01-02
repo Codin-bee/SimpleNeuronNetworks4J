@@ -1,56 +1,63 @@
 package com.codingbee.snn4j.neural_networks;
 
+@SuppressWarnings("unused")
 public class TrainingSettings {
     private double learningRate, exponentialDecayRateOne, exponentialDecayRateTwo, epsilon;
+    private int batchSize;
 
-    public TrainingSettings(double learningRate, double exponentialDecayRateOne, double exponentialDecayRateTwo, double epsilon) {
+    public TrainingSettings(double learningRate, double exponentialDecayRateOne, double exponentialDecayRateTwo, double epsilon, int batchSize) {
         this.learningRate = learningRate;
         this.exponentialDecayRateOne = exponentialDecayRateOne;
         this.exponentialDecayRateTwo = exponentialDecayRateTwo;
         this.epsilon = epsilon;
+        this.batchSize = batchSize;
     }
 
-    @SuppressWarnings("unused")
     public TrainingSettings() {
-        this(0.001, 0.9, 0.999, 1e-8);
-    }
-    @SuppressWarnings("unused")
-    public double getLearningRate() {
-        return learningRate;
+        this(0.001, 0.9, 0.999, 1e-8, 64);
     }
 
-    @SuppressWarnings("unused")
     public void setLearningRate(double learningRate) {
         this.learningRate = learningRate;
     }
 
-    @SuppressWarnings("unused")
-    public double getExponentialDecayRateOne() {
-        return exponentialDecayRateOne;
-    }
-
-    @SuppressWarnings("unused")
     public void setExponentialDecayRateOne(double exponentialDecayRateOne) {
         this.exponentialDecayRateOne = exponentialDecayRateOne;
     }
 
-    @SuppressWarnings("unused")
-    public double getExponentialDecayRateTwo() {
-        return exponentialDecayRateTwo;
-    }
-
-    @SuppressWarnings("unused")
     public void setExponentialDecayRateTwo(double exponentialDecayRateTwo) {
         this.exponentialDecayRateTwo = exponentialDecayRateTwo;
     }
 
-    @SuppressWarnings("unused")
+    public void setEpsilon(double epsilon) {
+        this.epsilon = epsilon;
+    }
+
+    public void setBatchSize(int batchSize) {
+        this.batchSize = batchSize;
+    }
+
+    //region GETTERS
+
+    public double getLearningRate() {
+        return learningRate;
+    }
+
+    public double getExponentialDecayRateOne() {
+        return exponentialDecayRateOne;
+    }
+
+    public double getExponentialDecayRateTwo() {
+        return exponentialDecayRateTwo;
+    }
+
     public double getEpsilon() {
         return epsilon;
     }
 
-    @SuppressWarnings("unused")
-    public void setEpsilon(double epsilon) {
-        this.epsilon = epsilon;
+    public int getBatchSize() {
+        return batchSize;
     }
+
+    //endregion
 }

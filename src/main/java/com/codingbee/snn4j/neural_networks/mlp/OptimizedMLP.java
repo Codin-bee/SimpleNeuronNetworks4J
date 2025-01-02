@@ -11,8 +11,17 @@ import com.codingbee.tool_box.exceptions.*;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 
 @SuppressWarnings("unused")
 public class OptimizedMLP {
@@ -106,6 +115,14 @@ public class OptimizedMLP {
         if (!initialized){
             throw new MethodCallingException("The network can not be saved, because it has not been initialized yet");
         }
+        try {
+            //Ignored because false can be returned because of existing directories
+            boolean mainCreated = new File(path).mkdirs();
+            boolean weightCreated = new File(path + "\\weights").mkdirs();
+        } catch (Exception e) {
+            throw new FileManagingException("Could not create directories" + e.getLocalizedMessage());
+        }
+
         for (int i = 0; i < weights.length; i++) {
             try(BufferedWriter writer = new BufferedWriter(new FileWriter(path + "\\weights\\w" + i + ".txt"))){
                 for (int j = 0; j < weights[i].length; j++) {
@@ -298,7 +315,7 @@ public class OptimizedMLP {
 
             if (debuggingSettings.isEveryIterationPrint()){
                 System.out.println("Iteration " + i + ":");
-                System.out.println("Cost: " + calculateAverageCost(data));
+                System.out.println("Cost: " + calculateAverageCostInParallel(data, trainingSettings.getBatchSize()));
                 System.out.println("Correct percentage: " + getCorrectPercentage(data));
             }
             if (debuggingSettings.isSavePeriodically()){
@@ -337,6 +354,59 @@ public class OptimizedMLP {
             cost += calculateCost(inputData[i], expectedOutputData[i]);
         }
         return (float) (cost / inputData.length);
+    }
+
+    /**
+     * Calculates the average cost of the network across all the given data in parallel batches
+     * @param inputData the input values for the calculations
+     * @param expectedOutputData expected values of the processing
+     * @param batchSize size of one batch of data
+     * @return the average cost of the network across all the data
+     * @throws RuntimeException if issue arises because of threads
+     * @throws MethodCallingException when called without initializing network
+     */
+    public float calculateAverageCostInParallel(double[][] inputData, double[][] expectedOutputData, int batchSize) throws RuntimeException, MethodCallingException {
+        if (!initialized) {
+            throw new MethodCallingException("The network cannot process anything, because it has not been initialized yet");
+        }
+
+        int batchCount = (int) Math.ceil((double) inputData.length / batchSize);
+        float cost = 0;
+
+        ExecutorService executorService = Executors.newFixedThreadPool(Math.min(batchCount, Runtime.getRuntime().availableProcessors()));
+        List<Future<Float>> futures = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < batchCount; i++) {
+                final int startI = i * batchSize;
+                final int endI = Math.min(startI + batchSize, inputData.length);
+
+                futures.add(executorService.submit(() -> calculateAverageCost(
+                        Arrays.copyOfRange(inputData, startI, endI),
+                        Arrays.copyOfRange(expectedOutputData, startI, endI))));
+            }
+
+            for (Future<Float> future : futures) {
+                cost += future.get();
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("An error occurred during parallel computation", e);
+        } finally {
+            executorService.shutdown();
+        }
+
+        return cost / batchCount;
+    }
+
+    /**
+     * Calculates cost of the network on given example.
+     * @param data the dataset to calculate the cost on
+     * @param batchSize size of one batch of data
+     * @return the average cost of the network across all the data
+     * @throws MethodCallingException when called without initializing network
+     */
+    public float calculateAverageCostInParallel(Dataset data, int batchSize) throws MethodCallingException {
+        return calculateAverageCostInParallel(data.getInputData(), data.getExpectedResults(), batchSize);
     }
 
     /**
@@ -430,9 +500,9 @@ public class OptimizedMLP {
         float original = weights[layer][to][from];
         float nudge = (float) Math.max(1e-6, Math.abs(original) * 1e-6);
         weights[layer][to][from] = original + nudge;
-        float positiveNudge = calculateAverageCost(data);
+        float positiveNudge = calculateAverageCostInParallel(data, trainingSettings.getBatchSize());
         weights[layer][to][from] = original - nudge;
-        float negativeNudge = calculateAverageCost(data);
+        float negativeNudge = calculateAverageCostInParallel(data, trainingSettings.getBatchSize());
         float gradient = (positiveNudge - negativeNudge) / ( 2 * nudge);
         weights[layer][to][from] = original;
         return gradient;
@@ -450,9 +520,9 @@ public class OptimizedMLP {
         float original = biases[layer][neuron];
         float nudge = (float) Math.max(1e-6, Math.abs(original) * 1e-6);
         biases[layer][neuron] = original + nudge;
-        float positiveNudge = calculateAverageCost(data);
+        float positiveNudge = calculateAverageCostInParallel(data, trainingSettings.getBatchSize());
         biases[layer][neuron] = original - nudge;
-        float negativeNudge = calculateAverageCost(data);
+        float negativeNudge = calculateAverageCostInParallel(data, trainingSettings.getBatchSize());
         float gradient = (positiveNudge - negativeNudge) / (2 * nudge);
         biases[layer][neuron] = original;
         return gradient;
