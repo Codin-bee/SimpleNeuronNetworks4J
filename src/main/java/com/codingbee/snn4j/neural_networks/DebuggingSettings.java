@@ -1,12 +1,12 @@
 package com.codingbee.snn4j.neural_networks;
 
 public class DebuggingSettings {
-    protected boolean startEndPrint;
-    protected boolean everyIterationPrint;
-    protected boolean saveCostValues;
-    protected boolean savePeriodically;
-    protected int periodicSavingInterval;
-    protected String costSavingFilePath;
+    private boolean startEndPrint;
+    private boolean everyIterationPrint;
+    private boolean saveCostValues;
+    private boolean savePeriodically;
+    private int periodicSavingInterval;
+    private String costSavingFilePath;
 
     public DebuggingSettings(boolean startEndPrint, boolean everyIterationPrint, boolean saveCostValues, boolean savePeriodically, int periodicSavingInterval, String costSavingFilePath) {
         this.startEndPrint = startEndPrint;
@@ -44,4 +44,32 @@ public class DebuggingSettings {
     public void setCostSavingFilePath(String costSavingFilePath) {
         this.costSavingFilePath = costSavingFilePath;
     }
+
+    //region GETTERS
+
+    public boolean isStartEndPrint() {
+        return startEndPrint;
+    }
+
+    public boolean isEveryIterationPrint() {
+        return everyIterationPrint;
+    }
+
+    public boolean isSaveCostValues() {
+        return saveCostValues;
+    }
+
+    public boolean isSavePeriodically() {
+        return savePeriodically;
+    }
+
+    public int getPeriodicSavingInterval() {
+        return periodicSavingInterval;
+    }
+
+    public String getCostSavingFilePath() {
+        return costSavingFilePath;
+    }
+
+    //endregion
 }

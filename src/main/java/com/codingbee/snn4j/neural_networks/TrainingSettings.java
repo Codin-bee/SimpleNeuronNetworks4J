@@ -2,8 +2,8 @@ package com.codingbee.snn4j.neural_networks;
 
 @SuppressWarnings("unused")
 public class TrainingSettings {
-    protected double learningRate, exponentialDecayRateOne, exponentialDecayRateTwo, epsilon;
-    protected int batchSize;
+    private double learningRate, exponentialDecayRateOne, exponentialDecayRateTwo, epsilon;
+    private int batchSize;
 
     public TrainingSettings(double learningRate, double exponentialDecayRateOne, double exponentialDecayRateTwo, double epsilon, int batchSize) {
         this.learningRate = learningRate;
@@ -36,4 +36,28 @@ public class TrainingSettings {
     public void setBatchSize(int batchSize) {
         this.batchSize = batchSize;
     }
+
+    //region GETTERS
+
+    public double getLearningRate() {
+        return learningRate;
+    }
+
+    public double getExponentialDecayRateOne() {
+        return exponentialDecayRateOne;
+    }
+
+    public double getExponentialDecayRateTwo() {
+        return exponentialDecayRateTwo;
+    }
+
+    public double getEpsilon() {
+        return epsilon;
+    }
+
+    public int getBatchSize() {
+        return batchSize;
+    }
+
+    //endregion
 }
