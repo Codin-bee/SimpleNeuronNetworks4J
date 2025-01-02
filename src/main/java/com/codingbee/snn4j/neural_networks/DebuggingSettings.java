@@ -1,5 +1,6 @@
 package com.codingbee.snn4j.neural_networks;
 
+@SuppressWarnings("unused")
 public class DebuggingSettings {
     private boolean startEndPrint;
     private boolean everyIterationPrint;
