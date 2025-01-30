@@ -1,11 +1,11 @@
-package com.codingbee.snn4j.neural_networks;
+package com.codingbee.snn4j.settings;
 
 @SuppressWarnings("unused")
 public class TrainingSettings {
-    private double learningRate, exponentialDecayRateOne, exponentialDecayRateTwo, epsilon;
+    private float learningRate, exponentialDecayRateOne, exponentialDecayRateTwo, epsilon;
     private int batchSize;
 
-    public TrainingSettings(double learningRate, double exponentialDecayRateOne, double exponentialDecayRateTwo, double epsilon, int batchSize) {
+    public TrainingSettings(float learningRate, float exponentialDecayRateOne, float exponentialDecayRateTwo, float epsilon, int batchSize) {
         this.learningRate = learningRate;
         this.exponentialDecayRateOne = exponentialDecayRateOne;
         this.exponentialDecayRateTwo = exponentialDecayRateTwo;
@@ -14,22 +14,22 @@ public class TrainingSettings {
     }
 
     public TrainingSettings() {
-        this(0.001, 0.9, 0.999, 1e-8, 64);
+        this(0.001f, 0.9f, 0.999f, 1e-8f, 64);
     }
 
-    public void setLearningRate(double learningRate) {
+    public void setLearningRate(float learningRate) {
         this.learningRate = learningRate;
     }
 
-    public void setExponentialDecayRateOne(double exponentialDecayRateOne) {
+    public void setExponentialDecayRateOne(float exponentialDecayRateOne) {
         this.exponentialDecayRateOne = exponentialDecayRateOne;
     }
 
-    public void setExponentialDecayRateTwo(double exponentialDecayRateTwo) {
+    public void setExponentialDecayRateTwo(float exponentialDecayRateTwo) {
         this.exponentialDecayRateTwo = exponentialDecayRateTwo;
     }
 
-    public void setEpsilon(double epsilon) {
+    public void setEpsilon(float epsilon) {
         this.epsilon = epsilon;
     }
 
@@ -39,19 +39,19 @@ public class TrainingSettings {
 
     //region GETTERS
 
-    public double getLearningRate() {
+    public float getLearningRate() {
         return learningRate;
     }
 
-    public double getExponentialDecayRateOne() {
+    public float getExponentialDecayRateOne() {
         return exponentialDecayRateOne;
     }
 
-    public double getExponentialDecayRateTwo() {
+    public float getExponentialDecayRateTwo() {
         return exponentialDecayRateTwo;
     }
 
-    public double getEpsilon() {
+    public float getEpsilon() {
         return epsilon;
     }
 

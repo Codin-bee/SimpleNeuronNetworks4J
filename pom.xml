@@ -39,12 +39,5 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.14.0</version>
         </dependency>
-
-        <!-- Custom Toolbox Methods -->
-        <dependency>
-            <groupId>com.github.Codin-bee</groupId>
-            <artifactId>ToolBox</artifactId>
-            <version>afb8ad19a692ff2e8330b2a0ba6c41fdc57207a6</version>
-        </dependency>
     </dependencies>
 </project>
