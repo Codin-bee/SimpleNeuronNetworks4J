@@ -6,6 +6,9 @@ import com.codingbee.snn4j.settings.DebuggingSettings;
 import com.codingbee.snn4j.settings.TrainingSettings;
 
 public interface Model {
+    void addLayer(Layer layer);
+    void addLayer(Layer layer, int index);
+
     float[][] process(float[][] i);
 
     void init(RandomWeightGenerator randomGen);
@@ -21,7 +24,7 @@ public interface Model {
     float calculateCorrectPercentage(Dataset data);
     float calculateCorrectPercentage(float[][][] input, float[][][] expectedOutput);
 
-    void train(Dataset data, long epochs, boolean printDebug);
+    void train(Dataset data, int epochs, boolean printDebug);
 
     void setDebuggingSettings(DebuggingSettings setting);
     DebuggingSettings getDebuggingSettings();
