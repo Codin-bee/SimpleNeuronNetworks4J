@@ -34,6 +34,8 @@ public interface Layer {
      */
     void save(String path) throws FileManagingException;
 
+    void initAdamValues();
+
     /**
      * Fine-tunes the layer parameters on given dataset to minimize the cost function of the model it is part of.
      * @param data the dataset to train on
@@ -44,4 +46,7 @@ public interface Layer {
 
     TrainingSettings getTrainingSettings();
     void setTrainingSettings(TrainingSettings settings);
+
+    Model getFullModel();
+    void setFullModel(Model fullModel);
 }
