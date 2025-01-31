@@ -1,6 +1,6 @@
 package com.codingbee.snn4j.interface_implementations.random_weight_generators;
 
-import com.codingbee.snn4j.exceptions.MethodCallingException;
+import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.codingbee.snn4j.interfaces.RandomWeightGenerator;
 
 import java.util.Random;
@@ -13,9 +13,9 @@ import java.util.Random;
 public class HeUniformGen implements RandomWeightGenerator {
     Random gen = new Random();
     @Override
-    public double getWeight(int inputs, int outputs) throws MethodCallingException {
+    public double getWeight(int inputs, int outputs) throws IncorrectDataException {
         if (inputs < 1 || outputs < 1){
-            throw new MethodCallingException("The layer sizes, the weights are between, have to be larger than 0");
+            throw new IncorrectDataException("The layer sizes, the weights are between, have to be larger than 0");
         }
         double limit = Math.sqrt(6.0) / Math.sqrt(inputs);
         return gen.nextDouble() * 2 * limit - limit;
