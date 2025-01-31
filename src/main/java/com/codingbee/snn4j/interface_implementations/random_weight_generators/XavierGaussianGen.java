@@ -13,20 +13,20 @@ import java.util.Random;
 public class XavierGaussianGen implements RandomWeightGenerator {
     Random gen = new Random();
     @Override
-    public double getWeight(int inputs, int outputs) throws IncorrectDataException {
+    public float getWeight(int inputs, int outputs) throws IncorrectDataException {
         if (inputs < 1 || outputs < 1){
             throw new IncorrectDataException("The layer sizes, the weights are between, have to be larger than 0");
         }
-        return gen.nextGaussian(0, (double) 2 / (inputs + outputs));
+        return (float) gen.nextGaussian(0, (float) 2 / (inputs + outputs));
     }
 
     @Override
-    public double getHiddenLayerBias() {
+    public float getHiddenLayerBias() {
         return 0;
     }
 
     @Override
-    public double getOutputLayerBias() {
+    public float getOutputLayerBias() {
         return 0;
     }
 }

@@ -4,15 +4,7 @@ import com.codingbee.snn4j.interfaces.ActivationFunction;
 
 @SuppressWarnings("unused")
 public class ELU implements ActivationFunction {
-    double alpha = 1;
-    @Override
-    public double activate(double n) {
-        if (n < 0) {
-            return alpha * (Math.exp(n) - 1);
-        }
-        return n;
-    }
-
+    float alpha = 1;
     @Override
     public float activate(float n) {
         if (n < 0) {
@@ -21,11 +13,11 @@ public class ELU implements ActivationFunction {
         return n;
     }
 
-    public double getAlpha() {
+    public float getAlpha() {
         return alpha;
     }
 
-    public void setAlpha(double alpha) {
+    public void setAlpha(float alpha) {
         this.alpha = alpha;
     }
 }

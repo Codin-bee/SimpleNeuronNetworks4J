@@ -13,21 +13,21 @@ import java.util.Random;
 public class HeUniformGen implements RandomWeightGenerator {
     Random gen = new Random();
     @Override
-    public double getWeight(int inputs, int outputs) throws IncorrectDataException {
+    public float getWeight(int inputs, int outputs) throws IncorrectDataException {
         if (inputs < 1 || outputs < 1){
             throw new IncorrectDataException("The layer sizes, the weights are between, have to be larger than 0");
         }
-        double limit = Math.sqrt(6.0) / Math.sqrt(inputs);
-        return gen.nextDouble() * 2 * limit - limit;
+        float limit = (float) Math.sqrt(6.0 / inputs);
+        return (gen.nextFloat() * 2.0f * limit) - limit;
     }
 
     @Override
-    public double getHiddenLayerBias() {
+    public float getHiddenLayerBias() {
         return 0;
     }
 
     @Override
-    public double getOutputLayerBias() {
+    public float getOutputLayerBias() {
         return 0;
     }
 }
