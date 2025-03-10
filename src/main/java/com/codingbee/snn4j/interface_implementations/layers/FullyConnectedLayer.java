@@ -95,7 +95,7 @@ public class FullyConnectedLayer implements Layer {
             mapper.readerForUpdating(this).readValue(new File(path), FullyConnectedLayer.class);
         } catch (IOException e) {
             throw new FileManagingException("An Exception occurred while trying to init the " +
-                    "FullyConnectedLayer from file" + e.getLocalizedMessage());
+                    "FullyConnectedLayer from file" + path + ": " + e.getLocalizedMessage());
         }
     }
 
@@ -242,6 +242,16 @@ public class FullyConnectedLayer implements Layer {
     }
 
     @Override
+    public ActivationFunction getActivationFunction() {
+        return activationFunction;
+    }
+
+    @Override
+    public void setActivationFunction(ActivationFunction activationFunction) {
+        this.activationFunction = activationFunction;
+    }
+
+    @Override
     public Model getFullModel() {
         return fullModel;
     }
@@ -250,5 +260,49 @@ public class FullyConnectedLayer implements Layer {
     public void setFullModel(Model fullModel) {
         this.fullModel = fullModel;
     }
+    //endregion
+
+    //region Weight, Bias and Dimension Getters and Setters for Jackson
+
+    public float[][][] getWeights() {
+        return weights;
+    }
+
+    public void setWeights(float[][][] weights) {
+        this.weights = weights;
+    }
+
+    public float[][] getBiases() {
+        return biases;
+    }
+
+    public void setBiases(float[][] biases) {
+        this.biases = biases;
+    }
+
+    public int getInputLayerSize() {
+        return inputLayerSize;
+    }
+
+    public void setInputLayerSize(int inputLayerSize) {
+        this.inputLayerSize = inputLayerSize;
+    }
+
+    public int getOutputLayerSize() {
+        return outputLayerSize;
+    }
+
+    public void setOutputLayerSize(int outputLayerSize) {
+        this.outputLayerSize = outputLayerSize;
+    }
+
+    public int[] getHiddenLayersSizes() {
+        return hiddenLayersSizes;
+    }
+
+    public void setHiddenLayersSizes(int[] hiddenLayersSizes) {
+        this.hiddenLayersSizes = hiddenLayersSizes;
+    }
+
     //endregion
 }
