@@ -4,9 +4,9 @@ import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.codingbee.snn4j.helping_objects.Dataset;
 import com.codingbee.snn4j.interfaces.ActivationFunction;
-import com.codingbee.snn4j.interfaces.RandomWeightGenerator;
-import com.codingbee.snn4j.interfaces.layers.Layer;
-import com.codingbee.snn4j.interfaces.layers.Model;
+import com.codingbee.snn4j.interfaces.model.RandomWeightGenerator;
+import com.codingbee.snn4j.interfaces.model.Layer;
+import com.codingbee.snn4j.interfaces.model.Model;
 import com.codingbee.snn4j.settings.TrainingSettings;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -105,11 +105,11 @@ public class FullyConnectedLayer implements Layer {
             for (int j = 0; j < weights[i].length; j++) {
                 for (int k = 0; k < weights[i][j].length; k++) {
                     if (i == 0) {
-                        weights[i][j][k] = (float) randomGen.getWeight(inputLayerSize, weights[0].length);
+                        weights[i][j][k] = randomGen.getWeight(inputLayerSize, weights[0].length);
                     } else if (i == weights.length - 1) {
-                        weights[i][j][k] = (float) randomGen.getWeight(weights[weights.length - 1].length, outputLayerSize);
+                        weights[i][j][k] = randomGen.getWeight(weights[weights.length - 1].length, outputLayerSize);
                     } else {
-                        weights[i][j][k] = (float) randomGen.getWeight(weights[i].length, weights[i + 1].length);
+                        weights[i][j][k] = randomGen.getWeight(weights[i].length, weights[i + 1].length);
                     }
                 }
             }
