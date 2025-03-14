@@ -2,7 +2,8 @@
 Shortened name SNN4J.
 
 ## What is this library?
-SNN4J is simple library for Java, which allows you to create simple neuron networks, train them and test them. It currently supports the MLP (multi-layer perceptron) architecture of neural network. Basic example of project you could do with this library is the number recognition AI using the MNIST database. But keep in mind this library is supposed to serve as a learning resource and not to be used in any big projects, where it may be better to use some high-performance library which can utilize GPUs and your specific CPU architecture. It is supposed to help understanding the theory but is not optimized or multithreaded. There is also branch for the KAN architecture (Kolmogorov-Arnold network) but it is still in developement, it will be added as soon as I have working polished version.
+SNN4J is simple library for Java, which allows you to create simple neuron networks, train them and test them.
+Currently, it is still developed and the whole system is being reworked to allow for much more customizable networks.
 
 ## How do I download it?
 1. If you use Maven, add to your pom.xml: 
@@ -38,7 +39,11 @@ dependencies {
 After that reload your build system files changes and the library should be in your folder with external libraries.
 
 ## How do I use it?
-My goal is to create as good documentation in the code as possible, so it is really easy to use. But I know how hard it can be to make the first step, so I will provide simple tutorial for the basic features.
+
+THIS IS TUTORIAL FOR OLD VERSION OF THE LIBRARY THE CURRENT SYSTEM WORKS USING LAYERS AND I WILL PROVIDE TUTORIAL ONCE IT IS FINISHED
+
+My goal is to create as good documentation in the code as possible, so it is really easy to use. But I know 
+how hard it can be to make the first step, so I will provide simple tutorial for the basic features.
 
 First thing u have to do is create the network. We will use the MLP class for it, which stands for multi-layer perceptron which is one of the neural network architectures.
 ```Java
@@ -103,7 +108,8 @@ double cost = myNetwork.getCorrectPercentage(dataset);
 All the object have the same interface methods, just in some cases they use different data-types, or the arguments are slightly changed up. The Javadoc documentation provided should be enough, but you can reach me to ask any questions if needed, do not be afraid.
 
 ## Have you got already working code I can use?
-Of course here is link to my repository I used to train on of my projects. Just make sure you install the MNIST database if you are going to use it.
+Of course here is link to my repository I used to train one of my projects.
+I will link all the repositories as I test the individual aspects of the library myself.
 https://github.com/Codin-bee/DigitRecognition
 
 ## I found a bug!
@@ -112,4 +118,4 @@ Please feel free to contact me via GitHub or my e-mail thecodingbee.dev@gmail.co
 
 
 ## Is this project abandoned ?
-Not really. Actually it is the quite opposite, I am working on much better and richer architecture right now, which will implement C++ under the hood. I got already working models in C++, but there is a lot of work, so it will take some time until I return to work on this main repository and extend its functionality. In the end maybe you should expect C++ implementation for the optimized version, but I will provide high level interface, same as in this one.
+Not really, but I am a busy man with busy life and I do not have much time left for this project right now.
