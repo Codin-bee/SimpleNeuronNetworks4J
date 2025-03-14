@@ -114,6 +114,14 @@ public class FullyConnectedLayer implements Layer {
                 }
             }
         }
+        for (int i = 0; i < biases.length-1; i++) {
+            for (int j = 0; j < biases[i].length; j++) {
+                biases[i][j] = randomGen.getHiddenLayerBias();
+            }
+        }
+        for (int i = 0; i < biases[biases.length - 1].length; i++) {
+            biases[biases.length-1][i] = randomGen.getOutputLayerBias();
+        }
     }
 
     @Override
