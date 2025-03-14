@@ -1,7 +1,6 @@
-package com.codingbee.snn4j.interfaces.layers;
+package com.codingbee.snn4j.interfaces.model;
 
 import com.codingbee.snn4j.helping_objects.Dataset;
-import com.codingbee.snn4j.interfaces.RandomWeightGenerator;
 import com.codingbee.snn4j.settings.DebuggingSettings;
 import com.codingbee.snn4j.settings.TrainingSettings;
 

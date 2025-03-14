@@ -1,4 +1,4 @@
-package com.codingbee.snn4j.interfaces;
+package com.codingbee.snn4j.interfaces.model;
 
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 

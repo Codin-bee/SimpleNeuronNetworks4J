@@ -4,9 +4,9 @@ import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.codingbee.snn4j.helping_objects.Dataset;
 import com.codingbee.snn4j.interfaces.ActivationFunction;
-import com.codingbee.snn4j.interfaces.RandomWeightGenerator;
-import com.codingbee.snn4j.interfaces.layers.Layer;
-import com.codingbee.snn4j.interfaces.layers.Model;
+import com.codingbee.snn4j.interfaces.model.RandomWeightGenerator;
+import com.codingbee.snn4j.interfaces.model.Layer;
+import com.codingbee.snn4j.interfaces.model.Model;
 import com.codingbee.snn4j.settings.TrainingSettings;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -95,7 +95,7 @@ public class FullyConnectedLayer implements Layer {
             mapper.readerForUpdating(this).readValue(new File(path), FullyConnectedLayer.class);
         } catch (IOException e) {
             throw new FileManagingException("An Exception occurred while trying to init the " +
-                    "FullyConnectedLayer from file" + e.getLocalizedMessage());
+                    "FullyConnectedLayer from file" + path + ": " + e.getLocalizedMessage());
         }
     }
 
@@ -105,14 +105,22 @@ public class FullyConnectedLayer implements Layer {
             for (int j = 0; j < weights[i].length; j++) {
                 for (int k = 0; k < weights[i][j].length; k++) {
                     if (i == 0) {
-                        weights[i][j][k] = (float) randomGen.getWeight(inputLayerSize, weights[0].length);
+                        weights[i][j][k] = randomGen.getWeight(inputLayerSize, weights[0].length);
                     } else if (i == weights.length - 1) {
-                        weights[i][j][k] = (float) randomGen.getWeight(weights[weights.length - 1].length, outputLayerSize);
+                        weights[i][j][k] = randomGen.getWeight(weights[weights.length - 1].length, outputLayerSize);
                     } else {
-                        weights[i][j][k] = (float) randomGen.getWeight(weights[i].length, weights[i + 1].length);
+                        weights[i][j][k] = randomGen.getWeight(weights[i].length, weights[i + 1].length);
                     }
                 }
             }
+        }
+        for (int i = 0; i < biases.length-1; i++) {
+            for (int j = 0; j < biases[i].length; j++) {
+                biases[i][j] = randomGen.getHiddenLayerBias();
+            }
+        }
+        for (int i = 0; i < biases[biases.length - 1].length; i++) {
+            biases[biases.length-1][i] = randomGen.getOutputLayerBias();
         }
     }
 
@@ -123,7 +131,7 @@ public class FullyConnectedLayer implements Layer {
             mapper.writeValue(new File(path), this);
         } catch (IOException e) {
             throw new FileManagingException("An Exception occurred trying to save the values of " +
-                    "the Dataset" + e.getLocalizedMessage());
+                    "the FullConnectedLayer: " + path + ": " + e.getLocalizedMessage());
         }
     }
 
@@ -176,6 +184,7 @@ public class FullyConnectedLayer implements Layer {
         loadHyperParams();
     }
 
+    //region Private methods
     private void loadHyperParams(){
         alpha = trainingSettings.getLearningRate();
         beta_1 = trainingSettings.getExponentialDecayRateOne();
@@ -228,8 +237,19 @@ public class FullyConnectedLayer implements Layer {
         biases[layer][neuron] = original;
         return gradient;
     }
+    //endregion
 
     //region Getters and Setters
+    public ActivationFunction getActivationFunction() {
+        return activationFunction;
+    }
+
+    public void setActivationFunction(ActivationFunction activationFunction) {
+        this.activationFunction = activationFunction;
+    }
+    //endregion
+
+    //region Basic Layer Interface Getters and Setters
     @Override
     public TrainingSettings getTrainingSettings() {
         return trainingSettings;
@@ -250,5 +270,49 @@ public class FullyConnectedLayer implements Layer {
     public void setFullModel(Model fullModel) {
         this.fullModel = fullModel;
     }
+    //endregion
+
+    //region Weight, Bias and Dimension Getters and Setters for Jackson
+
+    public float[][][] getWeights() {
+        return weights;
+    }
+
+    public void setWeights(float[][][] weights) {
+        this.weights = weights;
+    }
+
+    public float[][] getBiases() {
+        return biases;
+    }
+
+    public void setBiases(float[][] biases) {
+        this.biases = biases;
+    }
+
+    public int getInputLayerSize() {
+        return inputLayerSize;
+    }
+
+    public void setInputLayerSize(int inputLayerSize) {
+        this.inputLayerSize = inputLayerSize;
+    }
+
+    public int getOutputLayerSize() {
+        return outputLayerSize;
+    }
+
+    public void setOutputLayerSize(int outputLayerSize) {
+        this.outputLayerSize = outputLayerSize;
+    }
+
+    public int[] getHiddenLayersSizes() {
+        return hiddenLayersSizes;
+    }
+
+    public void setHiddenLayersSizes(int[] hiddenLayersSizes) {
+        this.hiddenLayersSizes = hiddenLayersSizes;
+    }
+
     //endregion
 }
