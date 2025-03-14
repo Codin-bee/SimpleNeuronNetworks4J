@@ -123,7 +123,7 @@ public class FullyConnectedLayer implements Layer {
             mapper.writeValue(new File(path), this);
         } catch (IOException e) {
             throw new FileManagingException("An Exception occurred trying to save the values of " +
-                    "the Dataset" + e.getLocalizedMessage());
+                    "the FullConnectedLayer: " + path + ": " + e.getLocalizedMessage());
         }
     }
 
@@ -229,7 +229,7 @@ public class FullyConnectedLayer implements Layer {
         return gradient;
     }
 
-    //region Getters and Setters
+    //region Basic Layer Interface Getters and Setters
     @Override
     public TrainingSettings getTrainingSettings() {
         return trainingSettings;
@@ -242,16 +242,6 @@ public class FullyConnectedLayer implements Layer {
     }
 
     @Override
-    public ActivationFunction getActivationFunction() {
-        return activationFunction;
-    }
-
-    @Override
-    public void setActivationFunction(ActivationFunction activationFunction) {
-        this.activationFunction = activationFunction;
-    }
-
-    @Override
     public Model getFullModel() {
         return fullModel;
     }
@@ -259,6 +249,16 @@ public class FullyConnectedLayer implements Layer {
     @Override
     public void setFullModel(Model fullModel) {
         this.fullModel = fullModel;
+    }
+    //endregion
+
+    //region Getters and Setters
+    public ActivationFunction getActivationFunction() {
+        return activationFunction;
+    }
+
+    public void setActivationFunction(ActivationFunction activationFunction) {
+        this.activationFunction = activationFunction;
     }
     //endregion
 

@@ -49,7 +49,4 @@ public interface Layer {
 
     Model getFullModel();
     void setFullModel(Model fullModel);
-
-    ActivationFunction getActivationFunction();
-    void setActivationFunction(ActivationFunction activationFunction);
 }
