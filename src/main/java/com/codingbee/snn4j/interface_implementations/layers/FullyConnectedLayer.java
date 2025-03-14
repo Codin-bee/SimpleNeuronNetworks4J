@@ -176,6 +176,7 @@ public class FullyConnectedLayer implements Layer {
         loadHyperParams();
     }
 
+    //region Private methods
     private void loadHyperParams(){
         alpha = trainingSettings.getLearningRate();
         beta_1 = trainingSettings.getExponentialDecayRateOne();
@@ -228,6 +229,17 @@ public class FullyConnectedLayer implements Layer {
         biases[layer][neuron] = original;
         return gradient;
     }
+    //endregion
+
+    //region Getters and Setters
+    public ActivationFunction getActivationFunction() {
+        return activationFunction;
+    }
+
+    public void setActivationFunction(ActivationFunction activationFunction) {
+        this.activationFunction = activationFunction;
+    }
+    //endregion
 
     //region Basic Layer Interface Getters and Setters
     @Override
@@ -249,16 +261,6 @@ public class FullyConnectedLayer implements Layer {
     @Override
     public void setFullModel(Model fullModel) {
         this.fullModel = fullModel;
-    }
-    //endregion
-
-    //region Getters and Setters
-    public ActivationFunction getActivationFunction() {
-        return activationFunction;
-    }
-
-    public void setActivationFunction(ActivationFunction activationFunction) {
-        this.activationFunction = activationFunction;
     }
     //endregion
 
