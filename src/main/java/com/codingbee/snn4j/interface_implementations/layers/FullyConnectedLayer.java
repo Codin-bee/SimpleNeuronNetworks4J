@@ -40,6 +40,10 @@ public class FullyConnectedLayer implements Layer {
     float[][] m_bias;
     float[][] v_bias;
 
+    float[][] deltas;
+    float[][] zs;
+    float[][] activations;
+
 
     public FullyConnectedLayer(int inputLayerSize, int outputLayerSize,int[] hiddenLayersSizes,
                                ActivationFunction activationFunction) {
@@ -137,14 +141,15 @@ public class FullyConnectedLayer implements Layer {
 
     @Override
     public void train(Dataset data, Model model) throws IncorrectDataException {
-        float m_hat, v_hat, g;
+        float m_hat, v_hat;
             time++;
+            float[][][] weightGradients = computeWeightGradients(activations, deltas);
+            float[][] biasGradients = computeBiasGradients(deltas);
             for (int j = 0; j < weights.length; j++) {
                 for (int k = 0; k < weights[j].length; k++) {
                     for (int l = 0; l < weights[j][k].length; l++) {
-                        g = calculateWeightGradient(j, k, l, data);
-                        m_weight[j][k][l] = beta_1 * m_weight[j][k][l] + beta_3 * g;
-                        v_weight[j][k][l] = (float) (beta_2 * v_weight[j][k][l] + beta_4 * Math.pow(g, 2));
+                        m_weight[j][k][l] = beta_1 * m_weight[j][k][l] + beta_3 * weightGradients[j][k][l];
+                        v_weight[j][k][l] = (float) (beta_2 * v_weight[j][k][l] + beta_4 * Math.pow(weightGradients[j][k][l], 2));
                         m_hat = (float) (m_weight[j][k][l] / (1 - Math.pow(beta_1, time)));
                         v_hat = (float) (v_weight[j][k][l] / (1 - Math.pow(beta_2, time)));
                         weights[j][k][l] = (float) (weights[j][k][l] - m_hat * (alpha / (Math.sqrt(v_hat) + epsilon)));
@@ -153,9 +158,8 @@ public class FullyConnectedLayer implements Layer {
             }
             for (int j = 0; j < biases.length; j++) {
                 for (int k = 0; k < biases[j].length; k++) {
-                    g = calculateBiasGradient(j, k, data);
-                    m_bias[j][k] = beta_1 * m_bias[j][k] + beta_3 * g;
-                    v_bias[j][k] = (float) (beta_2 * v_bias[j][k] + beta_4 * Math.pow(g, 2));
+                    m_bias[j][k] = beta_1 * m_bias[j][k] + beta_3 * biasGradients[j][k];
+                    v_bias[j][k] = (float) (beta_2 * v_bias[j][k] + beta_4 * Math.pow(biasGradients[j][k], 2));
                     m_hat = (float) (m_bias[j][k] / (1 - Math.pow(beta_1, time)));
                     v_hat = (float) (v_bias[j][k] / (1 - Math.pow(beta_2, time)));
                     biases[j][k] = (float) (biases[j][k] - m_hat * (alpha / (Math.sqrt(v_hat) + epsilon)));
@@ -214,29 +218,88 @@ public class FullyConnectedLayer implements Layer {
         }
     }
 
-    private float calculateWeightGradient(int layer, int to, int from, Dataset data) {
-        float original = weights[layer][to][from];
-        float nudge = (float) Math.max(1e-6, Math.abs(original) * 1e-6);
-        weights[layer][to][from] = original + nudge;
-        float positiveNudge = fullModel.calculateAverageCost(data);
-        weights[layer][to][from] = original - nudge;
-        float negativeNudge = fullModel.calculateAverageCost(data);
-        float gradient = (positiveNudge - negativeNudge) / ( 2 * nudge);
-        weights[layer][to][from] = original;
-        return gradient;
+    private float[][][] computeWeightGradients(float[][] activations, float[][] deltas) {
+        int numLayers = weights.length;
+        float[][][] gradients = new float[numLayers][][];
+
+        for (int layer = 1; layer < numLayers; layer++) {
+            int numNeurons = weights[layer].length;
+            int prevLayerNeurons = weights[layer][0].length;
+            gradients[layer] = new float[numNeurons][prevLayerNeurons];
+
+            for (int neuron = 0; neuron < numNeurons; neuron++) {
+                for (int from = 0; from < prevLayerNeurons; from++) {
+                    gradients[layer][neuron][from] = deltas[layer][neuron] * activations[layer - 1][from];
+                }
+            }
+        }
+        return gradients;
     }
 
-    private float calculateBiasGradient(int layer, int neuron, Dataset data) {
-        float original = biases[layer][neuron];
-        float nudge = (float) Math.max(1e-6, Math.abs(original) * 1e-6);
-        biases[layer][neuron] = original + nudge;
-        float positiveNudge = fullModel.calculateAverageCost(data);
-        biases[layer][neuron] = original - nudge;
-        float negativeNudge = fullModel.calculateAverageCost(data);
-        float gradient = (positiveNudge - negativeNudge) / (2 * nudge);
-        biases[layer][neuron] = original;
-        return gradient;
+    private float[][] computeBiasGradients(float[][] deltas) {
+        int numLayers = biases.length;
+        float[][] gradients = new float[numLayers][];
+        for (int layer = 0; layer < numLayers; layer++) {
+            int numNeurons = biases[layer].length;
+            gradients[layer] = new float[numNeurons];
+            System.arraycopy(deltas[layer], 0, gradients[layer], 0, numNeurons);
+        }
+        return gradients;
     }
+
+    private void forwardPass(float[][] input){
+        this.activations = new float[weights.length + 1][];
+        this.zs = new float[weights.length][];
+
+        float[] layerInput = input[0];
+        float[] layerOutput;
+
+        activations[0] = input[0];
+
+        for (int j = 0; j < weights.length; j++) {
+            layerOutput = new float[weights[j].length];
+            this.zs[j] = new float[weights[j].length];
+
+            for (int k = 0; k < weights[j].length; k++) {
+                layerOutput[k] = 0;
+                for (int l = 0; l < weights[j][k].length; l++) {
+                    layerOutput[k] += layerInput[l] * weights[j][k][l];
+                }
+                layerOutput[k] += biases[j][k];
+                this.zs[j][k] = layerOutput[k];
+                layerOutput[k] = activationFunction.activate(layerOutput[k]);
+            }
+
+            this.activations[j + 1] = layerOutput;
+            layerInput = layerOutput;
+        }
+    }
+
+    public void calculateDeltas(float[][] expectedOutput) {
+        this.deltas = new float[weights.length][];
+
+        int lastLayer = weights.length - 1;
+        deltas[lastLayer] = new float[activations[lastLayer + 1].length];
+
+        for (float[] floats : expectedOutput) {
+            for (int i = 0; i < activations[lastLayer + 1].length; i++) {
+                deltas[lastLayer][i] = (activations[lastLayer + 1][i] - floats[i]) * activationFunction.derivative(zs[lastLayer][i]);
+            }
+        }
+
+        for (int layer = lastLayer - 1; layer >= 0; layer--) {
+            deltas[layer] = new float[weights[layer].length];
+
+            for (int i = 0; i < weights[layer].length; i++) {
+                deltas[layer][i] = 0;
+                for (int j = 0; j < weights[layer + 1].length; j++) {
+                    deltas[layer][i] += weights[layer + 1][j][i] * deltas[layer + 1][j];
+                }
+                deltas[layer][i] *= activationFunction.derivative(zs[layer][i]);
+            }
+        }
+    }
+
     //endregion
 
     //region Getters and Setters
