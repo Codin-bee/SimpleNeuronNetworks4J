@@ -8,4 +8,11 @@ public class Tanh implements ActivationFunction {
     public float activate(float n) {
         return (float) ((Math.exp(n) - Math.exp(-n)) / (Math.exp(n) + Math.exp(-n)));
     }
+
+    @Override
+    public float derivative(float n) {
+        float tanhVal = activate(n);
+        return 1 - tanhVal * tanhVal;
+    }
+
 }

@@ -9,9 +9,18 @@ public class LeakyReLU implements ActivationFunction {
     @Override
     public float activate(float n) {
         if (n < 0){
-            return (float) (n * alpha);
+            return n * alpha;
         }else{
             return n;
+        }
+    }
+
+    @Override
+    public float derivative(float n) {
+        if (n < 0){
+            return n * alpha;
+        }else{
+            return alpha;
         }
     }
 

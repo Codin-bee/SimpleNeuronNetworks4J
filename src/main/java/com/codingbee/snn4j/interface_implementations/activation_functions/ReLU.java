@@ -11,4 +11,11 @@ public class ReLU implements ActivationFunction {
         }
         return n;
     }
+    @Override
+    public float derivative(float n) {
+        if (n < 0) {
+            return 0;
+        }
+        return 1;
+    }
 }
