@@ -11,6 +11,7 @@ import java.util.*;
 public class Dataset {
     private float[][][] inputData;
     private float[][][] expectedResults;
+    private int batchSize = 1;
 
     /**
      * Object which holds data used for training or testing any model
@@ -128,5 +129,14 @@ public class Dataset {
     public void setExpectedResults(float[][][] expectedResults) {
         this.expectedResults = expectedResults;
     }
+
+    public int getBatchSize() {
+        return batchSize;
+    }
+
+    public void setBatchSize(int batchSize) {
+        this.batchSize = batchSize;
+    }
+
     //endregion
 }
