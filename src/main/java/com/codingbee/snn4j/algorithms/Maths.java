@@ -39,4 +39,28 @@ public class Maths {
         System.arraycopy(vectorA, 0, concatenatedVector, vectorB.length, vectorA.length);
         return concatenatedVector;
     }
+
+    public static float calculateAverageMSE(float[][][] outputs, float[][][] expectedOutputs){
+        float cost = 0;
+        for (int i = 0; i < outputs.length; i++) {
+            for (int j = 0; j < outputs[i].length; j++) {
+                for (int k = 0; k < outputs[i][j].length; k++) {
+                    cost += (float) Math.pow((outputs[i][j][k] - expectedOutputs[i][j][k]), 2);
+                }
+            }
+        }
+        return cost / outputs.length;
+    }
+
+    public static int getIndexWithHighestVal(float[] array){
+        float highestVal = array[0];
+        int index = 0;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] > highestVal){
+                highestVal = array[i];
+                index = i;
+            }
+        }
+        return index;
+    }
 }
