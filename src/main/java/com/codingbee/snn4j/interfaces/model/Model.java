@@ -5,9 +5,6 @@ import com.codingbee.snn4j.helping_objects.Dataset;
 import com.codingbee.snn4j.settings.TrainingSettings;
 
 public interface Model {
-    void addLayer(Layer layer);
-    void addLayer(Layer layer, int index);
-
     float[][] process(float[][] i);
 
     void init(RandomWeightGenerator randomGen);
