@@ -17,7 +17,8 @@ public class XavierGaussianGen implements RandomWeightGenerator {
         if (inputs < 1 || outputs < 1){
             throw new IncorrectDataException("The layer sizes, the weights are between, have to be larger than 0");
         }
-        return (float) gen.nextGaussian(0, (float) 2 / (inputs + outputs));
+        float stdDev = (float) Math.sqrt(2.0 / (inputs + outputs));
+        return (float) (gen.nextGaussian() * stdDev);
     }
 
     @Override
