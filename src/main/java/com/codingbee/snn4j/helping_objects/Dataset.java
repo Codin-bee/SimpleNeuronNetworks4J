@@ -12,6 +12,7 @@ public class Dataset {
     private float[][][] inputData;
     private float[][][] expectedResults;
     private int batchSize = 1;
+    private int numberOfBatches = 1;
 
     /**
      * Object which holds data used for training or testing any model
@@ -20,18 +21,18 @@ public class Dataset {
      * @param expectedResults the values expected in the output of the model,
      *                        formated the same way as inputs
      */
-    @SuppressWarnings("unused")
     public Dataset(float[][][] inputData, float[][][] expectedResults) {
         this.inputData = inputData;
         this.expectedResults = expectedResults;
+        setNumberOfBatches(1);
     }
 
     /**
      * Creates new instance of Dataset and loads the values from json file into it
      * @param path path to the json file
-     * @throws IOException if any Exception occurs while working with files
+     * @throws FileManagingException if any Exception occurs while working with files
      */
-    public Dataset(String path) throws IOException {
+    public Dataset(String path) throws FileManagingException {
         this.loadFromJson(path);
     }
 
@@ -113,6 +114,25 @@ public class Dataset {
         return new Dataset(inputData, outputData);
     }
 
+    /**
+     * Splits the dataset into batches. The number of batches or their size can be modified using getters and setters
+     * @return list of new Dataset object, each being one batch
+     */
+    public List<Dataset> splitIntoBatches(){
+        List<Dataset> batches = new ArrayList<>(numberOfBatches);
+        for (int i = 0; i < numberOfBatches; i++) {
+            float[][][] batchInputs = new float[batchSize][][];
+            float[][][] batchOutputs = new float[batchSize][][];
+            for (int j = 0; j < batchSize; j++) {
+                batchInputs[j] = inputData[i];
+                batchOutputs[j] = inputData[i];
+            }
+            Dataset batch = new Dataset(batchInputs, batchOutputs);
+            batch.setNumberOfBatches(1);
+        }
+        return batches;
+    }
+
     //region Getters and setters
     public float[][][] getInputData() {
         return inputData;
@@ -136,6 +156,16 @@ public class Dataset {
 
     public void setBatchSize(int batchSize) {
         this.batchSize = batchSize;
+        this.numberOfBatches = this.getInputData().length / batchSize;
+    }
+
+    public int getNumberOfBatches() {
+        return numberOfBatches;
+    }
+
+    public void setNumberOfBatches(int numberOfBatches) {
+        this.numberOfBatches = numberOfBatches;
+        this.batchSize = this.getInputData().length / numberOfBatches;
     }
 
     //endregion
