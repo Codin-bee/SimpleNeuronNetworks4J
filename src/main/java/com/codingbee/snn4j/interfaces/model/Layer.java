@@ -1,7 +1,6 @@
 package com.codingbee.snn4j.interfaces.model;
 
 import com.codingbee.snn4j.exceptions.FileManagingException;
-import com.codingbee.snn4j.helping_objects.Dataset;
 import com.codingbee.snn4j.settings.TrainingSettings;
 
 public interface Layer {
@@ -14,17 +13,10 @@ public interface Layer {
 
     /**
      * Performs backpropagation to adjust weights based on the error gradient
-     * @param outputError 3D error array from the next layer (batchSize x D1 x D2)
+     * @param outputErrors 3D error array from the next layer (batchSize x D1 x D2)
      * @return 3D error array to propagate to the previous layer (batchSize x D1 x D2)
      */
-    float[][][] backPropagate(float[][][] outputError);
-
-    /**
-     * Computes the initial gradient for the first layer using the dataset.
-     * @param data Dataset containing inputs and labels
-     * @return 3D gradient array (batchSize x D1 x D2)
-     */
-    float[][][] computeInitialGradient(Dataset data);
+    float[][][] backPropagateAndUpdate(float[][][] outputErrors, float[][][] layerInputs);
 
     /**
      * Initializes the parameters of the layer from given json file
