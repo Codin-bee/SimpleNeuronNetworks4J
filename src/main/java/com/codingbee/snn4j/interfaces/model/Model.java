@@ -5,7 +5,6 @@ import com.codingbee.snn4j.helping_objects.Dataset;
 import com.codingbee.snn4j.settings.TrainingSettings;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, property = "@class")
 public interface Model {
     float[][] process(float[][] i);
 
