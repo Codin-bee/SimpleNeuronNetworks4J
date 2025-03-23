@@ -109,10 +109,12 @@ public class LayeredModel implements Model {
             data.shuffle();
             List<Dataset> batches = data.splitIntoBatches();
             for (Dataset batch : batches) {
+                for (Layer l : layers) {
+                    l.prepareForwardPass(batch.getInputData().length);
+                }
                 float[][][] prevGradients = calculateInitialGradient(batch);
                 for (int j = layers.size() - 1; j >= 0; j--) {
-                    //Replace NULL by the layerInput
-                    prevGradients = layers.get(j).backPropagateAndUpdate(prevGradients, null);
+                    prevGradients = layers.get(j).backPropagateAndUpdate(prevGradients);
                 }
                 adamTime++;
             }
@@ -175,6 +177,16 @@ public class LayeredModel implements Model {
             gradients[example] = exampleGradient;
         }
         return gradients;
+    }
+
+    private float[][] forwardPass(float[][] input) {
+        float[][] prevOutput = input;
+        float[][] output = null;
+        for (int i = 0; i < layers.size(); i++) {
+            output = layers.get(i).forwardPass(prevOutput, i);
+            prevOutput = output;
+        }
+        return output;
     }
     //endregion
 }
