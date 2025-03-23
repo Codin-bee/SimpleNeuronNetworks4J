@@ -2,8 +2,6 @@ package com.codingbee.snn4j.interface_implementations.layers;
 
 import com.codingbee.snn4j.algorithms.Maths;
 import com.codingbee.snn4j.exceptions.FileManagingException;
-import com.codingbee.snn4j.exceptions.IncorrectDataException;
-import com.codingbee.snn4j.helping_objects.Dataset;
 import com.codingbee.snn4j.interfaces.ActivationFunction;
 import com.codingbee.snn4j.interfaces.model.Layer;
 import com.codingbee.snn4j.interfaces.model.Model;
@@ -73,6 +71,22 @@ public class LSTMLayer implements Layer {
     }
 
     @Override
+    public float[][] forwardPass(float[][] input, int index) {
+        return new float[0][];
+    }
+
+    @Override
+    public void prepareForwardPass(int numberOfSamples) {
+
+    }
+
+    @Override
+    public float[][][] backPropagateAndUpdate(float[][][] outputErrors) {
+        return new float[0][][];
+    }
+
+
+    @Override
     public void init(String path) throws FileManagingException {
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -118,13 +132,9 @@ public class LSTMLayer implements Layer {
 
     @Override
     public void initAdamValues() {
-
+        //TODO
     }
 
-    @Override
-    public void train(Dataset data, Model model) throws IncorrectDataException {
-
-    }
     //region Private methods
     private float[] calculateCellOutput(int cellNo, float[] input){
         float[] processedVector = Maths.concatenateVectors(input, prevHiddenStates[cellNo]);
@@ -161,7 +171,29 @@ public class LSTMLayer implements Layer {
     }
     //endregion
 
-    //region Getters and Setters
+    //region Basic Interface Getters and Setters
+    @Override
+    public TrainingSettings getTrainingSettings() {
+        return trainingSettings;
+    }
+
+    @Override
+    public void setTrainingSettings(TrainingSettings settings) {
+        trainingSettings = settings;
+    }
+
+    @Override
+    public Model getFullModel() {
+        return fullModel;
+    }
+
+    @Override
+    public void setFullModel(Model fullModel) {
+        this.fullModel = fullModel;
+    }
+    //endregion
+
+    //region Other Getters and Setters
     public ActivationFunction getCellStateAF() {
         return cellStateAF;
     }
@@ -201,32 +233,6 @@ public class LSTMLayer implements Layer {
     public void setInputGateAF(ActivationFunction inputGateAF) {
         this.inputGateAF = inputGateAF;
     }
-
-    //endregion
-
-    //region Basic Interface Getters and Setters
-    @Override
-    public TrainingSettings getTrainingSettings() {
-        return trainingSettings;
-    }
-
-    @Override
-    public void setTrainingSettings(TrainingSettings settings) {
-        trainingSettings = settings;
-    }
-
-    @Override
-    public Model getFullModel() {
-        return fullModel;
-    }
-
-    @Override
-    public void setFullModel(Model fullModel) {
-        this.fullModel = fullModel;
-    }
-    //endregion
-
-    //region Weight, Bias and Cell State Getters and Setters for Jackson
 
     public float[][][] getForgetGateW() {
         return forgetGateW;
