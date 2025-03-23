@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +20,8 @@ public class LayeredModel implements Model {
     private List<Layer> layers = new ArrayList<>();
     private TrainingSettings trainingSettings = new TrainingSettings();
     int adamTime;
+
+    public LayeredModel(){};
 
     public void addLayer(Layer layer) {
         layers.add(layer);
