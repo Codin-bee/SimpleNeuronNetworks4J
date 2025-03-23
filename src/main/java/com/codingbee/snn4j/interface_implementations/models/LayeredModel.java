@@ -3,7 +3,6 @@ package com.codingbee.snn4j.interface_implementations.models;
 import com.codingbee.snn4j.algorithms.Maths;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.helping_objects.Dataset;
-import com.codingbee.snn4j.interface_implementations.layers.FullyConnectedLayer;
 import com.codingbee.snn4j.interfaces.model.Layer;
 import com.codingbee.snn4j.interfaces.model.Model;
 import com.codingbee.snn4j.interfaces.model.RandomWeightGenerator;
@@ -197,5 +196,21 @@ public class LayeredModel implements Model {
         }
         return output;
     }
+    //endregion
+
+    //region Getters and Setters for Jackson
+
+    public List<Layer> getLayers() {
+        return layers;
+    }
+
+    public void setLayers(List<Layer> layers) {
+        this.layers = layers;
+    }
+
+    public void setAdamTime(int adamTime) {
+        this.adamTime = adamTime;
+    }
+
     //endregion
 }
