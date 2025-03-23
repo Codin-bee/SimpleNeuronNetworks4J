@@ -61,7 +61,7 @@ public class LayeredModel implements Model {
         File directory = new File(path);
         if (!directory.isDirectory()) throw new FileManagingException("There is no directory at: " + path);
         for (int i = 0; i < layers.size(); i++){
-            layers.get(i).init(path + i + ".json");
+            layers.get(i).init(path + File.separator + i + ".json");
         }
     }
 
