@@ -2,7 +2,9 @@ package com.codingbee.snn4j.interfaces.model;
 
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.settings.TrainingSettings;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, property = "@class")
 public interface Layer {
     /**
      * Processes given input array and returns a new output array

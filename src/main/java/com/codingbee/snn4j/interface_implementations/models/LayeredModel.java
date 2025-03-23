@@ -127,9 +127,7 @@ public class LayeredModel implements Model {
                 adamTime++;
             }
             if (printDebug){
-                System.out.println(LocalDateTime.now());
                 System.out.println("The cost after " + epoch + ". epoch is : " + calculateAverageCost(data));
-                System.out.println(LocalDateTime.now());
             }
         }
     }
