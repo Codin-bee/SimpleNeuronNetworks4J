@@ -3,13 +3,17 @@ package com.codingbee.snn4j.interface_implementations.models;
 import com.codingbee.snn4j.algorithms.Maths;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.helping_objects.Dataset;
-import com.codingbee.snn4j.helping_objects.LayeredModelInfo;
+import com.codingbee.snn4j.interface_implementations.layers.FullyConnectedLayer;
 import com.codingbee.snn4j.interfaces.model.Layer;
 import com.codingbee.snn4j.interfaces.model.Model;
 import com.codingbee.snn4j.interfaces.model.RandomWeightGenerator;
 import com.codingbee.snn4j.settings.TrainingSettings;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,28 +63,25 @@ public class LayeredModel implements Model {
 
     @Override
     public void init(String path) throws FileManagingException {
-        LayeredModelInfo modelInfo = new LayeredModelInfo(path);
-        layers = modelInfo.getLayers();
-
-        File directory = new File(modelInfo.getDir());
-        if (!directory.isDirectory()) throw new FileManagingException("There is no directory at: " + modelInfo.getDir());
-        for (int i = 0; i < layers.size(); i++){
-            layers.get(i).init(modelInfo.getDir() + File.separator + i + ".json");
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+            mapper.readerForUpdating(this).readValue(new File(path), LayeredModel.class);
+        } catch (IOException e) {
+            throw new FileManagingException("An Exception occurred while trying to init the " +
+                    "LayeredModel from file" + path + ": " + e.getLocalizedMessage());
         }
     }
 
     @Override
     public void save(String path) throws FileManagingException{
-        LayeredModelInfo modelInfo = new LayeredModelInfo(path, layers);
-        modelInfo.save(path + File.separator + "modelInfo.json");
-
-        File directory = new File(path);
-        if (!(directory.isDirectory() || directory.mkdirs())) throw new FileManagingException("Could not " +
-                "create required directory: " + path);
-        for (int i = 0; i < layers.size(); i++){
-            layers.get(i).save(path + File.separator +  i + ".json");
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(new File(path), this);
+        } catch (IOException e) {
+            throw new FileManagingException("An Exception occurred trying to save the values of " +
+                    "the LayeredModel: " + path + ": " + e.getLocalizedMessage());
         }
-
     }
 
     @Override
