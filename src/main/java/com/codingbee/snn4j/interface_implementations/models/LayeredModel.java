@@ -8,6 +8,7 @@ import com.codingbee.snn4j.interfaces.model.Model;
 import com.codingbee.snn4j.interfaces.model.RandomWeightGenerator;
 import com.codingbee.snn4j.settings.TrainingSettings;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -22,26 +23,6 @@ public class LayeredModel implements Model {
     int adamTime;
 
     public LayeredModel(){};
-
-    public void addLayer(Layer layer) {
-        layers.add(layer);
-    }
-
-    public void addLayer(Layer layer, int index) {
-        layers.add(index, layer);
-    }
-
-    public void removeLayer(int index){
-        layers.remove(index);
-    }
-
-    public void removeLayer(Layer layer){
-        layers.remove(layer);
-    }
-
-    public int getNumberOfLayers(){
-        return layers.size();
-    }
 
     @Override
     public float[][] process(float[][] input) {
@@ -198,6 +179,10 @@ public class LayeredModel implements Model {
     //endregion
 
     //region Getters and Setters for Jackson
+    @JsonIgnore
+    public int getNumberOfLayers(){
+        return layers.size();
+    }
 
     public List<Layer> getLayers() {
         return layers;
@@ -211,5 +196,20 @@ public class LayeredModel implements Model {
         this.adamTime = adamTime;
     }
 
+    public void addLayer(Layer layer) {
+        layers.add(layer);
+    }
+
+    public void addLayer(Layer layer, int index) {
+        layers.add(index, layer);
+    }
+
+    public void removeLayer(int index){
+        layers.remove(index);
+    }
+
+    public void removeLayer(Layer layer){
+        layers.remove(layer);
+    }
     //endregion
 }
