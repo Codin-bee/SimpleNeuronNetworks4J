@@ -3,6 +3,7 @@ package com.codingbee.snn4j.interface_implementations.models;
 import com.codingbee.snn4j.algorithms.Maths;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.helping_objects.Dataset;
+import com.codingbee.snn4j.helping_objects.LayeredModelInfo;
 import com.codingbee.snn4j.interfaces.model.Layer;
 import com.codingbee.snn4j.interfaces.model.Model;
 import com.codingbee.snn4j.interfaces.model.RandomWeightGenerator;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LayeredModel implements Model {
-    private final List<Layer> layers = new ArrayList<>();
+    private List<Layer> layers = new ArrayList<>();
     private TrainingSettings trainingSettings = new TrainingSettings();
     int adamTime;
 
@@ -58,21 +59,28 @@ public class LayeredModel implements Model {
 
     @Override
     public void init(String path) throws FileManagingException {
-        File directory = new File(path);
-        if (!directory.isDirectory()) throw new FileManagingException("There is no directory at: " + path);
+        LayeredModelInfo modelInfo = new LayeredModelInfo(path);
+        layers = modelInfo.getLayers();
+
+        File directory = new File(modelInfo.getDir());
+        if (!directory.isDirectory()) throw new FileManagingException("There is no directory at: " + modelInfo.getDir());
         for (int i = 0; i < layers.size(); i++){
-            layers.get(i).init(path + File.separator + i + ".json");
+            layers.get(i).init(modelInfo.getDir() + File.separator + i + ".json");
         }
     }
 
     @Override
     public void save(String path) throws FileManagingException{
+        LayeredModelInfo modelInfo = new LayeredModelInfo(path, layers);
+        modelInfo.save(path + File.separator + "modelInfo.json");
+
         File directory = new File(path);
         if (!(directory.isDirectory() || directory.mkdirs())) throw new FileManagingException("Could not " +
                 "create required directory: " + path);
         for (int i = 0; i < layers.size(); i++){
             layers.get(i).save(path + File.separator +  i + ".json");
         }
+
     }
 
     @Override
