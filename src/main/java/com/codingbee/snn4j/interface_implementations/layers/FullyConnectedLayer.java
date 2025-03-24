@@ -60,22 +60,22 @@ public class FullyConnectedLayer implements Layer {
         float[] layerInput;
         float[] layerOutput = null;
 
-        for (int i = 0; i < input.length; i++) {
-            layerInput = input[i];
-            for (int j = 0; j < weights.length; j++) {
-                layerOutput = new float[weights[j].length];
-                for (int k = 0; k < weights[j].length; k++) {
-                    layerOutput[k] = 0;
-                    for (int l = 0; l < weights[j][k].length; l++) {
-                        layerOutput[k] += layerInput[l] * weights[j][k][l];
+        for (int vector = 0; vector < input.length; vector++) {
+            layerInput = input[vector];
+            for (int layer = 0; layer < weights.length; layer++) {
+                layerOutput = new float[weights[layer].length];
+                for (int to = 0; to < weights[layer].length; to++) {
+                    layerOutput[to] = 0;
+                    for (int from = 0; from < weights[layer][to].length; from++) {
+                        layerOutput[to] += layerInput[from] * weights[layer][to][from];
                     }
-                    layerOutput[k] += biases[j][k];
-                    layerOutput[k] = activationFunction.activate(layerOutput[k]);
+                    layerOutput[to] += biases[layer][to];
+                    layerOutput[to] = activationFunction.activate(layerOutput[to]);
                 }
                 layerInput = layerOutput;
             }
             assert layerOutput != null;
-            outputs[i] = Arrays.copyOf(layerOutput, layerOutput.length);
+            outputs[vector] = Arrays.copyOf(layerOutput, layerOutput.length);
         }
         return outputs;
     }
@@ -87,9 +87,8 @@ public class FullyConnectedLayer implements Layer {
         float[] layerInput;
         float[] layerOutput = null;
 
-        //Each vector
-        for (int i = 0; i < input.length; i++) {
 
+        for (int i = 0; i < input.length; i++) {
             layerInput = input[i];
             for (int j = 0; j < weights.length; j++) {
                 layerOutput = new float[weights[j].length];
@@ -168,6 +167,15 @@ public class FullyConnectedLayer implements Layer {
             }
 
             layerError = previousLayerError;
+        }
+
+        for (int i = 0; i < weightGradients.length; i++) {
+            for (int j = 0; j < weightGradients[i].length; j++) {
+                for (int k = 0; k < weightGradients[i][j].length; k++) {
+                    System.out.print(weightGradients[i][j][k] + " ");
+                }
+                System.out.println();
+            }
         }
 
         updateParams(weightGradients, biasGradients);
