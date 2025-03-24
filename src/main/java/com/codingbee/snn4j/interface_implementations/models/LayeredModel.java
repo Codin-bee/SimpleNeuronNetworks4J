@@ -99,7 +99,9 @@ public class LayeredModel implements Model {
         for (int epoch = 1; epoch <= epochs; epoch++) {
             data.shuffle();
             List<Dataset> batches = data.splitIntoBatches();
+            System.out.println(batches.size());
             for (Dataset batch : batches) {
+                System.out.println("1");
                 for (Layer l : layers) {
                     l.prepareForwardPass(batch.getInputData().length);
                 }
