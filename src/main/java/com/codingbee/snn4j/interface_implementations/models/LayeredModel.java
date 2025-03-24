@@ -99,16 +99,12 @@ public class LayeredModel implements Model {
         for (int epoch = 1; epoch <= epochs; epoch++) {
             data.shuffle();
             List<Dataset> batches = data.splitIntoBatches();
-            System.out.println(batches.size());
             for (Dataset batch : batches) {
-                System.out.println("1");
                 for (Layer l : layers) {
                     l.prepareForwardPass(batch.getInputData().length);
                 }
                 float[][][] prevGradients = calculateInitialGradient(batch);
-                System.out.println(layers.size() - 1);
                 for (int j = layers.size() - 1; j >= 0; j--) {
-                    System.out.println(j);
                     prevGradients = layers.get(j).backPropagateAndUpdate(prevGradients);
                 }
                 adamTime++;
@@ -202,10 +198,12 @@ public class LayeredModel implements Model {
     }
 
     public void addLayer(Layer layer) {
+        layer.setFullModel(this);
         layers.add(layer);
     }
 
     public void addLayer(Layer layer, int index) {
+        layer.setFullModel(this);
         layers.add(index, layer);
     }
 

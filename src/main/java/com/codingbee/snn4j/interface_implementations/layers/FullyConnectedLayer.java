@@ -125,7 +125,6 @@ public class FullyConnectedLayer implements Layer {
 
     @Override
     public float[][][] backPropagateAndUpdate(float[][][] outputErrors) {
-        System.out.println("CALLED");
         int numberOfSamples = outputErrors.length;
         int sequenceLength = outputErrors[0].length;
 
@@ -171,10 +170,10 @@ public class FullyConnectedLayer implements Layer {
             layerError = previousLayerError;
         }
 
-        for (int i = 0; i < weightGradients.length; i++) {
-            for (int j = 0; j < weightGradients[i].length; j++) {
-                for (int k = 0; k < weightGradients[i][j].length; k++) {
-                    System.out.print(weightGradients[i][j][k] + " ");
+        for (float[][] weightGradient : weightGradients) {
+            for (float[] floats : weightGradient) {
+                for (float aFloat : floats) {
+                    System.out.print(aFloat + " ");
                 }
                 System.out.println();
             }
