@@ -200,8 +200,8 @@ public class FullyConnectedLayer implements Layer {
         float g, m_hat, v_hat;
 
         for (int i = 0; i < weights.length; i++) {
-            for (int j = 0; j < weights[0].length; j++) {
-                for (int k = 0; k < weights[0][0].length; k++) {
+            for (int j = 0; j < weights[i].length; j++) {
+                for (int k = 0; k < weights[i][j].length; k++) {
                     g = weightGradient[i][j][k];
                     m_weight[i][j][k] = beta_1 * m_weight[i][j][k] + beta_3 * g;
                     v_weight[i][j][k] = (float) (beta_2 * v_weight[i][j][k] + beta_4 * Math.pow(g, 2));
@@ -213,7 +213,7 @@ public class FullyConnectedLayer implements Layer {
         }
 
         for (int i = 0; i < biases.length; i++) {
-            for (int j = 0; j < biases[0].length; j++) {
+            for (int j = 0; j < biases[i].length; j++) {
                 g = biasGradient[i][j];
                 m_bias[i][j] = beta_1 * m_bias[i][j] + beta_3 * g;
                 v_bias[i][j] = (float) (beta_2 * v_bias[i][j] + beta_4 * Math.pow(g, 2));
