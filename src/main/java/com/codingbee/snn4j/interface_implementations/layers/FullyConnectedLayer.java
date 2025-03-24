@@ -115,6 +115,7 @@ public class FullyConnectedLayer implements Layer {
         layerInputs = new float[numberOfSamples][weights.length][][];
         for (int i = 0; i < numberOfSamples; i++) {
             for (int j = 0; j < weights.length; j++) {
+                layerInputs[i][j] = new float[weights[j].length][];
                 for (int k = 0; k < weights[j].length; k++) {
                     layerInputs[i][j][k] = new float[weights[j][k].length];
                 }
