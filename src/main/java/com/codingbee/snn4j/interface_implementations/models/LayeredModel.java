@@ -104,6 +104,7 @@ public class LayeredModel implements Model {
                 }
                 float[][][] prevGradients = calculateInitialGradient(batch);
                 for (int j = layers.size() - 1; j >= 0; j--) {
+                    System.out.println(j);
                     prevGradients = layers.get(j).backPropagateAndUpdate(prevGradients);
                 }
                 adamTime++;
