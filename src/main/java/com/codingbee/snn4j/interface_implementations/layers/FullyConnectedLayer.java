@@ -127,6 +127,15 @@ public class FullyConnectedLayer implements Layer {
 
     @Override
     public float[][][] backPropagateAndUpdate(float[][][] outputErrors) {
+        for (float[][] outputError : outputErrors) {
+            for (float[] floats : outputError) {
+                for (float aFloat : floats) {
+                    System.out.println(aFloat + " ");
+                }
+                System.out.println();
+            }
+        }
+
         int numberOfSamples = outputErrors.length;
         int sequenceLength = outputErrors[0].length;
 
