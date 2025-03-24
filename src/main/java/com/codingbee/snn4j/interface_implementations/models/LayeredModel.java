@@ -9,7 +9,6 @@ import com.codingbee.snn4j.interfaces.model.RandomWeightGenerator;
 import com.codingbee.snn4j.settings.TrainingSettings;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -19,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LayeredModel implements Model {
-    @JsonManagedReference
     private List<Layer> layers = new ArrayList<>();
     private TrainingSettings trainingSettings = new TrainingSettings();
     int adamTime;
@@ -53,6 +51,9 @@ public class LayeredModel implements Model {
         } catch (IOException e) {
             throw new FileManagingException("An Exception occurred while trying to init the " +
                     "LayeredModel from file" + path + ": " + e.getLocalizedMessage());
+        }
+        for (Layer l : layers){
+            l.setFullModel(this);
         }
     }
 
