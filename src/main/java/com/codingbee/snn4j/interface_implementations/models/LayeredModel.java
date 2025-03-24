@@ -91,6 +91,7 @@ public class LayeredModel implements Model {
 
     @Override
     public void train(Dataset data, int epochs, boolean printDebug) {
+        System.out.println("---Training---");
         for (Layer l : layers) {
             l.initAdamValues();
         }
@@ -103,6 +104,7 @@ public class LayeredModel implements Model {
                     l.prepareForwardPass(batch.getInputData().length);
                 }
                 float[][][] prevGradients = calculateInitialGradient(batch);
+                System.out.println(layers.size() - 1);
                 for (int j = layers.size() - 1; j >= 0; j--) {
                     System.out.println(j);
                     prevGradients = layers.get(j).backPropagateAndUpdate(prevGradients);
