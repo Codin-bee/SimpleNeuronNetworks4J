@@ -9,6 +9,7 @@ import com.codingbee.snn4j.interfaces.model.RandomWeightGenerator;
 import com.codingbee.snn4j.settings.TrainingSettings;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LayeredModel implements Model {
+    @JsonManagedReference
     private List<Layer> layers = new ArrayList<>();
     private TrainingSettings trainingSettings = new TrainingSettings();
     int adamTime;

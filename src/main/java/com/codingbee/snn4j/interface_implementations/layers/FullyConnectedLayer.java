@@ -7,6 +7,7 @@ import com.codingbee.snn4j.interfaces.model.Layer;
 import com.codingbee.snn4j.interfaces.model.Model;
 import com.codingbee.snn4j.settings.TrainingSettings;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -22,6 +23,7 @@ public class FullyConnectedLayer implements Layer {
     private int[] hiddenLayersSizes;
     private TrainingSettings trainingSettings = new TrainingSettings();
     private ActivationFunction activationFunction;
+    @JsonBackReference
     private Model fullModel;
 
     //Adam training params
