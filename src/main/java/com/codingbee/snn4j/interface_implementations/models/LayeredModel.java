@@ -97,6 +97,7 @@ public class LayeredModel implements Model {
         System.out.println("---Training---");
         for (Layer l : layers) {
             l.initAdamValues();
+            l.setTrainingSettings(trainingSettings);
         }
         adamTime = 1;
         for (int epoch = 1; epoch <= epochs; epoch++) {

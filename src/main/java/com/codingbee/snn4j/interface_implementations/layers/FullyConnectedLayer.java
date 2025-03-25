@@ -84,31 +84,30 @@ public class FullyConnectedLayer implements Layer {
 
     @Override
     public float[][] forwardPass(float[][] input, int index) {
-
         float[][] outputs = new float[input.length][];
         float[] layerInput;
         float[] layerOutput = null;
-
 
         for (int i = 0; i < input.length; i++) {
             layerInput = input[i];
             for (int j = 0; j < weights.length; j++) {
                 layerOutput = new float[weights[j].length];
                 for (int k = 0; k < weights[j].length; k++) {
-                    layerOutput[k] = 0;
+                    float sum = 0;
                     for (int l = 0; l < weights[j][k].length; l++) {
-                        layerOutput[k] += layerInput[l] * weights[j][k][l];
+                        sum += layerInput[l] * weights[j][k][l];
                     }
-                    layerOutput[k] += biases[j][k];
-                    layerOutput[k] = activationFunction.activate(layerOutput[k]);
+                    sum += biases[j][k];
+                    layerOutput[k] = activationFunction.activate(sum);
                 }
-                layerInputs[index][i][j] = layerInput;
+                layerInputs[index][i][j] = Arrays.copyOf(layerInput, layerInput.length);
                 layerInput = layerOutput;
             }
-            assert layerOutput != null;
-            outputs[i] = Arrays.copyOf(layerOutput, layerOutput.length);
+            outputs[i] = layerOutput;
         }
+
         return outputs;
+
     }
 
     @Override
@@ -127,15 +126,6 @@ public class FullyConnectedLayer implements Layer {
 
     @Override
     public float[][][] backPropagateAndUpdate(float[][][] outputErrors) {
-        for (float[][] floats : layerInputs[0]) {
-            for (float[] aFloat : floats) {
-                for (float bFloat: aFloat){
-                    System.out.println(bFloat + " ");
-                }
-            }
-            System.out.println();
-        }
-
         int numberOfSamples = outputErrors.length;
         int sequenceLength = outputErrors[0].length;
 
@@ -179,15 +169,6 @@ public class FullyConnectedLayer implements Layer {
             }
 
             layerError = previousLayerError;
-        }
-
-        for (float[][] weightGradient : weightGradients) {
-            for (float[] floats : weightGradient) {
-                for (float aFloat : floats) {
-                    System.out.print(aFloat + " ");
-                }
-                System.out.println();
-            }
         }
 
         updateParams(weightGradients, biasGradients);
