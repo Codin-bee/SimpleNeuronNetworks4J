@@ -157,13 +157,13 @@ public class LayeredModel implements Model {
             float[][] inputs = data.getInputData()[example];
             float[][] targets = data.getExpectedResults()[example];
 
-            float[][] predictions = process(inputs);
+            float[][] predictions = forwardPass(inputs);
 
-            // Mean squared error loss function
+            // MSE Loss Function
             float[][] exampleGradient = new float[predictions.length][predictions[0].length];
             for (int i = 0; i < predictions.length; i++) {
                 for (int j = 0; j < predictions[i].length; j++) {
-                    exampleGradient[i][j] = (float) Math.pow((predictions[i][j] - targets[i][j]), 2); // MSE gradient
+                    exampleGradient[i][j] = (float) Math.pow((predictions[i][j] - targets[i][j]), 2);
                 }
             }
             gradients[example] = exampleGradient;
