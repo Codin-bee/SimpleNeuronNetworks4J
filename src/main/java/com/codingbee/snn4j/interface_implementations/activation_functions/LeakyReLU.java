@@ -4,7 +4,7 @@ import com.codingbee.snn4j.interfaces.ActivationFunction;
 
 @SuppressWarnings("unused")
 public class LeakyReLU implements ActivationFunction {
-    private float alpha = 0;
+    private float alpha = 0.1f;
 
     @Override
     public float activate(float n) {
@@ -18,9 +18,9 @@ public class LeakyReLU implements ActivationFunction {
     @Override
     public float derivative(float n) {
         if (n < 0){
-            return n * alpha;
-        }else{
             return alpha;
+        }else{
+            return 1;
         }
     }
 
