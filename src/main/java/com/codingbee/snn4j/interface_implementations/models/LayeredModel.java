@@ -163,7 +163,7 @@ public class LayeredModel implements Model {
             float[][] exampleGradient = new float[predictions.length][predictions[0].length];
             for (int i = 0; i < predictions.length; i++) {
                 for (int j = 0; j < predictions[i].length; j++) {
-                    exampleGradient[i][j] = (float) Math.pow((predictions[i][j] - targets[i][j]), 2);
+                    exampleGradient[i][j] = 2 * (predictions[i][j] - targets[i][j]);
                 }
             }
             gradients[example] = exampleGradient;
