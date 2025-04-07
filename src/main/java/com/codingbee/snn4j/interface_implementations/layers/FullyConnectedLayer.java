@@ -159,17 +159,17 @@ public class FullyConnectedLayer implements Layer {
                             weightGradients[layer][to][from] += layerError[vector][to] * layerInputs[sample][layer][vector][from];
                         }
                     }
-                    for (int from = 0; from < weights[layer][0].length; from++) {
+                    for (int to = 0; to < weights[layer][0].length; to++) {
                         float errorSum = 0;
-                        for (int to = 0; to < weights[layer].length; to++) {
-                            errorSum += layerError[vector][to] * weights[layer][to][from];
-                            biasGradients[layer][to] += layerError[vector][to];
+                        for (int from = 0; from < weights[layer].length; from++) {
+                            errorSum += layerError[vector][from] * weights[layer][from][to];
+                            biasGradients[layer][from] += layerError[vector][from];
                         }
-                        previousLayerError[vector][from] = errorSum * activationFunction.derivative(layerActivations[from]);
+                        biasGradients[layer][to] += layerError[vector][to];
+                        previousLayerError[vector][to] = errorSum * activationFunction.derivative(layerActivations[to]);
                     }
+                    layerError = previousLayerError;
                 }
-
-                layerError = previousLayerError;
             }
             inputErrors[sample] = layerError;
 
@@ -181,7 +181,7 @@ public class FullyConnectedLayer implements Layer {
                 for (int k = 0; k < weights[i][j].length; k++) {
                     weightGradients[i][i][k] /= numberOfSamples;
                 }
-                biasGradients[i][i] /= numberOfSamples;
+                biasGradients[i][j] /= numberOfSamples;
             }
         }
 
