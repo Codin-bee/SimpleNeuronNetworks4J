@@ -134,7 +134,7 @@ public class FullyConnectedLayer implements Layer {
         float[][][] weightGradients = Maths.allocateArrayOfSameSize(weights);
         float[][] biasGradients = new float[biases.length][];
         for (int i = 0; i < weights.length; i++) {
-            biasGradients[i] = new float[weights[i].length];
+            biasGradients[i] = new float[biases[i].length];
         }
 
         //The error propagated to previous layer
@@ -156,20 +156,20 @@ public class FullyConnectedLayer implements Layer {
                     for (int to = 0; to < weights[layer].length; to++) {
                         //All connections to previous layer
                         for (int from = 0; from < weights[layer][to].length; from++) {
-                            weightGradients[layer][to][from] += layerError[vector][to] * layerInputs[sample][layer][vector][from];
+                            weightGradients[layer][to][from] += layerError[vector][to] * layerActivations[from];
                         }
                     }
                     for (int to = 0; to < weights[layer][0].length; to++) {
                         float errorSum = 0;
                         for (int from = 0; from < weights[layer].length; from++) {
                             errorSum += layerError[vector][from] * weights[layer][from][to];
-                            biasGradients[layer][from] += layerError[vector][from];
                         }
                         biasGradients[layer][to] += layerError[vector][to];
                         previousLayerError[vector][to] = errorSum * activationFunction.derivative(layerActivations[to]);
+
                     }
-                    layerError = previousLayerError;
                 }
+                layerError = previousLayerError;
             }
             inputErrors[sample] = layerError;
 
@@ -179,7 +179,7 @@ public class FullyConnectedLayer implements Layer {
         for (int i = 0; i < weights.length; i++) {
             for (int j = 0; j < weights[i].length; j++) {
                 for (int k = 0; k < weights[i][j].length; k++) {
-                    weightGradients[i][i][k] /= numberOfSamples;
+                    weightGradients[i][j][k] /= numberOfSamples;
                 }
                 biasGradients[i][j] /= numberOfSamples;
             }
