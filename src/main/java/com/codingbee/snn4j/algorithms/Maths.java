@@ -25,6 +25,7 @@ public class Maths {
         }
         return product;
     }
+
     public static float[] addVectors(float[] vectorA, float[] vectorB){
         float[] sum = new float[vectorA.length];
         for (int i = 0; i < vectorA.length; i++) {
@@ -77,5 +78,16 @@ public class Maths {
             }
         }
         return index;
+    }
+
+    public static float[][][] allocateArrayOfSameSize(float[][][] reference){
+        float[][][] newArray = new float[reference.length][][];
+        for (int i = 0; i < reference.length; i++) {
+            newArray[i] = new float[reference[i].length][];
+            for (int j = 0; j < reference[i].length; j++) {
+                newArray[i][j] = new float[reference[i][j].length];
+            }
+        }
+        return newArray;
     }
 }

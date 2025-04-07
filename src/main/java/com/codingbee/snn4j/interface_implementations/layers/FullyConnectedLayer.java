@@ -1,5 +1,6 @@
 package com.codingbee.snn4j.interface_implementations.layers;
 
+import com.codingbee.snn4j.algorithms.Maths;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.interfaces.ActivationFunction;
 import com.codingbee.snn4j.interfaces.model.RandomWeightGenerator;
@@ -33,7 +34,7 @@ public class FullyConnectedLayer implements Layer {
     private float[][] v_bias;
 
     //Training
-    //Indexed Sample, vector, layer, index
+    //Indexed: sample, vector, layer, index
     private float[][][][] layerInputs;
 
 
@@ -129,51 +130,66 @@ public class FullyConnectedLayer implements Layer {
         int numberOfSamples = outputErrors.length;
         int sequenceLength = outputErrors[0].length;
 
-        float[][][] weightGradients = new float[weights.length][][];
+        //Allocate gradient arrays
+        float[][][] weightGradients = Maths.allocateArrayOfSameSize(weights);
         float[][] biasGradients = new float[biases.length][];
-
-        float[][][] layerError = outputErrors;
-
-        for (int layer = weights.length - 1; layer >= 0; layer--) {
-            weightGradients[layer] = new float[weights[layer].length][];
-            for (int i = 0; i < weights[layer].length; i++) {
-                weightGradients[layer][i] = new float[weights[layer][i].length];
-            }
-            biasGradients[layer] = new float[biases[layer].length];
-
-
-            float[][][] previousLayerError = new float[numberOfSamples][sequenceLength][weights[layer][0].length];
-
-            for (int example = 0; example < numberOfSamples; example++) {
-                for (int vector = 0; vector < sequenceLength; vector++) {
-                    float[] activations = layerInputs[example][vector][layer];
-
-                    for (int i = 0; i < weights[layer].length; i++) {
-                        for (int j = 0; j < weights[layer][i].length; j++) {
-                            weightGradients[layer][i][j] += layerError[example][vector][i] * activations[j];
-                        }
-                        biasGradients[layer][i] += layerError[example][vector][i];
-                    }
-
-                    // Back propagation to next (previous) layer
-                    if (layer > 0) {
-                        for (int j = 0; j < weights[layer][0].length; j++) {
-                            float errorSum = 0;
-                            for (int i = 0; i < weights[layer].length; i++) {
-                                errorSum += layerError[example][vector][i] * weights[layer][i][j];
-                            }
-                            previousLayerError[example][vector][j] = errorSum * activationFunction.derivative(activations[j]);
-                        }
-                    }
-                }
-            }
-
-            layerError = previousLayerError;
+        for (int i = 0; i < weights.length; i++) {
+            biasGradients[i] = new float[weights[i].length];
         }
 
+        //The error propagated to previous layer
+        float[][][] inputErrors = new float[numberOfSamples][][];
+
+        //For every sample in the training set
+        for (int sample = 0; sample < numberOfSamples; sample++) {
+            float[][] layerError = outputErrors[sample];
+
+            //Looping from last layer to first layer
+            for (int layer = weights.length - 1; layer >= 0; layer--) {
+                float[][] previousLayerError = new float[sequenceLength][weights[layer][0].length];
+
+                //For every vector in the sequence
+                for (int vector = 0; vector < sequenceLength; vector++) {
+                    float[] layerActivations = layerInputs[sample][vector][layer];
+
+                    //All neurons in the layer
+                    for (int to = 0; to < weights[layer].length; to++) {
+                        //All connections to previous layer
+                        for (int from = 0; from < weights[layer][to].length; from++) {
+                            weightGradients[layer][to][from] += layerError[vector][to] * layerInputs[sample][layer][vector][from];
+                        }
+                    }
+                    for (int from = 0; from < weights[layer][0].length; from++) {
+                        float errorSum = 0;
+                        for (int to = 0; to < weights[layer].length; to++) {
+                            errorSum += layerError[vector][to] * weights[layer][to][from];
+                            biasGradients[layer][to] += layerError[vector][to];
+                        }
+                        previousLayerError[vector][from] = errorSum * activationFunction.derivative(layerActivations[from]);
+                    }
+                }
+
+                layerError = previousLayerError;
+            }
+            inputErrors[sample] = layerError;
+
+        }
+
+        //Averaging weights and biases across samples
+        for (int i = 0; i < weights.length; i++) {
+            for (int j = 0; j < weights[i].length; j++) {
+                for (int k = 0; k < weights[i][j].length; k++) {
+                    weightGradients[i][i][k] /= numberOfSamples;
+                }
+                biasGradients[i][i] /= numberOfSamples;
+            }
+        }
+
+        //Update weights and biases using calculate gradients
         updateParams(weightGradients, biasGradients);
 
-        return layerError;
+        //Pass to previous layer in the model
+        return inputErrors;
     }
 
 
