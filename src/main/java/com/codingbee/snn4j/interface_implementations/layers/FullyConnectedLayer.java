@@ -159,14 +159,13 @@ public class FullyConnectedLayer implements Layer {
                             weightGradients[layer][to][from] += layerError[vector][to] * layerActivations[from];
                         }
                     }
-                    for (int to = 0; to < weights[layer][0].length; to++) {
+                    for (int from = 0; from < weights[layer][0].length; from++) {
                         float errorSum = 0;
-                        for (int from = 0; from < weights[layer].length; from++) {
-                            errorSum += layerError[vector][from] * weights[layer][from][to];
-                            previousLayerError[vector][from] = errorSum * activationFunction.derivative(layerActivations[from]);
+                        for (int to = 0; to < weights[layer].length; to++) {
+                            errorSum += layerError[vector][to] * weights[layer][to][from];
                         }
-                        biasGradients[layer][to] += layerError[vector][to];
-
+                        biasGradients[layer][from] += layerError[vector][from];
+                        previousLayerError[vector][from] = errorSum * activationFunction.derivative(layerActivations[from]);
                     }
                 }
                 layerError = previousLayerError;
