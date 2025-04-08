@@ -66,20 +66,19 @@ public class FullyConnectedLayer implements Layer {
             layerInput = input[vector];
             for (int layer = 0; layer < weights.length; layer++) {
                 layerOutput = new float[weights[layer].length];
-                for (int to = 0; to < weights[layer].length; to++) {
-                    layerOutput[to] = 0;
-                    for (int from = 0; from < weights[layer][to].length; from++) {
-                        layerOutput[to] += layerInput[from] * weights[layer][to][from];
+                for (int j = 0; j < weights[layer].length; j++) {
+                    float sum = 0;
+                    for (int k = 0; k < weights[layer][j].length; k++) {
+                        sum += layerInput[k] * weights[layer][j][k];
                     }
-                    layerOutput[to] += biases[layer][to];
-                    layerOutput[to] = activationFunction.activate(layerOutput[to]);
+                    layerOutput[j] = activationFunction.activate(sum + biases[layer][j]);
                 }
+
                 layerInput = layerOutput;
             }
-            assert layerOutput != null;
-            outputs[vector] = Arrays.copyOf(layerOutput, layerOutput.length);
-            Maths.softmaxInPlace(outputs[vector], 1);
+            outputs[vector] = layerOutput;
         }
+
         return outputs;
     }
 
@@ -109,7 +108,6 @@ public class FullyConnectedLayer implements Layer {
                 layerInput = layerOutput;
             }
             outputs[vector] = layerOutput;
-            Maths.softmaxInPlace(outputs[vector], 1);
         }
 
         return outputs;
