@@ -78,6 +78,7 @@ public class FullyConnectedLayer implements Layer {
             }
             assert layerOutput != null;
             outputs[vector] = Arrays.copyOf(layerOutput, layerOutput.length);
+            Maths.softmaxInPlace(outputs[vector], 1);
         }
         return outputs;
     }
@@ -108,6 +109,7 @@ public class FullyConnectedLayer implements Layer {
                 layerInput = layerOutput;
             }
             outputs[vector] = layerOutput;
+            Maths.softmaxInPlace(outputs[vector], 1);
         }
 
         return outputs;

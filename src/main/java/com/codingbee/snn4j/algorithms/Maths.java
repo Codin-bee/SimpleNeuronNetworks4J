@@ -107,4 +107,15 @@ public class Maths {
 
         return outputVector;
     }
+
+    public static void softmaxInPlace(float[] values, float temp){
+        float sum = 0;
+        for (int i = 0; i < values.length; i++) {
+            values[i] = (float) Math.exp(values[i] / temp);
+            sum += values[i];
+        }
+        for (int i = 0; i < values.length; i++) {
+            values[i] /= sum;
+        }
+    }
 }
