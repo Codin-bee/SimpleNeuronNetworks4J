@@ -442,5 +442,14 @@ public class FullyConnectedLayer implements Layer {
     public void setV_bias(float[][] v_bias) {
         this.v_bias = v_bias;
     }
+
+    public int getSequenceLength() {
+        return sequenceLength;
+    }
+
+    public void setSequenceLength(int sequenceLength) {
+        this.sequenceLength = sequenceLength;
+    }
+
     //endregion
 }
