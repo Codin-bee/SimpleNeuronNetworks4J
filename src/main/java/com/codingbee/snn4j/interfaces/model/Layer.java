@@ -31,7 +31,7 @@ public interface Layer {
      * @param outputErrors 3D error array from the next layer (batchSize x D1 x D2)
      * @return 3D error array to propagate to the previous layer (batchSize x D1 x D2)
      */
-    float[][][] backPropagateAndUpdate(float[][][] outputErrors);
+    float[][][] backPropagateAndUpdate(float[][][] outputErrors, int adamTime);
 
     /**
      * Initializes the parameters of the layer from given json file
@@ -69,16 +69,4 @@ public interface Layer {
      * @param settings Training settings
      */
     void setTrainingSettings(TrainingSettings settings);
-
-    /**
-     * Gets the full model this layer is part of
-     * @return Full model
-     */
-    Model getFullModel();
-
-    /**
-     * Sets the full model this layer is part of
-     * @param fullModel Full model
-     */
-    void setFullModel(Model fullModel);
 }

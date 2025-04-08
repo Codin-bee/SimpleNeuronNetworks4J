@@ -90,4 +90,21 @@ public class Maths {
         }
         return newArray;
     }
+
+    public static float[] multiplyTransposeWByV(float[][] matrix, float[] vector) {
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+
+        float[] outputVector = new float[cols];
+
+        for (int i = 0; i < cols; i++) {
+            float sum = 0;
+            for (int j = 0; j < rows; j++) {
+                sum += matrix[j][i] * vector[j];
+            }
+            outputVector[i] = sum;
+        }
+
+        return outputVector;
+    }
 }

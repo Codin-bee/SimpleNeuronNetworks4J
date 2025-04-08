@@ -5,10 +5,8 @@ import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.interfaces.ActivationFunction;
 import com.codingbee.snn4j.interfaces.model.RandomWeightGenerator;
 import com.codingbee.snn4j.interfaces.model.Layer;
-import com.codingbee.snn4j.interfaces.model.Model;
 import com.codingbee.snn4j.settings.TrainingSettings;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -22,10 +20,9 @@ public class FullyConnectedLayer implements Layer {
     private int inputLayerSize;
     private int outputLayerSize;
     private int[] hiddenLayersSizes;
+    private int sequenceLength;
     private TrainingSettings trainingSettings = new TrainingSettings();
     private ActivationFunction activationFunction;
-    @JsonBackReference
-    private Model fullModel;
 
     //Adam training params
     private float[][][] m_weight;
@@ -35,15 +32,17 @@ public class FullyConnectedLayer implements Layer {
 
     //Training
     //Indexed: sample, vector, layer, index
-    private float[][][][] layerInputs;
+    private float[][][][] inputs;
+    private float[][][][] weightedSums;
 
 
     public FullyConnectedLayer(int inputLayerSize, int outputLayerSize, int[] hiddenLayersSizes,
-                               ActivationFunction activationFunction) {
+                               int sequenceLength, ActivationFunction activationFunction) {
         this.hiddenLayersSizes = hiddenLayersSizes;
         this.inputLayerSize = inputLayerSize;
         this.outputLayerSize = outputLayerSize;
         this.activationFunction = activationFunction;
+        this.sequenceLength = sequenceLength;
     }
 
     public FullyConnectedLayer(String path) throws FileManagingException {
@@ -89,22 +88,26 @@ public class FullyConnectedLayer implements Layer {
         float[] layerInput;
         float[] layerOutput = null;
 
-        for (int i = 0; i < input.length; i++) {
-            layerInput = input[i];
-            for (int j = 0; j < weights.length; j++) {
-                layerOutput = new float[weights[j].length];
-                for (int k = 0; k < weights[j].length; k++) {
+        for (int vector = 0; vector < input.length; vector++) {
+            layerInput = input[vector];
+            for (int layer = 0; layer < weights.length; layer++) {
+                layerOutput = new float[weights[layer].length];
+                for (int j = 0; j < weights[layer].length; j++) {
                     float sum = 0;
-                    for (int l = 0; l < weights[j][k].length; l++) {
-                        sum += layerInput[l] * weights[j][k][l];
+                    for (int k = 0; k < weights[layer][j].length; k++) {
+                        sum += layerInput[k] * weights[layer][j][k];
                     }
-                    sum += biases[j][k];
-                    layerOutput[k] = activationFunction.activate(sum);
+                    layerOutput[j] = sum + biases[layer][j];
                 }
-                layerInputs[index][i][j] = Arrays.copyOf(layerInput, layerInput.length);
+                weightedSums[index][vector][layer] = Arrays.copyOf(layerOutput, layerOutput.length);
+                for (int k = 0; k < weights[layer].length; k++) {
+                    layerOutput[k] = activationFunction.activate(layerOutput[k]);
+                }
+                inputs[index][vector][layer] = Arrays.copyOf(layerInput, layerInput.length);
+
                 layerInput = layerOutput;
             }
-            outputs[i] = layerOutput;
+            outputs[vector] = layerOutput;
         }
 
         return outputs;
@@ -114,21 +117,33 @@ public class FullyConnectedLayer implements Layer {
     @Override
     public void prepareForwardPass(int numberOfSamples) {
         //Allocate array to store inputs
-        layerInputs = new float[numberOfSamples][weights.length][][];
+        inputs = new float[numberOfSamples][sequenceLength][weights.length][];
         for (int i = 0; i < numberOfSamples; i++) {
-            for (int j = 0; j < weights.length; j++) {
-                layerInputs[i][j] = new float[weights[j].length][];
-                for (int k = 0; k < weights[j].length; k++) {
-                    layerInputs[i][j][k] = new float[weights[j][k].length];
+            for (int j = 0; j < sequenceLength; j++) {
+                for (int k = 0; k < weights.length; k++) {
+                    if (k == 0){
+                        inputs[i][j][k] = new float[inputLayerSize];
+                    } else
+                    {
+                        inputs[i][j][k] = new float[weights[k-1].length];
+                    }
+                }
+            }
+        }
+
+        weightedSums = new float[numberOfSamples][sequenceLength][weights.length][];
+        for (int i = 0; i < numberOfSamples; i++) {
+            for (int j = 0; j < sequenceLength; j++) {
+                for (int k = 0; k < weights.length; k++) {
+                    weightedSums[i][j][k] = new float[weights[k].length];
                 }
             }
         }
     }
 
     @Override
-    public float[][][] backPropagateAndUpdate(float[][][] outputErrors) {
+    public float[][][] backPropagateAndUpdate(float[][][] outputErrors, int adamTime) {
         int numberOfSamples = outputErrors.length;
-        int sequenceLength = outputErrors[0].length;
 
         //Allocate gradient arrays
         float[][][] weightGradients = Maths.allocateArrayOfSameSize(weights);
@@ -137,64 +152,79 @@ public class FullyConnectedLayer implements Layer {
             biasGradients[i] = new float[biases[i].length];
         }
 
-        //The error propagated to previous layer
-        float[][][] inputErrors = new float[numberOfSamples][][];
+        //Results arrays
+        float[][][] inputError = new float[numberOfSamples][sequenceLength][inputLayerSize];
+        float[][][][] layerErrors = new float[numberOfSamples][sequenceLength][weights.length][];
 
-        //For every sample in the training set
+
         for (int sample = 0; sample < numberOfSamples; sample++) {
-            float[][] layerError = outputErrors[sample];
+            for (int vector = 0; vector < sequenceLength; vector++) {
 
-            //Looping from last layer to first layer
-            for (int layer = weights.length - 1; layer >= 0; layer--) {
-                float[][] previousLayerError = new float[sequenceLength][weights[layer][0].length];
-
-                //For every vector in the sequence
-                for (int vector = 0; vector < sequenceLength; vector++) {
-                    float[] layerActivations = layerInputs[sample][vector][layer];
-
-                    //All neurons in the layer
-                    for (int to = 0; to < weights[layer].length; to++) {
-                        //All connections to previous layer
-                        for (int from = 0; from < weights[layer][to].length; from++) {
-                            weightGradients[layer][to][from] += layerError[vector][to] * layerActivations[from];
-                        }
+                float[] layerActivationDerivatives = outputErrors[sample][vector];
+                float[] layerError = null;
+                for (int layer = weights.length - 1; layer >= 0; layer--) {
+                    float[] layerZs = weightedSums[sample][vector][layer];
+                    layerError = new float[weights[layer].length];
+                    for (int i = 0; i < layerError.length; i++) {
+                        layerError[i] = layerActivationDerivatives[i] * activationFunction.derivative(layerZs[i]);
                     }
-                    for (int from = 0; from < weights[layer][0].length; from++) {
-                        float errorSum = 0;
-                        for (int to = 0; to < weights[layer].length; to++) {
-                            errorSum += layerError[vector][to] * weights[layer][to][from];
-                        }
-                        biasGradients[layer][from] += 0;
-                        biasGradients[layer][from] += layerError[vector][from];
-                        previousLayerError[vector][from] = 0;
-                        previousLayerError[vector][from] = errorSum * activationFunction.derivative(layerActivations[from]);
-                    }
+
+                    layerErrors[sample][vector][layer] = layerError;
+
+                    //Calculating ahead for the previous layer
+                    layerActivationDerivatives = Maths.multiplyTransposeWByV(weights[layer], layerError);
                 }
-                layerError = previousLayerError;
-            }
-            inputErrors[sample] = layerError;
+                inputError[sample][vector] = Arrays.copyOf(layerError, layerError.length);
 
+            }
         }
 
-        //Averaging weights and biases across samples
-        for (int i = 0; i < weights.length; i++) {
-            for (int j = 0; j < weights[i].length; j++) {
-                for (int k = 0; k < weights[i][j].length; k++) {
-                    weightGradients[i][j][k] /= numberOfSamples;
+        //Bias gradients
+        for (int layer = 0; layer < weights.length; layer++) {
+            for (int index = 0; index < weights[layer].length; index++) {
+                //Average results across samples and vectors
+                float avgError = 0;
+                for (int sample = 0; sample < numberOfSamples; sample++) {
+                    for (int vector = 0; vector < sequenceLength; vector++) {
+                        avgError += layerErrors[sample][vector][layer][index];
+                    }
                 }
-                biasGradients[i][j] /= numberOfSamples;
+                avgError /= numberOfSamples * sequenceLength;
+                biasGradients[layer][index] = avgError;
+                for (int i = 0; i < weights[layer][index].length; i++) {
+                    weightGradients[layer][index][i] = avgError * 1;
+                }
+            }
+        }
+
+        //Weight gradients
+        for (int layer = 0; layer < weights.length; layer++) {
+            for (int index = 0; index < weights[layer].length; index++) {
+                for (int connection = 0; connection < weights[layer][index].length; connection++) {
+                    //Average results across samples and vectors
+                    float avgGradient = 0;
+                    for (int sample = 0; sample < numberOfSamples; sample++) {
+                        for (int vector = 0; vector < sequenceLength; vector++) {
+                            avgGradient += layerErrors[sample][vector][layer][index] * inputs[sample][vector][layer][connection];
+                        }
+                    }
+                    avgGradient /= numberOfSamples * sequenceLength;
+                    weightGradients[layer][index][connection] = avgGradient;
+                }
+
+
             }
         }
 
         //Update weights and biases using calculate gradients
-        updateParams(weightGradients, biasGradients);
+        updateParams(weightGradients, biasGradients, adamTime);
 
         //Pass to previous layer in the model
-        return inputErrors;
+        return inputError;
     }
 
 
-    private void updateParams(float[][][] weightGradient, float[][] biasGradient) {
+    private void updateParams(float[][][] weightGradient, float[][] biasGradient, int time) {
         //Hyperparameters
         float alpha = trainingSettings.getLearningRate();
         float beta_1 = trainingSettings.getExponentialDecayRateOne();
@@ -202,7 +232,6 @@ public class FullyConnectedLayer implements Layer {
         float epsilon = trainingSettings.getEpsilon();
         float beta_3 = 1 - beta_1;
         float beta_4 = 1 - beta_2;
-        int time = fullModel.getAdamTime();
 
         float g, m_hat, v_hat;
 
@@ -378,16 +407,6 @@ public class FullyConnectedLayer implements Layer {
 
     public void setActivationFunction(ActivationFunction activationFunction) {
         this.activationFunction = activationFunction;
-    }
-
-    @Override
-    public Model getFullModel() {
-        return fullModel;
-    }
-
-    @Override
-    public void setFullModel(Model fullModel) {
-        this.fullModel = fullModel;
     }
 
     public float[][][] getM_weight() {

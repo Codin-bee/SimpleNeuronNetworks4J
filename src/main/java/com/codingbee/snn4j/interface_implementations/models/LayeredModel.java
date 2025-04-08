@@ -52,9 +52,6 @@ public class LayeredModel implements Model {
             throw new FileManagingException("An Exception occurred while trying to init the " +
                     "LayeredModel from file" + path + ": " + e.getLocalizedMessage());
         }
-        for (Layer l : layers){
-            l.setFullModel(this);
-        }
     }
 
     @Override
@@ -109,7 +106,7 @@ public class LayeredModel implements Model {
                 }
                 float[][][] prevGradients = calculateInitialGradient(batch);
                 for (int j = layers.size() - 1; j >= 0; j--) {
-                    prevGradients = layers.get(j).backPropagateAndUpdate(prevGradients);
+                    prevGradients = layers.get(j).backPropagateAndUpdate(prevGradients, adamTime);
                 }
                 adamTime++;
             }
@@ -132,10 +129,6 @@ public class LayeredModel implements Model {
         }
     }
 
-    @Override
-    public int getAdamTime() {
-        return adamTime;
-    }
 
     //region Private Methods
     private float calculateCorrectPercentage(float[][][] outputs, float[][][] expectedOutputs){
@@ -202,12 +195,10 @@ public class LayeredModel implements Model {
     }
 
     public void addLayer(Layer layer) {
-        layer.setFullModel(this);
         layers.add(layer);
     }
 
     public void addLayer(Layer layer, int index) {
-        layer.setFullModel(this);
         layers.add(index, layer);
     }
 

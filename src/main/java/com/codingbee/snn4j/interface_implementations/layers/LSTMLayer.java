@@ -81,7 +81,7 @@ public class LSTMLayer implements Layer {
     }
 
     @Override
-    public float[][][] backPropagateAndUpdate(float[][][] outputErrors) {
+    public float[][][] backPropagateAndUpdate(float[][][] outputErrors, int adamTime) {
         return new float[0][][];
     }
 
@@ -180,16 +180,6 @@ public class LSTMLayer implements Layer {
     @Override
     public void setTrainingSettings(TrainingSettings settings) {
         trainingSettings = settings;
-    }
-
-    @Override
-    public Model getFullModel() {
-        return fullModel;
-    }
-
-    @Override
-    public void setFullModel(Model fullModel) {
-        this.fullModel = fullModel;
     }
     //endregion
 
