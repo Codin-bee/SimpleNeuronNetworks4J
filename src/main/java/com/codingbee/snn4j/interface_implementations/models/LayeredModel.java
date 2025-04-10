@@ -114,7 +114,7 @@ public class LayeredModel implements Model {
                 System.out.println("The cost after " + epoch + ". epoch is : " + calculateAverageCost(data));
             }
             if ((epoch % saveInterval) == 0){
-                save("");
+                save(savePath);
             }
         }
     }
