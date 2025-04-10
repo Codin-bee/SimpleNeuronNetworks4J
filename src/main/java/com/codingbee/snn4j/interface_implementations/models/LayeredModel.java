@@ -3,6 +3,8 @@ package com.codingbee.snn4j.interface_implementations.models;
 import com.codingbee.snn4j.algorithms.Maths;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.helping_objects.Dataset;
+import com.codingbee.snn4j.interface_implementations.cost_functions.MeanSquaredError;
+import com.codingbee.snn4j.interfaces.CostFunction;
 import com.codingbee.snn4j.interfaces.model.Layer;
 import com.codingbee.snn4j.interfaces.model.Model;
 import com.codingbee.snn4j.interfaces.model.RandomWeightGenerator;
@@ -20,7 +22,7 @@ import java.util.List;
 public class LayeredModel implements Model {
     private List<Layer> layers = new ArrayList<>();
     private TrainingSettings trainingSettings = new TrainingSettings();
-    int adamTime;
+    private CostFunction costFunction = new MeanSquaredError();
 
     public LayeredModel(){};
 
@@ -71,7 +73,7 @@ public class LayeredModel implements Model {
         for (int i = 0; i < data.getInputData().length; i++) {
             outputs[i] = process(data.getInputData()[i]);
         }
-        return Maths.calculateAverageMSE(outputs, data.getExpectedResults());
+        return costFunction.calculateAverage(outputs, data.getExpectedResults());
     }
 
     /**
@@ -96,7 +98,7 @@ public class LayeredModel implements Model {
             l.initAdamValues();
             l.setTrainingSettings(trainingSettings);
         }
-        adamTime = 1;
+        int adamTime = 1;
         for (int epoch = 1; epoch <= epochs; epoch++) {
             data.shuffle();
             List<Dataset> batches = data.splitIntoBatches();
@@ -193,10 +195,6 @@ public class LayeredModel implements Model {
         this.layers = layers;
     }
 
-    public void setAdamTime(int adamTime) {
-        this.adamTime = adamTime;
-    }
-
     public void addLayer(Layer layer) {
         layers.add(layer);
     }
@@ -212,5 +210,14 @@ public class LayeredModel implements Model {
     public void removeLayer(Layer layer){
         layers.remove(layer);
     }
+
+    public CostFunction getCostFunction() {
+        return costFunction;
+    }
+
+    public void setCostFunction(CostFunction costFunction) {
+        this.costFunction = costFunction;
+    }
+
     //endregion
 }

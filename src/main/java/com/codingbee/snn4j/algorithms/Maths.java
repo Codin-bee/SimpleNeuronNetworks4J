@@ -41,33 +41,6 @@ public class Maths {
         return concatenatedVector;
     }
 
-    public static float[][] calculateMSE(float[][][] outputs, float[][][] expectedOutputs){
-        float[][] errors = new float[outputs[0].length][outputs[0][0].length];
-
-        for (int i = 0; i < outputs[0].length; i++) {
-            for (int j = 0; j < outputs[0][0].length; j++) {
-                for (int k = 0; k < outputs.length; k++) {
-                    errors[i][j] += (float) Math.pow((outputs[k][i][j] - expectedOutputs[k][i][j]), 2);
-                }
-                errors[i][j] /= outputs.length;
-            }
-        }
-
-        return errors;
-    }
-
-    public static float calculateAverageMSE(float[][][] outputs, float[][][] expectedOutputs){
-        float cost = 0;
-        for (int i = 0; i < outputs.length; i++) {
-            for (int j = 0; j < outputs[i].length; j++) {
-                for (int k = 0; k < outputs[i][j].length; k++) {
-                    cost += (float) Math.pow((outputs[i][j][k] - expectedOutputs[i][j][k]), 2);
-                }
-            }
-        }
-        return cost / outputs.length;
-    }
-
     public static int getIndexWithHighestVal(float[] array){
         float highestVal = array[0];
         int index = 0;
