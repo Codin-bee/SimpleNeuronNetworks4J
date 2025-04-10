@@ -90,7 +90,7 @@ public class LayeredModel implements Model {
     }
 
     @Override
-    public void train(Dataset data, int epochs, boolean printDebug) {
+    public void train(Dataset data, int epochs, String savePath, int saveInterval, boolean printDebug) throws FileManagingException {
         System.out.println("---Training---");
         for (Layer l : layers) {
             l.initAdamValues();
@@ -112,6 +112,9 @@ public class LayeredModel implements Model {
             }
             if (printDebug){
                 System.out.println("The cost after " + epoch + ". epoch is : " + calculateAverageCost(data));
+            }
+            if ((epoch % saveInterval) == 0){
+                save("");
             }
         }
     }

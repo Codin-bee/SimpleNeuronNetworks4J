@@ -16,7 +16,7 @@ public interface Model {
 
     float calculateCorrectPercentage(Dataset data);
 
-    void train(Dataset data, int epochs, boolean printDebug);
+    void train(Dataset data, int epochs, String savePath, int saveInterval, boolean printDebug) throws FileManagingException;
 
     TrainingSettings getTrainingSettings();
     void setTrainingSettings(TrainingSettings settings);
