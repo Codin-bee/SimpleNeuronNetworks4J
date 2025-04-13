@@ -1,6 +1,6 @@
 package com.codingbee.snn4j.interface_implementations.activation_functions;
 
-import com.codingbee.snn4j.interfaces.ActivationFunction;
+import com.codingbee.snn4j.interfaces.utils.ActivationFunction;
 
 @SuppressWarnings("unused")
 public class ELU implements ActivationFunction {

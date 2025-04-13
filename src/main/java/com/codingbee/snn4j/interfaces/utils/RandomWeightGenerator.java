@@ -1,4 +1,4 @@
-package com.codingbee.snn4j.interfaces.model;
+package com.codingbee.snn4j.interfaces.utils;
 
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

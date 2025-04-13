@@ -1,7 +1,8 @@
-package com.codingbee.snn4j.interfaces.model;
+package com.codingbee.snn4j.interfaces.architecture;
 
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.helping_objects.Dataset;
+import com.codingbee.snn4j.interfaces.utils.RandomWeightGenerator;
 import com.codingbee.snn4j.settings.TrainingSettings;
 
 public interface Model {

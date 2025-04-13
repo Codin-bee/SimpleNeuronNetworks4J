@@ -1,7 +1,7 @@
 package com.codingbee.snn4j.interface_implementations.random_weight_generators;
 
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
-import com.codingbee.snn4j.interfaces.model.RandomWeightGenerator;
+import com.codingbee.snn4j.interfaces.utils.RandomWeightGenerator;
 
 import java.util.Random;
 

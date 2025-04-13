@@ -4,10 +4,10 @@ import com.codingbee.snn4j.algorithms.Maths;
 import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.helping_objects.Dataset;
 import com.codingbee.snn4j.interface_implementations.cost_functions.MeanSquaredError;
-import com.codingbee.snn4j.interfaces.CostFunction;
-import com.codingbee.snn4j.interfaces.model.Layer;
-import com.codingbee.snn4j.interfaces.model.Model;
-import com.codingbee.snn4j.interfaces.model.RandomWeightGenerator;
+import com.codingbee.snn4j.interfaces.utils.CostFunction;
+import com.codingbee.snn4j.interfaces.architecture.Layer;
+import com.codingbee.snn4j.interfaces.architecture.Model;
+import com.codingbee.snn4j.interfaces.utils.RandomWeightGenerator;
 import com.codingbee.snn4j.settings.TrainingSettings;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -158,11 +158,10 @@ public class LayeredModel implements Model {
 
             float[][] predictions = forwardPass(inputs);
 
-            // MSE Loss Function
             float[][] exampleGradient = new float[predictions.length][predictions[0].length];
             for (int i = 0; i < predictions.length; i++) {
                 for (int j = 0; j < predictions[i].length; j++) {
-                    exampleGradient[i][j] = 2 * (predictions[i][j] - targets[i][j]);
+                    exampleGradient[i][j] = costFunction.calculateDerivative(predictions[i][j], targets[i][j]);
                 }
             }
             gradients[example] = exampleGradient;

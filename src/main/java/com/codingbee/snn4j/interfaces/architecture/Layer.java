@@ -1,6 +1,7 @@
-package com.codingbee.snn4j.interfaces.model;
+package com.codingbee.snn4j.interfaces.architecture;
 
 import com.codingbee.snn4j.exceptions.FileManagingException;
+import com.codingbee.snn4j.interfaces.utils.RandomWeightGenerator;
 import com.codingbee.snn4j.settings.TrainingSettings;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 

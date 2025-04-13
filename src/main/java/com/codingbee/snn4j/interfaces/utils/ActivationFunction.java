@@ -1,4 +1,4 @@
-package com.codingbee.snn4j.interfaces;
+package com.codingbee.snn4j.interfaces.utils;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 

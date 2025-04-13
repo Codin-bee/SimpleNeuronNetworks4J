@@ -2,10 +2,10 @@ package com.codingbee.snn4j.interface_implementations.layers;
 
 import com.codingbee.snn4j.algorithms.Maths;
 import com.codingbee.snn4j.exceptions.FileManagingException;
-import com.codingbee.snn4j.interfaces.ActivationFunction;
-import com.codingbee.snn4j.interfaces.model.Layer;
-import com.codingbee.snn4j.interfaces.model.Model;
-import com.codingbee.snn4j.interfaces.model.RandomWeightGenerator;
+import com.codingbee.snn4j.interfaces.utils.ActivationFunction;
+import com.codingbee.snn4j.interfaces.architecture.Layer;
+import com.codingbee.snn4j.interfaces.architecture.Model;
+import com.codingbee.snn4j.interfaces.utils.RandomWeightGenerator;
 import com.codingbee.snn4j.settings.TrainingSettings;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
