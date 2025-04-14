@@ -1,6 +1,5 @@
 package com.codingbee.snn4j.interfaces.architecture;
 
-import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.interfaces.utils.RandomWeightGenerator;
 import com.codingbee.snn4j.settings.TrainingSettings;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -35,24 +34,10 @@ public interface Layer {
     float[][][] backPropagateAndUpdate(float[][][] outputErrors, int adamTime);
 
     /**
-     * Initializes the parameters of the layer from given json file
-     * @param path path to the file, which stores the parameters
-     * @throws FileManagingException if any Exception occurs while trying to initialize the parameters
-     */
-    void init(String path) throws FileManagingException;
-
-    /**
      * Initializes the parameters of the layer using a random weight generator.
      * @param randomGen the generator to use for the random parameter generating
      */
     void init(RandomWeightGenerator randomGen);
-
-    /**
-     * Saves the parameters of the layer into a given json file
-     * @param path path to the file to save
-     * @throws FileManagingException if any Exception occurs while trying to save the parameters
-     */
-    void save(String path) throws FileManagingException;
 
     /**
      * Initializes values for Adam optimizer
@@ -70,4 +55,16 @@ public interface Layer {
      * @param settings Training settings
      */
     void setTrainingSettings(TrainingSettings settings);
+
+    int getSequenceLength();
+
+    void setSequenceLength(int sequenceLength);
+
+    int getInputD();
+
+    void setInputD(int inputD);
+
+    int getOutputD();
+
+    void setOutputD(int outputD);
 }

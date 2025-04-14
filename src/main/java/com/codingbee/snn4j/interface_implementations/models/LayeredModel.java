@@ -2,6 +2,7 @@ package com.codingbee.snn4j.interface_implementations.models;
 
 import com.codingbee.snn4j.algorithms.Maths;
 import com.codingbee.snn4j.exceptions.FileManagingException;
+import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.codingbee.snn4j.helping_objects.Dataset;
 import com.codingbee.snn4j.interface_implementations.cost_functions.MeanSquaredError;
 import com.codingbee.snn4j.interfaces.utils.CostFunction;
@@ -122,6 +123,18 @@ public class LayeredModel implements Model {
     }
 
     @Override
+    public void validate(){
+        int seqLen = layers.getFirst().getSequenceLength();
+
+        for (int i = 1; i < layers.size(); i++) {
+            if (layers.get(i).getInputD() != layers.get(i-1).getOutputD()){
+                throw new IncorrectDataException("The dimensions of inputs and outputs in sequential " +
+                        "layers do not correspond");
+            }
+        }
+    }
+
+    @Override
     public TrainingSettings getTrainingSettings() {
         return trainingSettings;
     }
@@ -181,6 +194,7 @@ public class LayeredModel implements Model {
     //endregion
 
     //region Getters and Setters for Jackson
+    //Json has trouble deserializing this list without the annotation
     @JsonIgnore
     public int getNumberOfLayers(){
         return layers.size();

@@ -85,19 +85,6 @@ public class LSTMLayer implements Layer {
         return new float[0][][];
     }
 
-
-    @Override
-    public void init(String path) throws FileManagingException {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-            mapper.readerForUpdating(this).readValue(new File(path), LSTMLayer.class);
-        } catch (IOException e) {
-            throw new FileManagingException("An Exception occurred while trying to init the " +
-                    "LSTMLayer from file: " + path + ": " + e.getLocalizedMessage());
-        }
-    }
-
     @Override
     public void init(RandomWeightGenerator randomGen) {
         for (int i = 0; i < numberOfCells; i++) {
@@ -116,17 +103,6 @@ public class LSTMLayer implements Layer {
                     cellCandidateW[i][j][k] = randomGen.getWeight(d_input, d_output);
                 }
             }
-        }
-    }
-
-    @Override
-    public void save(String path) throws FileManagingException {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(new File(path), this);
-        } catch (IOException e) {
-            throw new FileManagingException("An Exception occurred trying to save the values of " +
-                    "the Dataset" + e.getLocalizedMessage());
         }
     }
 
@@ -180,6 +156,36 @@ public class LSTMLayer implements Layer {
     @Override
     public void setTrainingSettings(TrainingSettings settings) {
         trainingSettings = settings;
+    }
+
+    @Override
+    public int getSequenceLength() {
+        return 0;
+    }
+
+    @Override
+    public void setSequenceLength(int sequenceLength) {
+
+    }
+
+    @Override
+    public int getInputD() {
+        return 0;
+    }
+
+    @Override
+    public void setInputD(int inputD) {
+
+    }
+
+    @Override
+    public int getOutputD() {
+        return 0;
+    }
+
+    @Override
+    public void setOutputD(int outputD) {
+
     }
     //endregion
 

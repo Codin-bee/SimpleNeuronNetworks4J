@@ -1,17 +1,10 @@
 package com.codingbee.snn4j.interface_implementations.layers;
 
 import com.codingbee.snn4j.algorithms.Maths;
-import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.interfaces.utils.ActivationFunction;
 import com.codingbee.snn4j.interfaces.utils.RandomWeightGenerator;
 import com.codingbee.snn4j.interfaces.architecture.Layer;
 import com.codingbee.snn4j.settings.TrainingSettings;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 
 public class FullyConnectedLayer implements Layer {
@@ -43,10 +36,6 @@ public class FullyConnectedLayer implements Layer {
         this.outputLayerSize = outputLayerSize;
         this.activationFunction = activationFunction;
         this.sequenceLength = sequenceLength;
-    }
-
-    public FullyConnectedLayer(String path) throws FileManagingException {
-        init(path);
     }
 
     /**
@@ -261,18 +250,6 @@ public class FullyConnectedLayer implements Layer {
     }
 
     @Override
-    public void init(String path) throws FileManagingException {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-            mapper.readerForUpdating(this).readValue(new File(path), FullyConnectedLayer.class);
-        } catch (IOException e) {
-            throw new FileManagingException("An Exception occurred while trying to init the " +
-                    "FullyConnectedLayer from file" + path + ": " + e.getLocalizedMessage());
-        }
-    }
-
-    @Override
     public void init(RandomWeightGenerator randomGen) {
         allocateParams();
         for (int i = 0; i < weights.length; i++) {
@@ -295,17 +272,6 @@ public class FullyConnectedLayer implements Layer {
         }
         for (int i = 0; i < biases[biases.length - 1].length; i++) {
             biases[biases.length - 1][i] = randomGen.getOutputLayerBias();
-        }
-    }
-
-    @Override
-    public void save(String path) throws FileManagingException {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(new File(path), this);
-        } catch (IOException e) {
-            throw new FileManagingException("An Exception occurred trying to save the values of " +
-                    "the FullConnectedLayer: " + path + ": " + e.getLocalizedMessage());
         }
     }
 
@@ -359,6 +325,36 @@ public class FullyConnectedLayer implements Layer {
     @Override
     public void setTrainingSettings(TrainingSettings trainingSettings) {
         this.trainingSettings = trainingSettings;
+    }
+
+    @Override
+    public int getSequenceLength() {
+        return sequenceLength;
+    }
+
+    @Override
+    public void setSequenceLength(int sequenceLength) {
+        this.sequenceLength = sequenceLength;
+    }
+
+    @Override
+    public int getInputD() {
+        return inputLayerSize;
+    }
+
+    @Override
+    public void setInputD(int inputD) {
+        inputLayerSize = inputD;
+    }
+
+    @Override
+    public int getOutputD() {
+        return outputLayerSize;
+    }
+
+    @Override
+    public void setOutputD(int outputD) {
+        outputLayerSize = outputD;
     }
 
     public float[][][] getWeights() {
@@ -440,14 +436,5 @@ public class FullyConnectedLayer implements Layer {
     public void setV_bias(float[][] v_bias) {
         this.v_bias = v_bias;
     }
-
-    public int getSequenceLength() {
-        return sequenceLength;
-    }
-
-    public void setSequenceLength(int sequenceLength) {
-        this.sequenceLength = sequenceLength;
-    }
-
     //endregion
 }
