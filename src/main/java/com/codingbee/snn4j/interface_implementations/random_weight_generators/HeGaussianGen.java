@@ -12,6 +12,7 @@ import java.util.Random;
 @SuppressWarnings("unused")
 public class HeGaussianGen implements RandomWeightGenerator {
     Random gen = new Random();
+
     @Override
     public float getWeight(int inputs, int outputs) throws IncorrectDataException {
         if (inputs < 1 || outputs < 1){

@@ -1,18 +1,12 @@
 package com.codingbee.snn4j.interface_implementations.layers;
 
 import com.codingbee.snn4j.algorithms.Maths;
-import com.codingbee.snn4j.exceptions.FileManagingException;
 import com.codingbee.snn4j.interfaces.utils.ActivationFunction;
 import com.codingbee.snn4j.interfaces.architecture.Layer;
 import com.codingbee.snn4j.interfaces.architecture.Model;
 import com.codingbee.snn4j.interfaces.utils.RandomWeightGenerator;
 import com.codingbee.snn4j.settings.TrainingSettings;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 
 public class LSTMLayer implements Layer {
@@ -113,7 +107,7 @@ public class LSTMLayer implements Layer {
 
     //region Private methods
     private float[] calculateCellOutput(int cellNo, float[] input){
-        float[] processedVector = Maths.concatenateVectors(input, prevHiddenStates[cellNo]);
+        float[] processedVector = Maths.concatVectors(input, prevHiddenStates[cellNo]);
 
         float[] inputGate = calculateGate(inputGateW[cellNo], inputGateB[cellNo], inputGateAF, processedVector);
         float[] forgetGate = calculateGate(forgetGateW[cellNo], forgetGateB[cellNo], forgetGateAF, processedVector);

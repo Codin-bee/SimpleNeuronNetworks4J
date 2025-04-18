@@ -1,6 +1,7 @@
 package com.codingbee.snn4j.interface_implementations.layers;
 
 import com.codingbee.snn4j.algorithms.Maths;
+import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.codingbee.snn4j.interfaces.utils.ActivationFunction;
 import com.codingbee.snn4j.interfaces.utils.RandomWeightGenerator;
 import com.codingbee.snn4j.interfaces.architecture.Layer;
@@ -10,9 +11,9 @@ import java.util.Arrays;
 public class FullyConnectedLayer implements Layer {
     private float[][][] weights;
     private float[][] biases;
-    private int inputLayerSize;
-    private int outputLayerSize;
-    private int[] hiddenLayersSizes;
+    private int d_input;
+    private int d_output;
+    private int[] ds_hidden;
     private int sequenceLength;
     private TrainingSettings trainingSettings = new TrainingSettings();
     private ActivationFunction activationFunction;
@@ -29,11 +30,11 @@ public class FullyConnectedLayer implements Layer {
     private float[][][][] weightedSums;
 
 
-    public FullyConnectedLayer(int inputLayerSize, int outputLayerSize, int[] hiddenLayersSizes,
+    public FullyConnectedLayer(int d_input, int d_output, int[] ds_hidden,
                                int sequenceLength, ActivationFunction activationFunction) {
-        this.hiddenLayersSizes = hiddenLayersSizes;
-        this.inputLayerSize = inputLayerSize;
-        this.outputLayerSize = outputLayerSize;
+        this.ds_hidden = ds_hidden;
+        this.d_input = d_input;
+        this.d_output = d_output;
         this.activationFunction = activationFunction;
         this.sequenceLength = sequenceLength;
     }
@@ -111,7 +112,7 @@ public class FullyConnectedLayer implements Layer {
             for (int j = 0; j < sequenceLength; j++) {
                 for (int k = 0; k < weights.length; k++) {
                     if (k == 0){
-                        inputs[i][j][k] = new float[inputLayerSize];
+                        inputs[i][j][k] = new float[d_input];
                     } else
                     {
                         inputs[i][j][k] = new float[weights[k-1].length];
@@ -132,6 +133,9 @@ public class FullyConnectedLayer implements Layer {
 
     @Override
     public float[][][] backPropagateAndUpdate(float[][][] outputErrors, int adamTime) {
+        if (weights == null || weights.length == 0){
+            throw new IncorrectDataException("");
+        }
         int numberOfSamples = outputErrors.length;
 
         //Allocate gradient arrays
@@ -142,7 +146,7 @@ public class FullyConnectedLayer implements Layer {
         }
 
         //Results arrays
-        float[][][] inputError = new float[numberOfSamples][sequenceLength][inputLayerSize];
+        float[][][] inputError = new float[numberOfSamples][sequenceLength][d_input];
         float[][][][] layerErrors = new float[numberOfSamples][sequenceLength][weights.length][];
 
 
@@ -163,6 +167,7 @@ public class FullyConnectedLayer implements Layer {
                     //Calculating ahead for the previous layer
                     layerActivationDerivatives = Maths.multiplyTransposeWByV(weights[layer], layerError);
                 }
+                assert layerError != null;
                 inputError[sample][vector] = Arrays.copyOf(layerError, layerError.length);
 
             }
@@ -256,9 +261,9 @@ public class FullyConnectedLayer implements Layer {
             for (int j = 0; j < weights[i].length; j++) {
                 for (int k = 0; k < weights[i][j].length; k++) {
                     if (i == 0) {
-                        weights[i][j][k] = randomGen.getWeight(inputLayerSize, weights[0].length);
+                        weights[i][j][k] = randomGen.getWeight(d_input, weights[0].length);
                     } else if (i == weights.length - 1) {
-                        weights[i][j][k] = randomGen.getWeight(weights[weights.length - 1].length, outputLayerSize);
+                        weights[i][j][k] = randomGen.getWeight(weights[weights.length - 1].length, d_output);
                     } else {
                         weights[i][j][k] = randomGen.getWeight(weights[i].length, weights[i + 1].length);
                     }
@@ -297,21 +302,21 @@ public class FullyConnectedLayer implements Layer {
 
     //region Private Methods
     private void allocateParams() {
-        if (hiddenLayersSizes != null && hiddenLayersSizes.length != 0) {
-            weights = new float[1 + hiddenLayersSizes.length][][];
-            weights[0] = new float[hiddenLayersSizes[0]][inputLayerSize];
-            weights[weights.length - 1] = new float[outputLayerSize][hiddenLayersSizes[hiddenLayersSizes.length - 1]];
+        if (ds_hidden != null && ds_hidden.length != 0) {
+            weights = new float[1 + ds_hidden.length][][];
+            weights[0] = new float[ds_hidden[0]][d_input];
+            weights[weights.length - 1] = new float[d_output][ds_hidden[ds_hidden.length - 1]];
             for (int i = 1; i < weights.length - 1; i++) {
-                weights[i] = new float[hiddenLayersSizes[i]][hiddenLayersSizes[i - 1]];
+                weights[i] = new float[ds_hidden[i]][ds_hidden[i - 1]];
             }
-            biases = new float[hiddenLayersSizes.length + 1][];
+            biases = new float[ds_hidden.length + 1][];
             for (int i = 0; i < biases.length - 1; i++) {
-                biases[i] = new float[hiddenLayersSizes[i]];
+                biases[i] = new float[ds_hidden[i]];
             }
-            biases[biases.length - 1] = new float[outputLayerSize];
+            biases[biases.length - 1] = new float[d_output];
         } else {
-            weights = new float[1][outputLayerSize][inputLayerSize];
-            biases = new float[1][outputLayerSize];
+            weights = new float[1][d_output][d_input];
+            biases = new float[1][d_output];
         }
     }
     //endregion
@@ -339,22 +344,22 @@ public class FullyConnectedLayer implements Layer {
 
     @Override
     public int getInputD() {
-        return inputLayerSize;
+        return d_input;
     }
 
     @Override
     public void setInputD(int inputD) {
-        inputLayerSize = inputD;
+        d_input = inputD;
     }
 
     @Override
     public int getOutputD() {
-        return outputLayerSize;
+        return d_output;
     }
 
     @Override
     public void setOutputD(int outputD) {
-        outputLayerSize = outputD;
+        d_output = outputD;
     }
 
     public float[][][] getWeights() {
@@ -373,28 +378,28 @@ public class FullyConnectedLayer implements Layer {
         this.biases = biases;
     }
 
-    public int getInputLayerSize() {
-        return inputLayerSize;
+    public int getD_input() {
+        return d_input;
     }
 
-    public void setInputLayerSize(int inputLayerSize) {
-        this.inputLayerSize = inputLayerSize;
+    public void setD_input(int d_input) {
+        this.d_input = d_input;
     }
 
-    public int getOutputLayerSize() {
-        return outputLayerSize;
+    public int getD_output() {
+        return d_output;
     }
 
-    public void setOutputLayerSize(int outputLayerSize) {
-        this.outputLayerSize = outputLayerSize;
+    public void setD_output(int d_output) {
+        this.d_output = d_output;
     }
 
-    public int[] getHiddenLayersSizes() {
-        return hiddenLayersSizes;
+    public int[] getDs_hidden() {
+        return ds_hidden;
     }
 
-    public void setHiddenLayersSizes(int[] hiddenLayersSizes) {
-        this.hiddenLayersSizes = hiddenLayersSizes;
+    public void setDs_hidden(int[] ds_hidden) {
+        this.ds_hidden = ds_hidden;
     }
 
     public ActivationFunction getActivationFunction() {

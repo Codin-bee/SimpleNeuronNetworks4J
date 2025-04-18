@@ -27,6 +27,10 @@ public class LayeredModel implements Model {
 
     public LayeredModel(){};
 
+    public LayeredModel(List<Layer> layers){
+        this.layers = layers;
+    }
+
     @Override
     public float[][] process(float[][] input) {
         float[][] prevOutput = input;
