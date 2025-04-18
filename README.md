@@ -2,25 +2,29 @@
 Shortened name SNN4J.
 
 ## What is this library?
-SNN4J is simple library for Java, which allows you to create simple neuron networks, train them and test them.
-Currently, it is still developed and the whole system is being reworked to allow for much more customizable networks.
+SNN4J is simple library for Java, which allows you to create simple neuron networks, train them, testem and use them for processing any data. It is designed to give you control over as many aspect of the models as possible, while having simple interface abstracting from all the calculations.
 
 ## How do I download it?
-1. If you use Maven, add to your pom.xml: 
+Currently the library uses Jitpack.io for the distribution.
+
+### 1. If you use Maven, add to your pom.xml: 
 ```xml
-<repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
-</repository>
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
 
-<dependency>
-      <groupId>com.github.Codin-bee</groupId>
-      <artifactId>SimpleNeuronNetworks4J</artifactId>
-      <version>LATEST-RELEASE</version>
-</dependency>
-
+<dependencies>
+    <dependency>
+        <groupId>com.github.Codin-bee</groupId>
+        <artifactId>SimpleNeuronNetworks4J</artifactId>
+        <version>LATEST_RELEASE</version>
+    </dependency>
+</dependencies>
 ```
-2. If you use Gradle add to your build.gradle:
+### 2. If you use Gradle add to your build.gradle:
 ```groovy
 dependencyResolutionManagement {
 		repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
@@ -36,76 +40,76 @@ dependencies {
 
 ```
 
-After that reload your build system files changes and the library should be in your folder with external libraries.
+After pasting this, reload your build system files changes and the library should be in your folder with external libraries.
 
 ## How do I use it?
 
-THIS IS TUTORIAL FOR OLD VERSION OF THE LIBRARY THE CURRENT SYSTEM WORKS USING LAYERS AND I WILL PROVIDE TUTORIAL ONCE IT IS FINISHED
-
-My goal is to create as good documentation in the code as possible, so it is really easy to use. But I know 
-how hard it can be to make the first step, so I will provide simple tutorial for the basic features.
-
-First thing u have to do is create the network. We will use the MLP class for it, which stands for multi-layer perceptron which is one of the neural network architectures.
-```Java
-MLP myNetwork = new MLP(784, 10, new int[]{10, 10}, "my network");
-```
-The first parameter in the constructor defines how many neurons the input layer has, the second one defines how many neurons are in output layer. The array determines amounts of neurons in hidden layers. And the String is the name of the network in file system.
-
-Next we have to generate random weights and biases, which we will tune later by training, but they have to be generated randomly at the start. We do it using this method:
-```Java
-myNetwork.initializeWithRandomValues("src/main/resources/networks");
-```
-At the given path the library creates directory with the name of the network specified in the constructor. Inside directory for every layer will be created, containing one text file for each neuron.
-
-When we have the network in our file system we just load it into the actual network, simply by calling:
-```Java
-network.initializeFromFiles("src/main/resources");
-```
-Now our network is fully set-up, and we can do whatever we want with it. I will divide the functionalities into three sections.
-
-### 1. Training, data preparation
-First we have to prepare the dataset we will train our network on.
-```Java
-double[][] inputData = new double[1][];
-double[][] expectedResults = new double[1][];
-//Your own value initialization
-Dataset data = new Dataset(inputData, expectedResults);
-```
-The first array are the values passed to the network and the second one are values we want to get after it process the input. Now we can train our network calling the train method.
-```Java
-myNetwork.train(data, 100, true);
-```
-First parameter is obviously the dataset, second one is number of iterations(epochs) and last one is boolean, deciding if you want to print debug info while training.
-
-### 2. Processing - actual usage
-The MLP can process your input two ways and return either index of the output neuron with the highest activation:
-```Java
-int index = myNetwork.processAsIndex(new int[]{1, 2, 3});
-```
-or it can return activations of all output neurons:
-```Java
-double[] activations = myNetwork.processAsValues(new double[]{1, 2, 3});
-```
-
-### 3. Debugging, analysing, tuning
-I provided few methods, to help you analyze and debug your network.
-1. You can get the cost function of your model simply, by calling:
-```Java
-double[][] inputData;
-double[][] expectedResults;
-//Data initialization
-double cost = myNetwork.calculateAverageCost(inputData, expectedResults);
-```
-2. You can also get the correctness percentage of your model on given dataset by calling:
+### 1. Layers
+The architecture of all models accepts Layer implementations to use for the computations. Every Layer has its own constructor and accepts different parameters. Here are few different examples:
+#### Fully Connected Layer
+Or also called dense layer, feed forward network or multi-layer perceptron.
 
 ```Java
-Dataset dataset = new Dataset();
-//Data initialization
-double cost = myNetwork.getCorrectPercentage(dataset);
+FullyConnectedLayer ffn = new FullyConnectedLayer(784, 10, new int[]{16, 16}, 1, new ReLU());
+```
+In the example above we create a layer with input dimension 784, output dimension 10, two hidden layers of dimensions 16, with one only one vector in the sequence and ReLU as activation function(more about activation functions in the next chapter).
+
+### 2. Activation Functions, Cost Functions and Weight Generators
+There are different interfaces throughout the library making it more customizable. You can implement them however you want if you are looking for certain function, the library does not provide.
+
+#### a) Activation Functions
+This function is part of every Layer it is a non-linear function applied to the results of the computed results. Some have special properties, and you can modify them using getters and setters.
+
+#### b) Vector Activation Functions
+They serve the exactly same purpose as normal Activation Functions, but they are made for vectors and therefore take into account all its elements to calculate the activation of others.
+
+#### c) Cost Functions
+This function is used to calculate the error of the network on given data, by comparing the predicted outputs and targeted outputs.
+
+#### d) Weight Generators
+To initialize the parameters of the Layers before training, we use Weight Generators. They take the number of input and outputs of given layer as an argument to produce the best, numerically stable values.
+
+### 3. Model
+As a last step, we have to put our layers into a certain model. Currently, the only option is the LayeredModel. To use it, simply create new instance with ArrayList of your layer as a constructor parameter:
+
+```Java
+LayeredModel model = new LayeredModel(List.of(myLayer1, myLayer2));
+```
+Optionally, you can call an empty constructor and later use the method addLayer:
+```Java
+model.addLayer(myLayer);
+```
+You can also specify the index of the layer:
+```Java
+model.addLayer(myLayer, index);
 ```
 
-### What about the other architectures?
-All the object have the same interface methods, just in some cases they use different data-types, or the arguments are slightly changed up. The Javadoc documentation provided should be enough, but you can reach me to ask any questions if needed, do not be afraid.
+### 4. Training, Data Preparation
+#### Data
+Currently, the library can not process the training data into usable values, but there will be solutions added later on.
+If we want to make a dataset we have to prepare our own data. With it, we can create Dataset object. The data has two parts: inputs and prediction targets. Both are stored in 3-dimensional arrays.
+```Java
+Dataset data = new Dataset(inputs, targets);
+```
+The arrays are indexed:
+```Java
+float[][][] inputs = new float[sample][vector-in-sequence][elements-of-vector];
+```
+
+#### Training
+The train() method in the Model interface takes several parameters:
+trainDataset - Dataset object instance, containing the training data
+epochs - number of epochs/iterations for the training process
+savePath - path for saving temporary progress
+saveInterval - interval for saving the progress (number of epochs)
+debugPrint - boolean value, decide whether to print out the cost, etc
+```Java
+model.train(trainDataset, epochs, savePath, saveInterval, debugPrint);
+```
+
+### 5. Processing - Actual Usage
+
+### 6. Debugging, Analysing
 
 ## Have you got already working code I can use?
 Of course here is link to my repository I used to train one of my projects.
@@ -114,8 +118,4 @@ https://github.com/Codin-bee/DigitRecognition
 
 ## I found a bug!
 That can definitely happen, this library is still in development, and it will probably be for a long time.
-Please feel free to contact me via GitHub or my e-mail thecodingbee.dev@gmail.com and provide some information about the bug, so I can fix it for you.
-
-
-## Is this project abandoned ?
-Not really, but I am a busy man with busy life and I do not have much time left for this project right now.
+Please feel free to contact me via GitHub or my e-mail thecodingbee.dev@gmail.com and provide some information about the bug, so I can fix it.
