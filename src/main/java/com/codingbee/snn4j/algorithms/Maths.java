@@ -148,13 +148,13 @@ public class Maths {
      * @throws IncorrectDataException if any null values are passed or the matrix and vector can not be multiplied
      */
     public static float[] multiplyTransposeWByV(float[][] matrix, float[] vector) {
-        if (matrix == null || vector == null || matrix[0] == null){
-            throw new IncorrectDataException("The passed argument can not be a null");
+        if (matrix == null || vector == null || matrix[0] == null) {
+            throw new IncorrectDataException("The passed argument cannot be a null");
         }
         int rows = matrix.length;
         int cols = matrix[0].length;
 
-        if (vector.length != rows){
+        if (vector.length != rows) {
             throw new IncorrectDataException("The transpose of the matrix and the vector are incompatible for multiplication");
         }
 
@@ -163,9 +163,6 @@ public class Maths {
         for (int i = 0; i < cols; i++) {
             float sum = 0;
             for (int j = 0; j < rows; j++) {
-                if (matrix[i] == null){
-                    throw new IncorrectDataException("The passed argument can not be a null");
-                }
                 sum += matrix[j][i] * vector[j];
             }
             outputVector[i] = sum;
@@ -173,4 +170,5 @@ public class Maths {
 
         return outputVector;
     }
+
 }
