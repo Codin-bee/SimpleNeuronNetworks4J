@@ -55,20 +55,14 @@ public class FullyConnectedLayer implements Layer {
         for (int vector = 0; vector < input.length; vector++) {
             layerInput = input[vector];
             for (int layer = 0; layer < weights.length; layer++) {
-                layerOutput = new float[weights[layer].length];
+                layerOutput = Maths.multiplyWbyV(weights[layer], layerInput);
                 for (int j = 0; j < weights[layer].length; j++) {
-                    float sum = 0;
-                    for (int k = 0; k < weights[layer][j].length; k++) {
-                        sum += layerInput[k] * weights[layer][j][k];
-                    }
-                    layerOutput[j] = activationFunction.activate(sum + biases[layer][j]);
+                    layerOutput[j] = activationFunction.activate(layerOutput[j] + biases[layer][j]);
                 }
-
                 layerInput = layerOutput;
             }
             outputs[vector] = layerOutput;
         }
-
         return outputs;
     }
 
