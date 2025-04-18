@@ -122,7 +122,7 @@ public class Dataset {
         List<Dataset> batches = new ArrayList<>(numberOfBatches);
         for (int i = 0; i < numberOfBatches; i++) {
             float[][][] batchInputs = new float[batchSize][inputData[0].length][inputData[0][0].length];
-            float[][][] batchOutputs = new float[batchSize][inputData[0].length][inputData[0][0].length];
+            float[][][] batchOutputs = new float[batchSize][expectedResults[0].length][expectedResults[0][0].length];
             for (int j = 0; j < batchInputs.length; j++) {
                 for (int k = 0; k < inputData[0].length; k++) {
                     System.arraycopy(inputData[j][k], 0, batchInputs[j][k], 0, inputData[j][k].length);
