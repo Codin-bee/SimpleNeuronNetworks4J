@@ -29,7 +29,14 @@ public class FullyConnectedLayer implements Layer {
     private float[][][][] inputs;
     private float[][][][] weightedSums;
 
-
+    /**
+     * Create new Layer based on the specified parameters
+     * @param d_input input dimensions
+     * @param d_output output dimensions
+     * @param ds_hidden hidden layers dimensions
+     * @param sequenceLength number of vectors in the sequence
+     * @param activationFunction an activation function applied to the weighted sums
+     */
     public FullyConnectedLayer(int d_input, int d_output, int[] ds_hidden,
                                int sequenceLength, ActivationFunction activationFunction) {
         this.ds_hidden = ds_hidden;
