@@ -50,6 +50,11 @@ public class MemoryUtils {
         return newArray;
     }
 
+    /**
+     * Validates whether the given 2-dimensional array is a matrix
+     * @param matrix the matrix to validate
+     * @throws IncorrectDataException if there are any null values in the matrix or the lengths of rows differ
+     */
     public static void validateMatrix(float[][] matrix){
         if (matrix == null || matrix[0] == null){
             throw new IncorrectDataException("The passed argument cannot be a null");
@@ -66,11 +71,18 @@ public class MemoryUtils {
         }
     }
 
-    public static float[][] copyArray(float[][] array){
-        float[][] copy = new float[array.length][];
-        for (int i = 0; i < array.length; i++) {
-            copy[i] = new float[array[i].length];
-            System.arraycopy(array[i], 0, copy[i], 0, array[i].length);
+    /**
+     * Copies the given matrix and returns the copy
+     * @param matrix the matrix to be copied
+     * @return copy of the matrix
+     * @throws IncorrectDataException if there are any null values in the matrix or the lengths of rows differ
+     */
+    public static float[][] copyMatrix(float[][] matrix){
+        MemoryUtils.validateMatrix(matrix);
+        float[][] copy = new float[matrix.length][];
+        for (int i = 0; i < matrix.length; i++) {
+            copy[i] = new float[matrix[i].length];
+            System.arraycopy(matrix[i], 0, copy[i], 0, matrix[i].length);
         }
         return copy;
     }
