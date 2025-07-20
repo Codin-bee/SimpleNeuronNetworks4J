@@ -18,8 +18,6 @@ public interface Model {
 
     void train(Dataset data, int epochs, String savePath, int saveInterval, boolean printDebug) throws FileManagingException;
 
-    void validate();
-
     TrainingSettings getTrainingSettings();
     void setTrainingSettings(TrainingSettings settings);
 }

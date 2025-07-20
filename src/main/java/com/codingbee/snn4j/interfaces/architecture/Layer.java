@@ -58,13 +58,7 @@ public interface Layer {
 
     int getSequenceLength();
 
-    void setSequenceLength(int sequenceLength);
-
     int getInputD();
 
-    void setInputD(int inputD);
-
     int getOutputD();
-
-    void setOutputD(int outputD);
 }

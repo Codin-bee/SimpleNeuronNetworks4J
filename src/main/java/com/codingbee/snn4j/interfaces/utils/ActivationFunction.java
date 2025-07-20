@@ -6,4 +6,5 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public interface ActivationFunction {
     float activate(float n);
     float derivative(float n);
+    float[] derivative(float[] ns);
 }
