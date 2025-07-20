@@ -2,7 +2,6 @@ package com.codingbee.snn4j.interface_implementations.layers.ffn;
 
 import com.codingbee.snn4j.algorithms.Maths;
 import com.codingbee.snn4j.algorithms.MemoryUtils;
-import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import com.codingbee.snn4j.interfaces.utils.ActivationFunction;
 import com.codingbee.snn4j.interfaces.utils.RandomWeightGenerator;
 import com.codingbee.snn4j.interfaces.architecture.Layer;
@@ -64,7 +63,7 @@ public class FullyConnectedLayer implements Layer {
         for (int vector = 0; vector < input.length; vector++) {
             layerInput = input[vector];
             for (int layer = 0; layer < weights.length; layer++) {
-                layerOutput = Maths.multiplyWbyV(weights[layer], layerInput);
+                layerOutput = Maths.multiply(weights[layer], layerInput);
                 for (int j = 0; j < weights[layer].length; j++) {
                     layerOutput[j] = activationFunction.activate(layerOutput[j] + biases[layer][j]);
                 }
@@ -156,7 +155,7 @@ public class FullyConnectedLayer implements Layer {
                 float[] layerError;
 
                 for (int layer = weights.length - 2; layer >= 0; layer--){
-                    layerError = Maths.multiplyVectors(Maths.multiplyTransposeWByV(weights[layer+1], prevLayerError), activationFunction.derivative(weightedSums[sample][vector][layer]));
+                    layerError = Maths.multiplyElementWise(Maths.multiplyTranspose(weights[layer+1], prevLayerError), activationFunction.derivative(weightedSums[sample][vector][layer]));
                     layerErrors[sample][vector][layer+1] = layerError;
                     prevLayerError = layerError;
                 }
@@ -177,7 +176,7 @@ public class FullyConnectedLayer implements Layer {
                         input = activations[i][j][k];
                     }
                     float[][] wg = Maths.dyadicProduct(layerErrors[i][j][(weights.length-1)-k], input);
-                    Maths.addTo(weightGradient[k], wg);
+                    Maths.addInPlace(weightGradient[k], wg);
 
                     for (int l = 0; l < weights[k].length; l++) {
                         biasGradient[k][l] += layerErrors[i][j][(weights.length-1)-k][l];

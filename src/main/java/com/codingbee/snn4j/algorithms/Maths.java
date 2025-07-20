@@ -10,7 +10,7 @@ public class Maths {
      * @return new vector as a product of the multiplication
      * @throws IncorrectDataException if any null values are passed or the matrix and vector cannot be multiplied
      */
-    public static float[] multiplyWbyV(float[][] matrix, float[] vector){
+    public static float[] multiply(float[][] matrix, float[] vector){
         if (vector == null){
             throw new IncorrectDataException("The passed argument cannot be a null");
         }
@@ -43,7 +43,7 @@ public class Maths {
      * @return new vector of the same length
      * @throws IncorrectDataException if any vector is null or their length does not match
      */
-    public static float[] multiplyVectors(float[] vectorA, float[] vectorB){
+    public static float[] multiplyElementWise(float[] vectorA, float[] vectorB){
         if (vectorA == null || vectorB == null){
             throw new IncorrectDataException("The passed argument can not be a null.");
         }
@@ -126,7 +126,7 @@ public class Maths {
      * @return new vector, the product of the multiplication
      * @throws IncorrectDataException if any null values are passed or the matrix and vector cannot be multiplied
      */
-    public static float[] multiplyTransposeWByV(float[][] matrix, float[] vector) {
+    public static float[] multiplyTranspose(float[][] matrix, float[] vector) {
         if (vector == null) {
             throw new IncorrectDataException("The passed argument cannot be a null");
         }
@@ -153,21 +153,45 @@ public class Maths {
         return outputVector;
     }
 
-    public static float[][] multiplyMatrices(float[][] matrixA, float[][] matrixB) {
+    /**
+     * Multiplies the two matrices using standard iterative algorithm
+     * @param matrixA first matrix
+     * @param matrixB second matrix
+     * @return the product of the two matrices
+     * @throws IncorrectDataException if any null values are passed or the matrices cannot be multiplied
+     */
+    public static float[][] multiply(float[][] matrixA, float[][] matrixB) {
         MemoryUtils.validateMatrix(matrixA);
         MemoryUtils.validateMatrix(matrixB);
 
         int rowsA = matrixA.length;
         int rowsB = matrixB.length;
-        int columnsB = matrixB[0].length;
         int columnsA = matrixA[0].length;
+        int columnsB = matrixB[0].length;
 
         if (columnsA != rowsB){
             throw new IncorrectDataException("The matrices are unable to be multiplied");
         }
-        return null;
+
+        float[][] result = new float[rowsA][columnsB];
+        for (int i = 0; i < rowsA; i++) {
+            for (int j = 0; j < columnsB; j++) {
+                for (int k = 0; k < columnsA; k++) {
+                    result[i][j] += matrixA[i][k] * matrixB[k][j];
+                }
+            }
+        }
+
+        return result;
     }
 
+    /**
+     * Calculates the dot product of two vectors with the same length
+     * @param vectorA first vector
+     * @param vectorB second vector
+     * @return the dot product of the two vectors
+     * @throws IncorrectDataException if any null values are passed or the vector lengths do not match
+     */
     public static float dotProduct(float[] vectorA, float[] vectorB){
         if (vectorA == null || vectorB == null){
             throw new IncorrectDataException("The passed argument cannot be a null");
@@ -182,6 +206,13 @@ public class Maths {
         return sum;
     }
 
+    /**
+     * Calculates the dyadic product of two vectors
+     * @param vectorA first vector
+     * @param vectorB second vector
+     * @return newly created matrix, dyadic product of the vectors
+     * @throws IncorrectDataException if any null values are passed
+     */
     public static float[][] dyadicProduct(float[] vectorA, float[] vectorB){
         if (vectorA == null || vectorB == null){
             throw new IncorrectDataException("The passed argument cannot be a null");
@@ -196,7 +227,20 @@ public class Maths {
         return dyadic;
     }
 
-    public static void addTo(float[][] matrixA, float[][] matrixB){
+    /**
+     * Adds elements of the second matrix to the first matrix in-place
+     * @param matrixA first matrix, the result
+     * @param matrixB second matrix, added to the first
+     * @throws IncorrectDataException if any null values are passed
+     */
+    public static void addInPlace(float[][] matrixA, float[][] matrixB){
+        MemoryUtils.validateMatrix(matrixA);
+        MemoryUtils.validateMatrix(matrixB);
+
+        if (matrixA.length != matrixB.length || matrixA[0].length != matrixB[0].length){
+            throw new IncorrectDataException("The elements of given matrices can not be added because they have different dimensions");
+        }
+
         for (int i = 0; i < matrixA.length; i++) {
             for (int j = 0; j < matrixA[i].length; j++) {
                 matrixA[i][j] += matrixB[i][j];
@@ -204,7 +248,15 @@ public class Maths {
         }
     }
 
+    /**
+     * Scales every value of the matrix by given scalar in-place
+     * @param matrix the matrix to be scaled
+     * @param scale scalar by which the elements of the matrix are multiplied
+     * @throws IncorrectDataException if any null values are passed
+     */
     public static void scale(float[][] matrix, float scale){
+        MemoryUtils.validateMatrix(matrix);
+
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
                 matrix[i][j] *= scale;
