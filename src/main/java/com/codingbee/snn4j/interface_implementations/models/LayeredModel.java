@@ -9,6 +9,7 @@ import com.codingbee.snn4j.interfaces.utils.CostFunction;
 import com.codingbee.snn4j.interfaces.architecture.Layer;
 import com.codingbee.snn4j.interfaces.architecture.Model;
 import com.codingbee.snn4j.interfaces.utils.RandomWeightGenerator;
+import com.codingbee.snn4j.interfaces.utils.VectorActivationFunction;
 import com.codingbee.snn4j.settings.TrainingSettings;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,18 +18,29 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class LayeredModel implements Model {
-    private List<Layer> layers = new ArrayList<>();
+    private Layer[] layers = new Layer[0];
     private TrainingSettings trainingSettings = new TrainingSettings();
     private CostFunction costFunction = new MeanSquaredError();
+    private VectorActivationFunction outputActivationFunction = null;
 
     public LayeredModel(){};
 
+    public LayeredModel(Layer[] layers){
+        //TODO: Exceptions, rework for better time
+        for (Layer layer : layers) {
+            addLayer(layer);
+        }
+    }
+
     public LayeredModel(List<Layer> layers){
-        this.layers = layers;
+        //TODO: Exceptions
+        for (Layer layer : layers){
+            addLayer(layer);
+        }
     }
 
     @Override
@@ -38,6 +50,11 @@ public class LayeredModel implements Model {
         for (Layer layer : layers) {
             output = layer.process(prevOutput);
             prevOutput = output;
+        }
+        if (outputActivationFunction != null) {
+            for (int i = 0; i < Objects.requireNonNull(output).length; i++) {
+                output[i] = outputActivationFunction.activate(output[i]);
+            }
         }
         return output;
     }
@@ -112,30 +129,20 @@ public class LayeredModel implements Model {
                     l.prepareForwardPass(batch.getInputData().length);
                 }
                 float[][][] prevGradients = calculateInitialGradient(batch);
-                for (int j = layers.size() - 1; j >= 0; j--) {
-                    prevGradients = layers.get(j).backPropagateAndUpdate(prevGradients, adamTime);
+                for (int j = layers.length - 1; j >= 0; j--) {
+                    prevGradients = layers[j].backPropagateAndUpdate(prevGradients, adamTime);
                 }
                 adamTime++;
             }
             if (printDebug){
-                System.out.println("The cost after " + epoch + ". epoch is : " + calculateAverageCost(data));
+                System.out.println("The cost after " + epoch + ". epoch is : " + calculateAverageCost(data)
+                 + ", the correct percentage is: " + calculateCorrectPercentage(data));
             }
             if ((epoch % saveInterval) == 0){
                 save(savePath);
             }
         }
-    }
-
-    @Override
-    public void validate(){
-        int seqLen = layers.getFirst().getSequenceLength();
-
-        for (int i = 1; i < layers.size(); i++) {
-            if (layers.get(i).getInputD() != layers.get(i-1).getOutputD()){
-                throw new IncorrectDataException("The dimensions of inputs and outputs in sequential " +
-                        "layers do not correspond");
-            }
-        }
+        save(savePath);
     }
 
     @Override
@@ -157,8 +164,8 @@ public class LayeredModel implements Model {
         float correct = 0;
         for (int i = 0; i < outputs.length; i++) {
             for (int j = 0; j < outputs[i].length; j++) {
-                if (Maths.getIndexWithHighestVal(outputs[i][j]) ==
-                        Maths.getIndexWithHighestVal(expectedOutputs[i][j])){
+                if (Maths.getIndexOfLargestElement(outputs[i][j]) ==
+                        Maths.getIndexOfLargestElement(expectedOutputs[i][j])){
                     correct++;
                 }
             }
@@ -168,12 +175,16 @@ public class LayeredModel implements Model {
 
     private float[][][] calculateInitialGradient(Dataset data){
         float[][][] gradients = new float[data.getInputData().length][][];
+        float[][][] outputs = new float[data.getInputData().length][][];
 
         for (int example = 0; example < data.getInputData().length; example++) {
             float[][] inputs = data.getInputData()[example];
             float[][] targets = data.getExpectedResults()[example];
 
-            float[][] predictions = forwardPass(inputs);
+            float[][] predictions = forwardPass(inputs, example);
+            if (outputActivationFunction != null){
+                outputs[example] = predictions;
+            }
 
             float[][] exampleGradient = new float[predictions.length][predictions[0].length];
             for (int i = 0; i < predictions.length; i++) {
@@ -183,49 +194,84 @@ public class LayeredModel implements Model {
             }
             gradients[example] = exampleGradient;
         }
+        if (outputActivationFunction != null) {
+            for (int i = 0; i < gradients.length; i++) {
+                for (int j = 0; j < gradients[i].length; j++) {
+                    gradients[i][j] = outputActivationFunction.derivative(outputs[i][j], gradients[i][j]);
+                }
+            }
+        }
         return gradients;
     }
 
-    private float[][] forwardPass(float[][] input) {
+    private float[][] forwardPass(float[][] input, int example) {
         float[][] prevOutput = input;
         float[][] output = null;
-        for (int i = 0; i < layers.size(); i++) {
-            output = layers.get(i).forwardPass(prevOutput, i);
+        for (Layer layer : layers) {
+            output = layer.forwardPass(prevOutput, example);
             prevOutput = output;
+        }
+        if (outputActivationFunction != null) {
+            for (int i = 0; i < Objects.requireNonNull(output).length; i++) {
+                output[i] = outputActivationFunction.activate(output[i]);
+            }
         }
         return output;
     }
+
+    private boolean layersMatchDimensions(Layer first, Layer second){
+        return first.getOutputD() == second.getInputD();
+    }
     //endregion
 
-    //region Getters and Setters for Jackson
-    //Json has trouble deserializing this list without the annotation
+    //region Getters and Setters for Jackson:
+    //Jackson has trouble deserializing the value without this annotation
     @JsonIgnore
     public int getNumberOfLayers(){
-        return layers.size();
+        if (layers == null){
+            return 0;
+        }
+        return layers.length;
     }
 
-    public List<Layer> getLayers() {
+    public Layer[] getLayers() {
         return layers;
     }
 
-    public void setLayers(List<Layer> layers) {
+    public void setLayers(Layer[] layers) {
         this.layers = layers;
     }
 
     public void addLayer(Layer layer) {
-        layers.add(layer);
-    }
+        if (layers.length != 0){
+            if (layersMatchDimensions(layers[layers.length - 1], layer)){
+                throw new IncorrectDataException("The added layer does not match the dimensions of the previous layer");
+            }
+        }
 
-    public void addLayer(Layer layer, int index) {
-        layers.add(index, layer);
+        Layer[] newLayers = new Layer[layers.length + 1];
+        System.arraycopy(layers, 0, newLayers, 0, layers.length);
+        newLayers[newLayers.length - 1] = layer;
+
+        layers = newLayers;
     }
 
     public void removeLayer(int index){
-        layers.remove(index);
-    }
+        if (layers.length == 0){
+            throw new IncorrectDataException("There are no layers in the model");
+        }
 
-    public void removeLayer(Layer layer){
-        layers.remove(layer);
+        Layer[] newLayers = new Layer[layers.length - 1];
+        int j = 0;
+        for (int i = 0; i < layers.length; i++) {
+            if (i == index){
+                continue;
+            }
+            newLayers[j] = layers[i];
+            j++;
+        }
+
+        layers = newLayers;
     }
 
     public CostFunction getCostFunction() {
@@ -234,6 +280,14 @@ public class LayeredModel implements Model {
 
     public void setCostFunction(CostFunction costFunction) {
         this.costFunction = costFunction;
+    }
+
+    public VectorActivationFunction getOutputActivationFunction() {
+        return outputActivationFunction;
+    }
+
+    public void setOutputActivationFunction(VectorActivationFunction outputActivationFunction) {
+        this.outputActivationFunction = outputActivationFunction;
     }
 
     //endregion
