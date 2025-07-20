@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-@SuppressWarnings("unused")
 public class Dataset {
     private float[][][] inputData;
     private float[][][] expectedResults;

@@ -9,7 +9,6 @@ import java.util.Random;
  * Xavier initialization with Gaussian(normal) distribution, works best in combination
  * with Sigmoid and Tanh activation functions
  */
-@SuppressWarnings("unused")
 public class XavierGaussianGen implements RandomWeightGenerator {
     Random gen = new Random();
     @Override

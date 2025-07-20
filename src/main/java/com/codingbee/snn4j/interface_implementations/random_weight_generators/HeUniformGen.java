@@ -9,7 +9,6 @@ import java.util.Random;
  * He initialization with uniform distribution, works best in combination
  * with ReLU and leaky ReLU activation functions
  */
-@SuppressWarnings("unused")
 public class HeUniformGen implements RandomWeightGenerator {
     Random gen = new Random();
     @Override

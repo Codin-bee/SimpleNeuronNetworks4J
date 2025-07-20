@@ -1,5 +1,7 @@
 package com.codingbee.snn4j.algorithms;
 
+import com.codingbee.snn4j.annotations.JUnitTested;
+import com.codingbee.snn4j.annotations.Pure;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 
 public class Maths {
@@ -85,6 +87,7 @@ public class Maths {
      * @return new vector with combined length of vectorA and vectorB, containing all their elements in order
      * @throws IncorrectDataException if a null is passed to the method
      */
+    @Pure @JUnitTested
     public static float[] concatVectors(float[] vectorA, float[] vectorB){
         if (vectorA == null || vectorB == null){
             throw new IncorrectDataException("The passed argument can not be a null.");
@@ -101,6 +104,7 @@ public class Maths {
      * @return index of the largest element
      * @throws IncorrectDataException if a null or empty array is passed to the method
      */
+    @Pure @JUnitTested
     public static int getIndexOfLargestElement(float[] array){
         if (array == null){
             throw new IncorrectDataException("The passed argument can not be a null.");

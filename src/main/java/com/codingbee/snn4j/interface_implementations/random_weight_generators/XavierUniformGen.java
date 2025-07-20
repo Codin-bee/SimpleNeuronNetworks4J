@@ -9,7 +9,6 @@ import java.util.Random;
  * Xavier initialization with uniform distribution, works best in combination
  * with Sigmoid and Tanh activation functions
  */
-@SuppressWarnings("unused")
 public class XavierUniformGen implements RandomWeightGenerator {
     Random gen = new Random();
     @Override

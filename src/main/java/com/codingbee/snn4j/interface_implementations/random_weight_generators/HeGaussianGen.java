@@ -9,7 +9,6 @@ import java.util.Random;
  * He initialization with Gaussian(normal) distribution, works best in combination
  * with ReLU and leaky ReLU activation functions
  */
-@SuppressWarnings("unused")
 public class HeGaussianGen implements RandomWeightGenerator {
     Random gen = new Random();
 

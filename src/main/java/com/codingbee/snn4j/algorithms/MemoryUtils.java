@@ -1,5 +1,7 @@
 package com.codingbee.snn4j.algorithms;
 
+import com.codingbee.snn4j.annotations.JUnitTested;
+import com.codingbee.snn4j.annotations.Pure;
 import com.codingbee.snn4j.exceptions.IncorrectDataException;
 
 public class MemoryUtils {
@@ -36,6 +38,7 @@ public class MemoryUtils {
      * @return newly allocated 2-dimensional array with the same dimensions as the passed reference array
      * @throws IncorrectDataException if there are any null values in the reference array
      */
+    @Pure @ JUnitTested
     public static float[][] allocateArrayOfSameSize(float[][] reference){
         if (reference == null){
             throw new IncorrectDataException("The passed argument can not be a null");
@@ -55,6 +58,7 @@ public class MemoryUtils {
      * @param matrix the matrix to validate
      * @throws IncorrectDataException if there are any null values in the matrix or the lengths of rows differ
      */
+    @Pure @JUnitTested
     public static void validateMatrix(float[][] matrix){
         if (matrix == null || matrix[0] == null){
             throw new IncorrectDataException("The passed argument cannot be a null");

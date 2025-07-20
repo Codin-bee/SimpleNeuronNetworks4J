@@ -2,7 +2,6 @@ package com.codingbee.snn4j.interface_implementations.activation_functions;
 
 import com.codingbee.snn4j.interfaces.utils.ActivationFunction;
 
-@SuppressWarnings("unused")
 public class LeakyReLU implements ActivationFunction {
     private float alpha = 0.1f;
 
