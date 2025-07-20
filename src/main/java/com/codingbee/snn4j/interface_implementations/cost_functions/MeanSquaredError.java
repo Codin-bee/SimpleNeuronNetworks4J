@@ -5,7 +5,8 @@ import com.codingbee.snn4j.interfaces.utils.CostFunction;
 public class MeanSquaredError implements CostFunction {
     @Override
     public float calculate(float prediction, float target) {
-        return (float) Math.pow((prediction - target), 2);
+        float difference = prediction - target;
+        return difference * difference;
     }
 
     @Override
@@ -23,6 +24,6 @@ public class MeanSquaredError implements CostFunction {
 
     @Override
     public float calculateDerivative(float prediction, float target) {
-        return 2 * (prediction - target);
+        return -2 * (prediction - target);
     }
 }

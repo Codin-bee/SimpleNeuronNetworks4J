@@ -24,6 +24,15 @@ public class LeakyReLU implements ActivationFunction {
         }
     }
 
+    @Override
+    public float[] derivative(float[] ns) {
+        float[] derivatives = new float[ns.length];
+        for (int i = 0; i < ns.length; i++) {
+            derivatives[i] = derivative(ns[i]);
+        }
+        return derivatives;
+    }
+
     public void setAlpha(float alpha){
         this.alpha = alpha;
     }

@@ -2,12 +2,12 @@ package com.codingbee.snn4j.interface_implementations.cost_functions;
 
 import com.codingbee.snn4j.interfaces.utils.CostFunction;
 
-public class CrossEntropy implements CostFunction {
-    float epsilon = 1e-15f;
+public class BinaryCrossEntropy implements CostFunction {
+    float epsilon = 1e-7f;
     @Override
     public float calculate(float prediction, float target) {
-        target = Math.max(epsilon, Math.min(1 - epsilon, target));
-        return (float) - (prediction * Math.log(target) + (1 - prediction) * Math.log(1 - target));
+        prediction = Math.max(epsilon, Math.min(1 - epsilon, prediction));
+        return (float) - (target * Math.log(prediction) + (1 - target) * Math.log(1 - prediction));
     }
 
     @Override
@@ -25,7 +25,7 @@ public class CrossEntropy implements CostFunction {
 
     @Override
     public float calculateDerivative(float prediction, float target) {
-        target = Math.max(epsilon, Math.min(1 - epsilon, target));
-        return - (prediction / target - (1 - prediction) / (1 - target));
+        prediction = Math.max(epsilon, Math.min(1 - epsilon, prediction));
+        return (prediction - target) / (prediction * (1 - prediction));
     }
 }

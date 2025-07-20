@@ -14,4 +14,13 @@ public class Sigmoid implements ActivationFunction {
         float sig = activate(n);
         return sig * (1 - sig);
     }
+
+    @Override
+    public float[] derivative(float[] ns) {
+        float[] derivatives = new float[ns.length];
+        for (int i = 0; i < ns.length; i++) {
+            derivatives[i] = derivative(ns[i]);
+        }
+        return derivatives;
+    }
 }

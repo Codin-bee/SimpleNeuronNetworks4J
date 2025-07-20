@@ -18,4 +18,13 @@ public class ReLU implements ActivationFunction {
         }
         return 1;
     }
+
+    @Override
+    public float[] derivative(float[] ns) {
+        float[] derivatives = new float[ns.length];
+        for (int i = 0; i < ns.length; i++) {
+            derivatives[i] = derivative(ns[i]);
+        }
+        return derivatives;
+    }
 }
