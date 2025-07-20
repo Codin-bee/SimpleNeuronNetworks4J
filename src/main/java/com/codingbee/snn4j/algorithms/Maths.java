@@ -8,9 +8,14 @@ public class Maths {
      * @param matrix the matrix to be multiplied
      * @param vector vector of the same length as matrix columns
      * @return new vector as a product of the multiplication
-     * @throws IncorrectDataException if any null values are passed or the matrix and vector can not be multiplied
+     * @throws IncorrectDataException if any null values are passed or the matrix and vector cannot be multiplied
      */
     public static float[] multiplyWbyV(float[][] matrix, float[] vector){
+        if (vector == null){
+            throw new IncorrectDataException("The passed argument cannot be a null");
+        }
+        MemoryUtils.validateMatrix(matrix);
+
         int rows = matrix.length;
         int cols = matrix[0].length;
 
@@ -21,9 +26,6 @@ public class Maths {
         float[] outputVector = new float[rows];
 
         for (int i = 0; i < rows; i++) {
-            if (matrix[i] == null){
-                throw new IncorrectDataException("The passed argument can not be a null");
-            }
             float sum = 0;
             for (int j = 0; j < cols; j++) {
                 sum += matrix[i][j] * vector[j];
@@ -88,8 +90,8 @@ public class Maths {
             throw new IncorrectDataException("The passed argument can not be a null.");
         }
         float[] concatenatedVector = new float[vectorA.length + vectorB.length];
-        System.arraycopy(vectorB, 0, concatenatedVector, 0, vectorB.length);
-        System.arraycopy(vectorA, 0, concatenatedVector, vectorB.length, vectorA.length);
+        System.arraycopy(vectorA, 0, concatenatedVector, 0, vectorA.length);
+        System.arraycopy(vectorB, 0, concatenatedVector, vectorA.length, vectorB.length);
         return concatenatedVector;
     }
 
@@ -97,11 +99,14 @@ public class Maths {
      * Finds the element with the largest value and returns its index in the array.
      * @param array the array to search through
      * @return index of the largest element
-     * @throws IncorrectDataException if null array is passed to the method
+     * @throws IncorrectDataException if a null or empty array is passed to the method
      */
-    public static int getIndexWithHighestVal(float[] array){
+    public static int getIndexOfLargestElement(float[] array){
         if (array == null){
             throw new IncorrectDataException("The passed argument can not be a null.");
+        }
+        if (array.length == 0){
+            throw new IncorrectDataException("The passed array does not contain any values");
         }
         float highestVal = array[0];
         int index = 0;
@@ -115,42 +120,19 @@ public class Maths {
     }
 
     /**
-     * Allocates a new 3-dimensional array of the same dimensions as the reference array
-     * @param reference the array with desired dimensions
-     * @return newly allocated 3-dimensional array with same dimensions as the passed reference array
-     * @throws IncorrectDataException if there are any null values in the reference array
-     */
-    public static float[][][] allocateArrayOfSameSize(float[][][] reference){
-        if (reference == null){
-            throw new IncorrectDataException("The passed argument can not be a null");
-        }
-        float[][][] newArray = new float[reference.length][][];
-        for (int i = 0; i < reference.length; i++) {
-            if (reference[i] == null){
-                throw new IncorrectDataException("The passed argument can not be a null");
-            }
-            newArray[i] = new float[reference[i].length][];
-            for (int j = 0; j < reference[i].length; j++) {
-                if (reference[i][j] == null){
-                    throw new IncorrectDataException("The passed argument can not be a null");
-                }
-                newArray[i][j] = new float[reference[i][j].length];
-            }
-        }
-        return newArray;
-    }
-
-    /**
      * Multiplies transpose of the matrix by the vector and return their product vector
      * @param matrix the matrix
-     * @param vector the vector with same length as number of vector rows
+     * @param vector the vector with the same length as number of vector rows
      * @return new vector, the product of the multiplication
-     * @throws IncorrectDataException if any null values are passed or the matrix and vector can not be multiplied
+     * @throws IncorrectDataException if any null values are passed or the matrix and vector cannot be multiplied
      */
     public static float[] multiplyTransposeWByV(float[][] matrix, float[] vector) {
-        if (matrix == null || vector == null || matrix[0] == null) {
+        if (vector == null) {
             throw new IncorrectDataException("The passed argument cannot be a null");
         }
+
+        MemoryUtils.validateMatrix(matrix);
+
         int rows = matrix.length;
         int cols = matrix[0].length;
 
@@ -169,6 +151,65 @@ public class Maths {
         }
 
         return outputVector;
+    }
+
+    public static float[][] multiplyMatrices(float[][] matrixA, float[][] matrixB) {
+        MemoryUtils.validateMatrix(matrixA);
+        MemoryUtils.validateMatrix(matrixB);
+
+        int rowsA = matrixA.length;
+        int rowsB = matrixB.length;
+        int columnsB = matrixB[0].length;
+        int columnsA = matrixA[0].length;
+
+        if (columnsA != rowsB){
+            throw new IncorrectDataException("The matrices are unable to be multiplied");
+        }
+        return null;
+    }
+
+    public static float dotProduct(float[] vectorA, float[] vectorB){
+        if (vectorA == null || vectorB == null){
+            throw new IncorrectDataException("The passed argument cannot be a null");
+        }
+        if (vectorA.length != vectorB.length){
+            throw new IncorrectDataException("The lengths of vectors have to be the same in order to calculate their dot product");
+        }
+        float sum = 0;
+        for (int i = 0; i < vectorA.length; i++) {
+            sum += vectorA[i] * vectorB[i];
+        }
+        return sum;
+    }
+
+    public static float[][] dyadicProduct(float[] vectorA, float[] vectorB){
+        if (vectorA == null || vectorB == null){
+            throw new IncorrectDataException("The passed argument cannot be a null");
+        }
+        float[][] dyadic = new float[vectorA.length][vectorB.length];
+
+        for (int i = 0; i < vectorA.length; i++) {
+            for (int j = 0; j < vectorB.length; j++) {
+                dyadic[i][j] = vectorA[i] * vectorB[j];
+            }
+        }
+        return dyadic;
+    }
+
+    public static void addTo(float[][] matrixA, float[][] matrixB){
+        for (int i = 0; i < matrixA.length; i++) {
+            for (int j = 0; j < matrixA[i].length; j++) {
+                matrixA[i][j] += matrixB[i][j];
+            }
+        }
+    }
+
+    public static void scale(float[][] matrix, float scale){
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] *= scale;
+            }
+        }
     }
 
 }
