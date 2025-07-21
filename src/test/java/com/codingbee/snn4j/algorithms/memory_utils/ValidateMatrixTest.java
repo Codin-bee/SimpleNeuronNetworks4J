@@ -13,7 +13,7 @@ public class ValidateMatrixTest {
     }
 
     @Test
-    void jaggedArrayTest1(){
+    void jaggedArrayTest(){
         float[][] matrix = new float[][]{{1, 2, 3}, {1, 2, 3}, {1, 2}};
         Assertions.assertThrows(IncorrectDataException.class, () -> MemoryUtils.validateMatrix(matrix));
     }

@@ -12,6 +12,7 @@ public class MemoryUtils {
      * @return newly allocated 3-dimensional array with the same dimensions as the passed reference array
      * @throws IncorrectDataException if there are any null values in the reference array
      */
+    @Pure @JUnitTested
     public static float[][][] allocateArrayOfSameSize(float[][][] reference){
         if (reference == null){
             throw new IncorrectDataException("The passed argument can not be a null");
@@ -81,6 +82,7 @@ public class MemoryUtils {
      * @return copy of the matrix
      * @throws IncorrectDataException if there are any null values in the matrix or the lengths of rows differ
      */
+    @Pure @JUnitTested
     public static float[][] copyMatrix(float[][] matrix){
         MemoryUtils.validateMatrix(matrix);
         float[][] copy = new float[matrix.length][];

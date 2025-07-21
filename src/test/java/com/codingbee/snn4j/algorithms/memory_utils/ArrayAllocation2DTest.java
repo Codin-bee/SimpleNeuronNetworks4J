@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 public class ArrayAllocation2DTest {
 
     @Test
-    public void arrayDimensionalityTest1(){
+    public void arrayDimensionalityTest(){
         float[][] original = new float[][]{{1, 2, 3}, {1, 2, 3, 4}, {1, 2, 3, 4, 5, 6, 7}};
         float[][] copy = MemoryUtils.allocateArrayOfSameSize(original);
 
@@ -31,7 +31,14 @@ public class ArrayAllocation2DTest {
         }
     }
 
-    @Test public void nullTest(){
+    @Test
+    public void nullTest(){
         Assertions.assertThrows(IncorrectDataException.class, () -> MemoryUtils.allocateArrayOfSameSize((float[][]) null));
+    }
+
+    @Test
+    public void nullElementTest(){
+        float[][] array = new float[][]{{1, 2, 3}, null, {1, 2, 3, 4}};
+        Assertions.assertThrows(IncorrectDataException.class, () -> MemoryUtils.allocateArrayOfSameSize(array));
     }
 }
