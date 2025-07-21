@@ -7,7 +7,7 @@ public class LeakyReLUTest {
     LeakyReLU leakyReLU = new LeakyReLU();
 
     @Test
-    public void aboveZeroTest1(){
+    public void aboveZeroTest(){
         float result = leakyReLU.activate(0.2f);
         float expected = 0.2f;
         Assertions.assertEquals(expected, result);
@@ -35,7 +35,7 @@ public class LeakyReLUTest {
     }
 
     @Test
-    public void underZeroTest1(){
+    public void underZeroTest(){
         leakyReLU.setAlpha(0.1f);
         float result = leakyReLU.activate(-12.33f);
         float expected = -1.233f;

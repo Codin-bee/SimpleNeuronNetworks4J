@@ -37,7 +37,7 @@ public class XavierGaussianGenTest {
     }
 
     @Test
-    void invalidInputTest1() {
+    void invalidInputTest() {
         assertThrows(IncorrectDataException.class, () -> weightGenerator.getWeight(0, 10));
     }
     @Test

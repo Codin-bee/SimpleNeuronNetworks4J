@@ -8,7 +8,7 @@ public class ReLUTest {
     ReLU reLU = new ReLU();
 
     @Test
-    public void aboveZeroTest1(){
+    public void aboveZeroTest(){
         float result = reLU.activate(0.2f);
         float expected = 0.2f;
         Assertions.assertEquals(expected, result);
@@ -36,7 +36,7 @@ public class ReLUTest {
     }
 
     @Test
-    public void underZeroTest1(){
+    public void underZeroTest(){
         float result = reLU.activate(-12.33f);
         float expected = 0;
         Assertions.assertEquals(expected, result);
