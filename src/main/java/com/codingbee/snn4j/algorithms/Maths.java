@@ -12,6 +12,7 @@ public class Maths {
      * @return new vector as a product of the multiplication
      * @throws IncorrectDataException if any null values are passed or the matrix and vector cannot be multiplied
      */
+    @Pure
     public static float[] multiply(float[][] matrix, float[] vector){
         if (vector == null){
             throw new IncorrectDataException("The passed argument cannot be a null");
@@ -45,6 +46,7 @@ public class Maths {
      * @return new vector of the same length
      * @throws IncorrectDataException if any vector is null or their length does not match
      */
+    @Pure
     public static float[] multiplyElementWise(float[] vectorA, float[] vectorB){
         if (vectorA == null || vectorB == null){
             throw new IncorrectDataException("The passed argument can not be a null.");
@@ -66,7 +68,8 @@ public class Maths {
      * @return new vector of the same length
      * @throws IncorrectDataException if any array is null or their length does not match
      */
-    public static float[] addVectors(float[] vectorA, float[] vectorB){
+    @Pure @JUnitTested
+    public static float[] addElementWise(float[] vectorA, float[] vectorB){
         if (vectorA == null || vectorB == null){
             throw new IncorrectDataException("The passed argument can not be a null.");
         }
@@ -130,6 +133,7 @@ public class Maths {
      * @return new vector, the product of the multiplication
      * @throws IncorrectDataException if any null values are passed or the matrix and vector cannot be multiplied
      */
+    @Pure
     public static float[] multiplyTranspose(float[][] matrix, float[] vector) {
         if (vector == null) {
             throw new IncorrectDataException("The passed argument cannot be a null");
@@ -164,6 +168,7 @@ public class Maths {
      * @return the product of the two matrices
      * @throws IncorrectDataException if any null values are passed or the matrices cannot be multiplied
      */
+    @Pure
     public static float[][] multiply(float[][] matrixA, float[][] matrixB) {
         MemoryUtils.validateMatrix(matrixA);
         MemoryUtils.validateMatrix(matrixB);
@@ -196,6 +201,7 @@ public class Maths {
      * @return the dot product of the two vectors
      * @throws IncorrectDataException if any null values are passed or the vector lengths do not match
      */
+    @Pure
     public static float dotProduct(float[] vectorA, float[] vectorB){
         if (vectorA == null || vectorB == null){
             throw new IncorrectDataException("The passed argument cannot be a null");
@@ -217,6 +223,7 @@ public class Maths {
      * @return newly created matrix, dyadic product of the vectors
      * @throws IncorrectDataException if any null values are passed
      */
+    @Pure
     public static float[][] dyadicProduct(float[] vectorA, float[] vectorB){
         if (vectorA == null || vectorB == null){
             throw new IncorrectDataException("The passed argument cannot be a null");
@@ -258,6 +265,7 @@ public class Maths {
      * @param scale scalar by which the elements of the matrix are multiplied
      * @throws IncorrectDataException if any null values are passed
      */
+    @JUnitTested
     public static void scale(float[][] matrix, float scale){
         MemoryUtils.validateMatrix(matrix);
 
