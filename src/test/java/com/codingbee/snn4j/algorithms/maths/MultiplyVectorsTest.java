@@ -5,26 +5,26 @@ import com.codingbee.snn4j.exceptions.IncorrectDataException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class AddVectorsTest {
+public class MultiplyVectorsTest {
 
     @Test
     public void functionalityTest(){
-        float[] vectorA = new float[]{1, 2.3f, 4, 5};
-        float[] vectorB = new float[]{9.56f, 4.4f, 3, 1};
+        float[] vectorA = new float[]{1,2, 4, 5};
+        float[] vectorB = new float[]{9.56f, 4.4f, 4.4f, 1};
 
-        float[] expected = new float[]{10.56f, 6.7f, 7, 6};
-        float[] actual = Maths.addElementWise(vectorA, vectorB);
+        float[] expected = new float[]{9.56f, 8.8f, 17.6f, 5};
+        float[] actual = Maths.multiplyElementWise(vectorA, vectorB);
 
         Assertions.assertArrayEquals(expected, actual, 0.000001f);
     }
 
     @Test
     public void functionalityTest2(){
-        float[] vectorA = new float[]{76.45f, 573, 29.5f, 5};
-        float[] vectorB = new float[]{12, 4.32f, 4, 3};
+        float[] vectorA = new float[]{1.8f, 4.5f, 3, 7.1f};
+        float[] vectorB = new float[]{3, 2, 0.5f, 3};
 
-        float[] expected = new float[]{88.45f, 577.32f, 33.5f, 8};
-        float[] actual = Maths.addElementWise(vectorA, vectorB);
+        float[] expected = new float[]{5.4f, 9, 1.5f, 21.3f};
+        float[] actual = Maths.multiplyElementWise(vectorA, vectorB);
 
         Assertions.assertArrayEquals(expected, actual, 0.000001f);
     }
@@ -34,7 +34,7 @@ public class AddVectorsTest {
         float[] vectorA = null;
         float[] vectorB = new float[]{2, 3, 4, 9.56f, 4.3f, 3, 1};
 
-        Assertions.assertThrows(IncorrectDataException.class, () -> Maths.addElementWise(vectorA, vectorB));
+        Assertions.assertThrows(IncorrectDataException.class, () -> Maths.multiplyElementWise(vectorA, vectorB));
     }
 
     @Test
@@ -42,7 +42,7 @@ public class AddVectorsTest {
         float[] vectorA = new float[]{6, 8, 9, 2, 1, 2.3f, 4, 5};
         float[] vectorB = null;
 
-        Assertions.assertThrows(IncorrectDataException.class, () -> Maths.addElementWise(vectorA, vectorB));
+        Assertions.assertThrows(IncorrectDataException.class, () -> Maths.multiplyElementWise(vectorA, vectorB));
     }
 
     @Test
@@ -50,6 +50,6 @@ public class AddVectorsTest {
         float[] vectorA = new float[]{2, 1, 2.3f, 4, 5};
         float[] vectorB = new float[]{9.56f, 4.3f, 3, 1};
 
-        Assertions.assertThrows(IncorrectDataException.class, () -> Maths.addElementWise(vectorA, vectorB));
+        Assertions.assertThrows(IncorrectDataException.class, () -> Maths.multiplyElementWise(vectorA, vectorB));
     }
 }

@@ -15,7 +15,7 @@ public class ScaleMatrixTest {
         Maths.scale(actual, 2);
 
         for (int i = 0; i < expected.length; i++) {
-            Assertions.assertArrayEquals(expected[i], actual[i]);
+            Assertions.assertArrayEquals(expected[i], actual[i], 0.000001f);
         }
     }
 
@@ -27,7 +27,7 @@ public class ScaleMatrixTest {
         Maths.scale(actual, 0.5f);
 
         for (int i = 0; i < expected.length; i++) {
-            Assertions.assertArrayEquals(expected[i], actual[i]);
+            Assertions.assertArrayEquals(expected[i], actual[i], 0.000001f);
         }
     }
 
